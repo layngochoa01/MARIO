@@ -9,6 +9,7 @@
 #include "Portal.h"
 #include "Coin.h"
 #include "Platform.h"
+#include "BackgroundOBJ.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -136,6 +137,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			sprite_begin, sprite_middle, sprite_end
 		);
 
+		break;
+	}
+
+	case OBJECT_TYPE_BACKGROUND:
+	{
+		int sprite_id = atoi(tokens[3].c_str());
+		obj = new CBackgroundOBJ(x, y, sprite_id);
 		break;
 	}
 

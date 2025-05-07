@@ -1,8 +1,11 @@
 # id	left	top	right	bottom	texture_id
 [SPRITES]
-60001	0	80	48	143	50
-60002	48	80	79	143	50
-60003	80	80	127	143	50
-
+#BUSH1
+60001	0	78	48	142	50
+60002	47	94	127	142	50
+#GRASS
+60101	52	6	67	21	50
+#CLOUD 
+60201	72	1	119	23	50
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
