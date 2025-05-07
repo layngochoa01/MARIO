@@ -6,6 +6,7 @@
 
 #include "Goomba.h"
 #include "Coin.h"
+#include "Platform.h"
 #include "Portal.h"
 
 #include "Collision.h"
@@ -100,6 +101,9 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 	CPortal* p = (CPortal*)e->obj;
 	CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
 }
+
+void CMario::OnCollisionWithPlatForm(LPCOLLISIONEVENT e)
+{}
 
 //
 // Get animation ID for small Mario
