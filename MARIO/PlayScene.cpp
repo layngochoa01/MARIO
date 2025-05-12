@@ -11,6 +11,7 @@
 #include "Platform.h"
 #include "BackgroundOBJ.h"
 #include "Pipe.h"
+#include "BrickQues.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -119,9 +120,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		DebugOut(L"[INFO] Player object has been created!\n");
 		break;
 	}
-		
+
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x, y); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); break;
+	
 	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
 	case OBJECT_TYPE_PLATFORM:
 	{
@@ -150,7 +152,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 
 	case OBJECT_TYPE_PIPE:	obj = new CPipe(x, y); break;
-
+	case OBJECT_TYPE_BRICK_QUES:
+	{
+		int item = atoi(tokens[3].c_str());
+		obj = new CBrickQues(x, y, item);
+		break;
+	}
 	case OBJECT_TYPE_PORTAL:
 	{
 		float r = (float)atof(tokens[3].c_str());
@@ -333,4 +340,9 @@ void CPlayScene::PurgeDeletedObjects()
 	objects.erase(
 		std::remove_if(objects.begin(), objects.end(), CPlayScene::IsGameObjectDeleted),
 		objects.end());
+}
+
+void CPlayScene::AddObject(LPGAMEOBJECT obj)
+{
+	objects.insert(objects.begin() + 1, obj);
 }

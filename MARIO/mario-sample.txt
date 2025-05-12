@@ -17,3 +17,4 @@ height	240
 30	textures\misc_1.png
 40	textures\misc_2.png
 50	textures\misc_3.png
+60	textures\bush.png

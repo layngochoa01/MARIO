@@ -1,4 +1,4 @@
-#include <algorithm>
+﻿#include <algorithm>
 #include "debug.h"
 
 #include "Mario.h"
@@ -8,10 +8,12 @@
 #include "Coin.h"
 #include "Platform.h"
 #include "Portal.h"
+#include "BrickQues.h"
 
 #include "Collision.h"
+#include "PlayScene.h"
 
-void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
+void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
 	vx += ax * dt;
@@ -19,7 +21,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
 
 	// reset untouchable timer if untouchable time has passed
-	if ( GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME) 
+	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
 		untouchable_start = 0;
 		untouchable = 0;
@@ -42,18 +44,56 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		vy = 0;
 		if (e->ny < 0) isOnPlatform = true;
 	}
-	else 
-	if (e->nx != 0 && e->obj->IsBlocking())
-	{
-		vx = 0;
-	}
+	else
+		if (e->nx != 0 && e->obj->IsBlocking())
+		{
+			vx = 0;
+		}
 
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	else if (dynamic_cast<CCoin*>(e->obj))
 		OnCollisionWithCoin(e);
+	else if (dynamic_cast<CBrickQues*>(e->obj))
+		OnCollisionWithBrickQues(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
+}
+//======================================================================
+#define MARGIN 4.0f
+#define SNAPOFFSET 2.0f
+
+float CMario::GetCurrentHeight() const
+{
+	if (level == MARIO_LEVEL_SMALL) {
+		return MARIO_SMALL_BBOX_HEIGHT;
+	}
+	return (isSitting ? MARIO_BIG_SITTING_BBOX_HEIGHT : MARIO_BIG_BBOX_HEIGHT);
+}
+
+void CMario::ResetVerticalMovement()
+{
+	vy = 0;
+	isOnPlatform = true;
+}
+
+void CMario::HandleSolidCollision(LPGAMEOBJECT gameobject)
+{
+	float collisionHeight = GetCurrentHeight();
+	float distanceToPlatform = gameobject->GetY() - y;
+
+	if (distanceToPlatform < collisionHeight + MARGIN) {
+		float newY = gameobject->GetY() - collisionHeight;
+		if (level == MARIO_LEVEL_SMALL) {
+			newY -= SNAPOFFSET;
+		}
+		else if (!isSitting) {
+			newY += SNAPOFFSET;
+		}
+		SetPosition(x, newY);
+		ResetVerticalMovement();
+	}
+
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
@@ -82,7 +122,7 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 				}
 				else
 				{
-					DebugOut(L">>> Mario DIE >>> \n");
+					//DebugOut(L">>> Mario DIE >>> \n");
 					SetState(MARIO_STATE_DIE);
 				}
 			}
@@ -103,8 +143,36 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 }
 
 void CMario::OnCollisionWithPlatForm(LPCOLLISIONEVENT e)
-{}
+{
+}
 
+void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
+{
+	CBrickQues* questionBrick = dynamic_cast<CBrickQues*>(e->obj);
+
+	if (!questionBrick || questionBrick->GetIsUnbox() || questionBrick->GetIsEmpty())
+		return;
+	if (e->ny < 0) {
+		HandleSolidCollision(questionBrick);
+		return;
+	}
+
+	if (e->ny > 0)
+	{
+		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+		questionBrick->SetState(BRICK_QUES_STATE_UP);
+
+		if (questionBrick->GetItemType() == BRICK_QUES_COIN)
+		{
+			SetCoin(GetCoin() + 1);
+			CCoin* coin = new CCoin(questionBrick->GetX(), questionBrick->GetY());
+			coin->SetState(COIN_SUM);
+			scene->AddObject(coin);
+		}
+		questionBrick->SetIsEmpty(true);
+	}
+
+}
 //
 // Get animation ID for small Mario
 //
@@ -243,14 +311,15 @@ void CMario::Render()
 	animations->Get(aniId)->Render(x, y);
 
 	//RenderBoundingBox();
-	
+
 	DebugOutTitle(L"Coins: %d", coin);
+	DebugOutTitle(L"Score: %d", score);
 }
 
 void CMario::SetState(int state)
 {
 	// DIE is the end state, cannot be changed! 
-	if (this->state == MARIO_STATE_DIE) return; 
+	if (this->state == MARIO_STATE_DIE) return;
 
 	switch (state)
 	{
@@ -299,7 +368,7 @@ void CMario::SetState(int state)
 			state = MARIO_STATE_IDLE;
 			isSitting = true;
 			vx = 0; vy = 0.0f;
-			y +=MARIO_SIT_HEIGHT_ADJUST;
+			y += MARIO_SIT_HEIGHT_ADJUST;
 		}
 		break;
 
@@ -327,9 +396,11 @@ void CMario::SetState(int state)
 	CGameObject::SetState(state);
 }
 
-void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom)
+
+
+void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	if (level==MARIO_LEVEL_BIG)
+	if (level == MARIO_LEVEL_BIG)
 	{
 		if (isSitting)
 		{
@@ -338,21 +409,32 @@ void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom
 			right = left + MARIO_BIG_SITTING_BBOX_WIDTH;
 			bottom = top + MARIO_BIG_SITTING_BBOX_HEIGHT;
 		}
-		else 
+		else
 		{
-			left = x - MARIO_BIG_BBOX_WIDTH/2;
-			top = y - MARIO_BIG_BBOX_HEIGHT/2;
+			left = x - MARIO_BIG_BBOX_WIDTH / 2;
+			top = y - MARIO_BIG_BBOX_HEIGHT / 2;
 			right = left + MARIO_BIG_BBOX_WIDTH;
 			bottom = top + MARIO_BIG_BBOX_HEIGHT;
 		}
 	}
 	else
 	{
-		left = x - MARIO_SMALL_BBOX_WIDTH/2;
-		top = y - MARIO_SMALL_BBOX_HEIGHT/2;
+		left = x - MARIO_SMALL_BBOX_WIDTH / 2;
+		top = y - MARIO_SMALL_BBOX_HEIGHT / 2;
 		right = left + MARIO_SMALL_BBOX_WIDTH;
 		bottom = top + MARIO_SMALL_BBOX_HEIGHT;
 	}
+}
+
+void CMario::AddScore(float xTemp, float yTemp, int scoreAdd)
+{
+	/*CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+
+	if (scoreAdd == 100) {
+		CEffect* effect = new CEffect(xTemp, yTemp, EFFECT_SCORE_100);
+		scene->AddObject(effect);
+	}*/
+
 }
 
 void CMario::SetLevel(int l)
@@ -364,4 +446,6 @@ void CMario::SetLevel(int l)
 	}
 	level = l;
 }
+
+
 
