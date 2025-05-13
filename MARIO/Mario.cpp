@@ -9,15 +9,19 @@
 #include "Platform.h"
 #include "Portal.h"
 #include "BrickQues.h"
+#include "BaseMushroom.h"
 
 #include "Collision.h"
 #include "PlayScene.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	
 	vy += ay * dt;
 	vx += ax * dt;
-
+	
+	if (vy > TERMINAL_VELOCITY)
+		vy = TERMINAL_VELOCITY;
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
 
 	// reset untouchable timer if untouchable time has passed
@@ -26,8 +30,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		untouchable_start = 0;
 		untouchable = 0;
 	}
-
+	if (vy > 0.0f)
+		isOnPlatform = false;
 	CCollision::GetInstance()->Process(this, dt, coObjects);
+	DebugOut(L"out\n");
 }
 
 void CMario::OnNoCollision(DWORD dt)
@@ -41,6 +47,7 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	if (e->ny != 0 && e->obj->IsBlocking())
 	{
+		
 		vy = 0;
 		if (e->ny < 0) isOnPlatform = true;
 	}
@@ -56,18 +63,19 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithCoin(e);
 	else if (dynamic_cast<CBrickQues*>(e->obj))
 		OnCollisionWithBrickQues(e);
+	else if (dynamic_cast<CBaseMushroom*>(e->obj))
+		OnCollisionWithMushroom(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
 }
 //======================================================================
-#define MARGIN 4.0f
-#define SNAPOFFSET 2.0f
 
 float CMario::GetCurrentHeight() const
 {
 	if (level == MARIO_LEVEL_SMALL) {
 		return MARIO_SMALL_BBOX_HEIGHT;
 	}
+	
 	return (isSitting ? MARIO_BIG_SITTING_BBOX_HEIGHT : MARIO_BIG_BBOX_HEIGHT);
 }
 
@@ -79,21 +87,27 @@ void CMario::ResetVerticalMovement()
 
 void CMario::HandleSolidCollision(LPGAMEOBJECT gameobject)
 {
+	
 	float collisionHeight = GetCurrentHeight();
 	float distanceToPlatform = gameobject->GetY() - y;
+	DebugOut(L"collisionHeight :%f ,distanceToPlatform : %f \n", collisionHeight, distanceToPlatform);
 
-	if (distanceToPlatform < collisionHeight + MARGIN) {
+	if (distanceToPlatform < collisionHeight + COLLISION_MARGIN) {
 		float newY = gameobject->GetY() - collisionHeight;
+		DebugOut(L"newY :%f\n", newY);
+		DebugOut(L"collisionHeight + COLLISION_MARGIN :%f\n", collisionHeight + COLLISION_MARGIN);
 		if (level == MARIO_LEVEL_SMALL) {
 			newY -= SNAPOFFSET;
+			DebugOut(L"newY mario small:%f\n", newY);
 		}
 		else if (!isSitting) {
 			newY += SNAPOFFSET;
+			DebugOut(L"newY mario big:%f\n", newY);
 		}
 		SetPosition(x, newY);
 		ResetVerticalMovement();
 	}
-
+	
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
@@ -150,9 +164,10 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 {
 	CBrickQues* questionBrick = dynamic_cast<CBrickQues*>(e->obj);
 
-	if (!questionBrick || questionBrick->GetIsUnbox() || questionBrick->GetIsEmpty())
+	if (!questionBrick )
 		return;
 	if (e->ny < 0) {
+		
 		HandleSolidCollision(questionBrick);
 		return;
 	}
@@ -173,6 +188,22 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 	}
 
 }
+
+void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
+{
+	CBaseMushroom* mushroom = dynamic_cast<CBaseMushroom*>(e->obj);
+	if (mushroom->GetType() == MUSHROOM_TYPE_RED) {
+		if (!mushroom->IsDeleted()) {
+			score += 1000;
+			//AddScoreEffect(x, y - MARIO_BIG_BBOX_HEIGHT, 1000);
+		}
+		if (level == MARIO_LEVEL_SMALL)
+		{
+			SetLevel(MARIO_LEVEL_BIG);
+		}
+	}
+}
+
 //
 // Get animation ID for small Mario
 //
@@ -310,10 +341,10 @@ void CMario::Render()
 
 	animations->Get(aniId)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 
 	//DebugOutTitle(L"Coins: %d", coin);
-	//DebugOutTitle(L"Score: %d", score);
+	DebugOutTitle(L"Score: %d", score);
 	
 }
 
@@ -427,11 +458,11 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	}
 }
 
-void CMario::AddScore(float xTemp, float yTemp, int scoreAdd)
+void CMario::AddScoreEffect(float xTemp, float yTemp, int scoreAdd)
 {
 	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 
-	if (scoreAdd == 100) {
+	if (scoreAdd == SCORE_100) {
 		//CEffect* effect = new CEffect(xTemp, yTemp, EFFECT_SCORE_100);
 		//scene->AddObject(effect);
 	}

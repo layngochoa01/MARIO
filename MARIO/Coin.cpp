@@ -19,8 +19,7 @@ void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	DebugOut(L"[VANTOC] %f\n", vy);
 	if (vy > COIN_SPEED_FALL) {
 		if (!isDeleted) {
-			mario->AddScore(x, y, 100);
-			mario->SetScore(mario->GetScore() + 100);
+			mario->SetScore(mario->GetScore() + SCORE_100);
 		}
 		Delete();
 

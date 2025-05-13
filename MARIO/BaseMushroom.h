@@ -14,6 +14,8 @@
 
 #define ID_ANI_RED_MUSHROOM 14000
 
+#define MUSHROOM_TYPE_RED 1
+
 
 class CBaseMushroom : public CGameObject
 {
@@ -38,6 +40,9 @@ protected:
 public:
 	CBaseMushroom(float x, float y, int t);
 	virtual void SetState(int state);
+
+	void SetType(int t) { this->type = t; }
+	int GetType() { return this->type; }
 
 };
 

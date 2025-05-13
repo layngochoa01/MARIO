@@ -7,7 +7,7 @@ background.txt
 pipe.txt
 coin.txt
 goomba.txt
-mushroom.txt
+#mushroom.txt
 
 
 [OBJECTS]
@@ -82,7 +82,7 @@ mushroom.txt
 
 #MUSHROOM
 #RED
-9	275	50	1
+#9	275	50	1
 
 
 #COIN
