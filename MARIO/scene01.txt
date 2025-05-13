@@ -5,9 +5,10 @@ brick.txt
 brickQues.txt
 background.txt
 pipe.txt
-#coin.txt
+coin.txt
 goomba.txt
-#cloud.txt
+mushroom.txt
+
 
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -46,10 +47,10 @@ goomba.txt
 6	150	40	60201
 6	350	20	60202
 6	780	40	60202
-6	850	60	60203
+6	900	60	60203
 #khoi mau hong xanh 
-5	345	135	38	78	1	20012
-5	310	150	35	46	1	20011
+5	325	135	38	78	1	20012
+5	300	150	35	46	1	20011
 
 5	608	103	55	78	1	20015
 5	555	134	55	78	1	20014
@@ -69,15 +70,20 @@ goomba.txt
 
 # BRICKS
 8	195	120	1
-1	210	120
-1	250	70
-1	265	70
-1	480	70
-1	781	153
-1	827	103
-1	1730	123
+8	210	120	1
+8	260	70	1
+8	275	70	1
+8	480	70	1
+8	781	153	1
+8	827	103	1
+8	1730	123	1
 #
-1	745	170
+8	745	170	1
+
+#MUSHROOM
+#RED
+9	275	50	1
+
 
 #COIN
 #4	100	120

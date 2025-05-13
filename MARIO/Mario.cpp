@@ -312,8 +312,9 @@ void CMario::Render()
 
 	//RenderBoundingBox();
 
-	DebugOutTitle(L"Coins: %d", coin);
-	DebugOutTitle(L"Score: %d", score);
+	//DebugOutTitle(L"Coins: %d", coin);
+	//DebugOutTitle(L"Score: %d", score);
+	
 }
 
 void CMario::SetState(int state)
@@ -428,13 +429,13 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 
 void CMario::AddScore(float xTemp, float yTemp, int scoreAdd)
 {
-	/*CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 
 	if (scoreAdd == 100) {
-		CEffect* effect = new CEffect(xTemp, yTemp, EFFECT_SCORE_100);
-		scene->AddObject(effect);
-	}*/
-
+		//CEffect* effect = new CEffect(xTemp, yTemp, EFFECT_SCORE_100);
+		//scene->AddObject(effect);
+	}
+	score += scoreAdd;
 }
 
 void CMario::SetLevel(int l)

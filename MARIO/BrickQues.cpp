@@ -7,8 +7,8 @@
 void CBrickQues::Render()
 {
     int aniId = isEmpty ? ID_ANI_BRICK_EMPTY : ID_ANI_BRICK_QUES;
-    CAnimations* animations = CAnimations::GetInstance();
-    if (animations) {
+    //CAnimations* animations = CAnimations::GetInstance();
+    /*if (animations) {
         CAnimation* anim = animations->Get(aniId);
         if (anim) {
             anim->Render(x, y);
@@ -16,8 +16,8 @@ void CBrickQues::Render()
         else {
             DebugOut(L"[ERROR] Failed to get animation %d\n", aniId);
         }
-    }
-    //CAnimations::GetInstance()->Get(aniId)->Render(x, y);
+    }*/
+    CAnimations::GetInstance()->Get(aniId)->Render(x, y);
     RenderBoundingBox();
 }
 

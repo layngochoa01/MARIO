@@ -12,6 +12,8 @@
 #include "BackgroundOBJ.h"
 #include "Pipe.h"
 #include "BrickQues.h"
+#include "BaseMushroom.h"
+
 
 #include "SampleKeyEventHandler.h"
 
@@ -122,9 +124,11 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x, y); break;
+
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); break;
-	
+
 	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
+
 	case OBJECT_TYPE_PLATFORM:
 	{
 
@@ -144,6 +148,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		break;
 	}
+
 	case OBJECT_TYPE_BACKGROUND:
 	{
 		int sprite_id = atoi(tokens[3].c_str());
@@ -152,12 +157,23 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 
 	case OBJECT_TYPE_PIPE:	obj = new CPipe(x, y); break;
+
 	case OBJECT_TYPE_BRICK_QUES:
 	{
 		int item = atoi(tokens[3].c_str());
 		obj = new CBrickQues(x, y, item);
+		DebugOut(L"BrickQues item type: %d\n", item);
 		break;
 	}
+
+	case OBJECT_TYPE_MUSHROOM:
+	{
+		int TYPE = atoi(tokens[3].c_str());
+		obj = new CBaseMushroom(x, y, TYPE);
+		DebugOut(L"mushroom type: %d\n", TYPE);
+		break;
+	}
+	
 	case OBJECT_TYPE_PORTAL:
 	{
 		float r = (float)atof(tokens[3].c_str());
@@ -188,7 +204,6 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 	f.open(assetFile);
 
 	int section = ASSETS_SECTION_UNKNOWN;
-
 	char str[MAX_SCENE_LINE];
 	while (f.getline(str, MAX_SCENE_LINE))
 	{
@@ -196,10 +211,10 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 
 		if (line[0] == '#') continue;	// skip comment lines	
 
-		if (line == "[SPRITES]") { section = ASSETS_SECTION_SPRITES; continue; };
-		if (line == "[ANIMATIONS]") { section = ASSETS_SECTION_ANIMATIONS; continue; };
-		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
-
+		if (line == "[SPRITES]") {  section = ASSETS_SECTION_SPRITES; continue; };
+		if (line == "[ANIMATIONS]") {  section = ASSETS_SECTION_ANIMATIONS; continue; };
+		if (line[0] == '[') {  section = SCENE_SECTION_UNKNOWN; continue; }
+		DebugOut(L"[INFO] section : %d \n",section);
 		//
 		// data section
 		//

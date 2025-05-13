@@ -7,7 +7,7 @@ void CCoin::Render()
 	CAnimations* animations = CAnimations::GetInstance();
 	animations->Get(ID_ANI_COIN)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -19,7 +19,7 @@ void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	DebugOut(L"[VANTOC] %f\n", vy);
 	if (vy > COIN_SPEED_FALL) {
 		if (!isDeleted) {
-			//mario->AddScore(x, y, 100);
+			mario->AddScore(x, y, 100);
 			mario->SetScore(mario->GetScore() + 100);
 		}
 		Delete();

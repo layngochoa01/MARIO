@@ -25,6 +25,7 @@ public:
 	{
 		this->state = COIN_NOT_SUM;
 		this->ay = 0.0005f;
+		this->canCollect = false;
 
 	};
 	void Render();
