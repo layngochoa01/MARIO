@@ -23,6 +23,22 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
+	
+	if (isGrowing )
+	{
+		if (GetTickCount64() - grow_start > MARIO_GROW_TIME)
+		{
+			isGrowing = false;
+			level = targetLevel;
+			targetLevel = -1; // tránh bị lẫn 
+		}
+		else
+		{
+			//stop
+			vx = 0;
+			vy = 0;
+		}
+	}
 
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
@@ -189,7 +205,7 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 			coin->SetState(COIN_SUM);
 			scene->AddObject(coin);
 		}
-		else if (questionBrick->GetItemType() == BRICK_QUES_MUSHROOM_RED)
+		else if (questionBrick->GetItemType() == BRICK_QUES_MUSHROOM_RED_OR_LEAF)
 		{
 			if (level == MARIO_LEVEL_SMALL) {
 				CBaseMushroom* mushroom = new CBaseMushroom(xT, yT, MUSHROOM_TYPE_RED);
@@ -209,14 +225,19 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 {
 	CBaseMushroom* mushroom = dynamic_cast<CBaseMushroom*>(e->obj);
-	if (mushroom->GetType() == MUSHROOM_TYPE_RED) {
+	
+
+	if (mushroom->GetType() == MUSHROOM_TYPE_RED) 
+	{
 		if (!mushroom->IsDeleted()) {
 			score += 1000;
 			//AddScoreEffect(x, y - MARIO_BIG_BBOX_HEIGHT, 1000);
 		}
 		if (level == MARIO_LEVEL_SMALL)
 		{
-			SetLevel(MARIO_LEVEL_BIG);
+			isGrowing = true;
+			grow_start = GetTickCount64();
+			targetLevel = MARIO_LEVEL_BIG;  // vì sau khi nháy mario mới biến thành to
 		}
 	}
 
@@ -349,17 +370,25 @@ int CMario::GetAniIdBig()
 void CMario::Render()
 {
 	CAnimations* animations = CAnimations::GetInstance();
-	int aniId = -1;
+	if (isGrowing) 
+	{
+		if ((GetTickCount64() / 100) % 2 == 0)
+			if (level == MARIO_LEVEL_BIG)
+				animations->Get(GetAniIdBig())->Render(x, y);
+			else animations->Get(GetAniIdSmall())->Render(x, y);
+	}
+	else 
+	{
+		int aniId = -1;
+		if (state == MARIO_STATE_DIE)
+			aniId = ID_ANI_MARIO_DIE;
+		else if (level == MARIO_LEVEL_BIG)
+			aniId = GetAniIdBig();
+		else if (level == MARIO_LEVEL_SMALL)
+			aniId = GetAniIdSmall();
 
-	if (state == MARIO_STATE_DIE)
-		aniId = ID_ANI_MARIO_DIE;
-	else if (level == MARIO_LEVEL_BIG)
-		aniId = GetAniIdBig();
-	else if (level == MARIO_LEVEL_SMALL)
-		aniId = GetAniIdSmall();
-
-	animations->Get(aniId)->Render(x, y);
-
+		animations->Get(aniId)->Render(x, y); // render bình thường
+	}
 	RenderBoundingBox();
 
 	//DebugOutTitle(L"Coins: %d", coin);

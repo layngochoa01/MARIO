@@ -39,6 +39,9 @@
 #define MARIO_STATE_SIT				600
 #define MARIO_STATE_SIT_RELEASE		601
 
+#define MARRIO_STATE_GROWING	700
+#define MARIO_GROW_TIME 500
+
 
 #pragma region ANIMATION_ID
 
@@ -125,8 +128,10 @@ class CMario : public CGameObject
 	float ay;				// acceleration on y 
 
 	int level;
+	int targetLevel;
 	int untouchable;
 	ULONGLONG untouchable_start;
+	ULONGLONG grow_start ;
 	BOOLEAN isOnPlatform;
 	int coin;
 	int score;
@@ -141,6 +146,8 @@ class CMario : public CGameObject
 	int GetAniIdBig();
 	int GetAniIdSmall();
 
+	bool isGrowing ;
+
 public:
 	CMario(float x, float y) : CGameObject(x, y)
 	{
@@ -152,9 +159,12 @@ public:
 		level = MARIO_LEVEL_SMALL;
 		untouchable = 0;
 		untouchable_start = -1;
+		grow_start = 0;
 		isOnPlatform = false;
 		coin = 0;
 		score = 0;
+		isGrowing = false;
+		int targetLevel = -1;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();

@@ -97,7 +97,7 @@ void CBaseMushroom::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 	}
 }
 
-
+#define OFFSET 5
 void CBaseMushroom::SetState(int state)
 {
 	CGameObject::SetState(state);
@@ -114,7 +114,7 @@ void CBaseMushroom::SetState(int state)
 		break;
 	case MUSHROOM_STATE_MOVING:
 		ay = MUSHROOM_GRAVITY;
-		vx = MUSHROOM_SPEED; // hoặc -0.03f tuỳ hướng
+		vx = ((x + OFFSET) < mario->GetX() ? -MUSHROOM_SPEED : MUSHROOM_SPEED);
 		isPoppingUp = false;
 		break;
 
