@@ -28,6 +28,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		if (GetTickCount64() - grow_start > MARIO_GROW_TIME)
 		{
+			if (level == MARIO_LEVEL_SMALL && targetLevel == MARIO_LEVEL_BIG)
+				y -= 12; // Dịch trước khi gán level
 			isGrowing = false;
 			level = targetLevel;
 			targetLevel = -1; // tránh bị lẫn 
@@ -370,6 +372,13 @@ int CMario::GetAniIdBig()
 void CMario::Render()
 {
 	CAnimations* animations = CAnimations::GetInstance();
+	int aniId = -1;
+	if (state == MARIO_STATE_DIE)
+		aniId = ID_ANI_MARIO_DIE;
+	else if (level == MARIO_LEVEL_BIG)
+		aniId = GetAniIdBig();
+	else if (level == MARIO_LEVEL_SMALL)
+		aniId = GetAniIdSmall();
 	if (isGrowing) 
 	{
 		if ((GetTickCount64() / 100) % 2 == 0)
@@ -379,14 +388,6 @@ void CMario::Render()
 	}
 	else 
 	{
-		int aniId = -1;
-		if (state == MARIO_STATE_DIE)
-			aniId = ID_ANI_MARIO_DIE;
-		else if (level == MARIO_LEVEL_BIG)
-			aniId = GetAniIdBig();
-		else if (level == MARIO_LEVEL_SMALL)
-			aniId = GetAniIdSmall();
-
 		animations->Get(aniId)->Render(x, y); // render bình thường
 	}
 	RenderBoundingBox();
