@@ -1,20 +1,25 @@
 #pragma once
 #include "GameObject.h"
 
-#define MUSHROOM_GRAVITY 0.002f
-#define MUSHROOM_MOVING_SPEED 0.05f
 
 
-#define MUSHROOM_BBOX_WIDTH 16
-#define MUSHROOM_BBOX_HEIGHT 14
+#define	MUSHROOM_WIDTH 10
+#define MUSHROOM_BBOX_WIDTH 10
+#define MUSHROOM_BBOX_HEIGHT 16
 
-#define MUSHROOM_STATE_IDLE	100
-#define MUSHROOM_STATE_MOVING 101
-#define MUSHROOM_STATE_COLLECTED 102
+
+
+#define MUSHROOM_STATE_MOVING 100
+#define MUSHROOM_STATE_IDLE 101
+#define MUSHROOM_STATE_RISING 102
 
 #define ID_ANI_RED_MUSHROOM 14000
 
 #define MUSHROOM_TYPE_RED 1
+
+#define MUSHROOM_GRAVITY 0.0005f
+#define MUSHROOM_SPEED 0.06f
+#define MUSHROOM_SPEED_RISING 0.03f
 
 
 class CBaseMushroom : public CGameObject
@@ -23,6 +28,8 @@ protected:
 	float ax;
 	float ay;
 
+	float startY;
+	bool isPoppingUp = false;
 	int type;
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
@@ -35,7 +42,7 @@ protected:
 
 	virtual void OnCollisionWith(LPCOLLISIONEVENT e);
 	virtual void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
-	virtual void OnCollisionWithBrickQuestion(LPCOLLISIONEVENT e);
+	
 
 public:
 	CBaseMushroom(float x, float y, int t);

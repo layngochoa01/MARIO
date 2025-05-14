@@ -1,6 +1,7 @@
 #include "Pipe.h"
 void CPipe::Render()
 {
+	if (!CheckObjectInCamera(this)) return;
 	CAnimations* animations = CAnimations::GetInstance();
 	animations->Get(ID_ANI_PIPE)->Render(x, y);
 	//RenderBoundingBox();

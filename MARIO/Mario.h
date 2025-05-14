@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include "GameObject.h"
 
 #include "Animation.h"
@@ -17,7 +18,7 @@
 #define MARIO_JUMP_RUN_SPEED_Y	    0.4f		// từ 0.6f
 
 // Giảm trọng lực để rơi chậm hơn
-#define MARIO_GRAVITY			    0.0008f		// từ 0.002f
+#define MARIO_GRAVITY			    0.0005f		// từ 0.002f
 
 // Khi Mario dẫm lên enemy, nhảy bật lên chậm hơn một chút
 #define MARIO_JUMP_DEFLECT_SPEED    0.3f		// từ 0.4f
@@ -111,7 +112,7 @@
 #define SCORE_1000 1000
 
 
-#define SNAPOFFSET 2.0f    
+#define SNAPOFFSET 1.5f    
 #define TERMINAL_VELOCITY 0.2f
 
 
@@ -148,7 +149,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY;
 
-		level = MARIO_LEVEL_BIG;
+		level = MARIO_LEVEL_SMALL;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
@@ -185,7 +186,7 @@ public:
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void AddScoreEffect(float xTemp, float yTemp, int scoreAdd);
-
+	
 
 
 };

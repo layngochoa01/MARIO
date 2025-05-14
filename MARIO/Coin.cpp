@@ -4,6 +4,7 @@
 #include "PlayScene.h"
 void CCoin::Render()
 {
+	if (!CheckObjectInCamera(this)) return;
 	CAnimations* animations = CAnimations::GetInstance();
 	animations->Get(ID_ANI_COIN)->Render(x, y);
 
@@ -16,7 +17,7 @@ void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (!canCollect) vy += ay * dt;
 
-	DebugOut(L"[VANTOC] %f\n", vy);
+	//DebugOut(L"[VANTOC] %f\n", vy);
 	if (vy > COIN_SPEED_FALL) {
 		if (!isDeleted) {
 			mario->SetScore(mario->GetScore() + SCORE_100);

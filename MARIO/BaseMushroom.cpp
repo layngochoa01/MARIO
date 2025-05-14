@@ -1,17 +1,19 @@
 ﻿#include "BaseMushroom.h"
-#include "Mario.h"
+#include "BrickQues.h"
+#include "Debug.h"
+
 #include "Platform.h"
 #include "PlayScene.h"
-#include "BrickQues.h"
-
-
+#include "Mario.h"
 
 CBaseMushroom::CBaseMushroom(float x, float y, int t) : CGameObject(x, y)
 {
 	this->ax = 0;
 	this->ay = MUSHROOM_GRAVITY;
+	vy = 0;
 	this->type = t;
-	this->state = MUSHROOM_STATE_IDLE;
+	startY = y;
+	SetState(MUSHROOM_STATE_IDLE);
 }
 
 void CBaseMushroom::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -22,15 +24,26 @@ void CBaseMushroom::GetBoundingBox(float& left, float& top, float& right, float&
 	bottom = top + MUSHROOM_BBOX_HEIGHT;
 }
 
+
 void CBaseMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	vy += ay * dt;
-	vx += ax * dt;
+	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	if (isPoppingUp)
+	{
+		vy = - MUSHROOM_SPEED_RISING;  // tiếp tục đi lên
+		y += vy * dt;
 
-	if ( state == MUSHROOM_STATE_COLLECTED){
-		isDeleted = true;
-		return;
+		if (startY - y >= MUSHROOM_BBOX_HEIGHT)
+		{
+			y = startY - MUSHROOM_BBOX_HEIGHT;  // giới hạn lên
+			SetState(MUSHROOM_STATE_MOVING);
+		}
 	}
+	else if (state == MUSHROOM_STATE_MOVING)
+	{
+		vy += ay * dt;
+	}
+
 
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
@@ -38,15 +51,16 @@ void CBaseMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CBaseMushroom::Render()
 {
-	int aniId ;
+	if (!CheckObjectInCamera(this)) return;
+	//DebugOut(L"mushroom type : %d, \n", type);
 	switch (type) 
 	{
-	case 1:
-		aniId = ID_ANI_RED_MUSHROOM;
+	case MUSHROOM_TYPE_RED:
+		CAnimations::GetInstance()->Get(ID_ANI_RED_MUSHROOM)->Render(x, y);
 		break;
 	// có thể mở rộng cho các nấm màu khác
 	}
-	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
+	
 	RenderBoundingBox();
 }
 
@@ -72,42 +86,38 @@ void CBaseMushroom::OnCollisionWith(LPCOLLISIONEVENT e)
 
 	if (dynamic_cast<CPlatform*>(e->obj))
 		OnCollisionWithPlatform(e);
-	else if (dynamic_cast<CBrickQues*>(e->obj))
-		OnCollisionWithBrickQuestion(e);
 }
 
 void CBaseMushroom::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 {
 	CPlatform* platform = dynamic_cast<CPlatform*>(e->obj);
-	if (platform->IsBlocking()) return;
+	if (platform->IsBlocking()) {};
 	if (e->ny < 0) {
 		SetPosition(GetX(), platform->GetY() - MUSHROOM_BBOX_HEIGHT);
 	}
 }
 
-void CBaseMushroom::OnCollisionWithBrickQuestion(LPCOLLISIONEVENT e)
-{
-
-
-}
 
 void CBaseMushroom::SetState(int state)
 {
 	CGameObject::SetState(state);
 
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
-	switch (state) 
+	switch (state)
 	{
-		case MUSHROOM_STATE_IDLE:
-			vx = vy = 0;
-			break;
-		case MUSHROOM_STATE_MOVING:
-			vx = (x < mario->GetX()) ? -MUSHROOM_MOVING_SPEED : MUSHROOM_MOVING_SPEED;
-			break;
-		case MUSHROOM_STATE_COLLECTED:
-			vx = 0;
-			vy = 0;
-			ay = 0;
-			break;
+	case MUSHROOM_STATE_RISING:
+		vy = -MUSHROOM_SPEED_RISING;
+		vx = 0;
+		ay = 0;
+		isPoppingUp = true;
+		startY = y;
+		break;
+	case MUSHROOM_STATE_MOVING:
+		ay = MUSHROOM_GRAVITY;
+		vx = MUSHROOM_SPEED; // hoặc -0.03f tuỳ hướng
+		isPoppingUp = false;
+		break;
+
 	}
+
 }

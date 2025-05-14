@@ -17,7 +17,7 @@
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	
-	vy += ay * dt;
+	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
 	
 	if (vy > TERMINAL_VELOCITY)
@@ -33,7 +33,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (vy > 0.0f)
 		isOnPlatform = false;
 	CCollision::GetInstance()->Process(this, dt, coObjects);
-	DebugOut(L"out\n");
+	//DebugOut(L"out\n");
 }
 
 void CMario::OnNoCollision(DWORD dt)
@@ -90,19 +90,19 @@ void CMario::HandleSolidCollision(LPGAMEOBJECT gameobject)
 	
 	float collisionHeight = GetCurrentHeight();
 	float distanceToPlatform = gameobject->GetY() - y;
-	DebugOut(L"collisionHeight :%f ,distanceToPlatform : %f \n", collisionHeight, distanceToPlatform);
+	//DebugOut(L"collisionHeight :%f ,distanceToPlatform : %f \n", collisionHeight, distanceToPlatform);
 
 	if (distanceToPlatform < collisionHeight + COLLISION_MARGIN) {
 		float newY = gameobject->GetY() - collisionHeight;
-		DebugOut(L"newY :%f\n", newY);
-		DebugOut(L"collisionHeight + COLLISION_MARGIN :%f\n", collisionHeight + COLLISION_MARGIN);
+		//DebugOut(L"newY :%f\n", newY);
+		//DebugOut(L"collisionHeight + COLLISION_MARGIN :%f\n", collisionHeight + COLLISION_MARGIN);
 		if (level == MARIO_LEVEL_SMALL) {
 			newY -= SNAPOFFSET;
-			DebugOut(L"newY mario small:%f\n", newY);
+			//DebugOut(L"newY mario small:%f\n", newY);
 		}
 		else if (!isSitting) {
 			newY += SNAPOFFSET;
-			DebugOut(L"newY mario big:%f\n", newY);
+			//DebugOut(L"newY mario big:%f\n", newY);
 		}
 		SetPosition(x, newY);
 		ResetVerticalMovement();
@@ -164,7 +164,7 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 {
 	CBrickQues* questionBrick = dynamic_cast<CBrickQues*>(e->obj);
 
-	if (!questionBrick )
+	if (!questionBrick || questionBrick->GetIsUnbox() || questionBrick->GetIsEmpty())
 		return;
 	if (e->ny < 0) {
 		
@@ -177,12 +177,29 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 		questionBrick->SetState(BRICK_QUES_STATE_UP);
 
+		float xT, yT, minY;
+		xT = questionBrick->GetX();
+		yT = questionBrick->GetY();
+		minY = questionBrick->GetMinY();
+
 		if (questionBrick->GetItemType() == BRICK_QUES_COIN)
 		{
 			SetCoin(GetCoin() + 1);
-			CCoin* coin = new CCoin(questionBrick->GetX(), questionBrick->GetY());
+			CCoin* coin = new CCoin(xT, yT);
 			coin->SetState(COIN_SUM);
 			scene->AddObject(coin);
+		}
+		else if (questionBrick->GetItemType() == BRICK_QUES_MUSHROOM_RED)
+		{
+			if (level == MARIO_LEVEL_SMALL) {
+				CBaseMushroom* mushroom = new CBaseMushroom(xT, yT, MUSHROOM_TYPE_RED);
+				DebugOut(L"type mushroom  %d \n", mushroom->GetType());
+				mushroom->SetState(MUSHROOM_STATE_RISING);
+				scene->AddObject(mushroom);
+			}
+			else if (level >= MARIO_LEVEL_BIG) {
+				DebugOut(L"type mushroom  %d \n", 0);
+			}
 		}
 		questionBrick->SetIsEmpty(true);
 	}
@@ -202,6 +219,8 @@ void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 			SetLevel(MARIO_LEVEL_BIG);
 		}
 	}
+
+	mushroom->Delete();
 }
 
 //
