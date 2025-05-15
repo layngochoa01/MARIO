@@ -96,6 +96,8 @@
 
 #define	MARIO_LEVEL_SMALL	1
 #define	MARIO_LEVEL_BIG		2
+#define	MARIO_LEVEL_RACCOON		3
+
 
 #define MARIO_BIG_BBOX_WIDTH  14
 #define MARIO_BIG_BBOX_HEIGHT 24
@@ -131,7 +133,8 @@ class CMario : public CGameObject
 	int targetLevel;
 	int untouchable;
 	ULONGLONG untouchable_start;
-	ULONGLONG grow_start ;
+	ULONGLONG grow_start ;//thời gian biến to
+	ULONGLONG transform_start;// thời gian biến hình
 	BOOLEAN isOnPlatform;
 	int coin;
 	int score;
@@ -142,11 +145,13 @@ class CMario : public CGameObject
 	void OnCollisionWithPlatForm(LPCOLLISIONEVENT e);
 	void OnCollisionWithBrickQues(LPCOLLISIONEVENT e);
 	void OnCollisionWithMushroom(LPCOLLISIONEVENT e);
+	void OnCollisionWithLeaf(LPCOLLISIONEVENT e);
 
 	int GetAniIdBig();
 	int GetAniIdSmall();
 
-	bool isGrowing ;
+	bool isGrowing ;// xác định mario từ nhỏ biến to
+	bool isRaccoon ;
 
 public:
 	CMario(float x, float y) : CGameObject(x, y)
@@ -160,11 +165,14 @@ public:
 		untouchable = 0;
 		untouchable_start = -1;
 		grow_start = 0;
+		transform_start = 0;
 		isOnPlatform = false;
 		coin = 0;
 		score = 0;
 		isGrowing = false;
-		int targetLevel = -1;
+		isRaccoon = false;
+
+		targetLevel = -1;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();

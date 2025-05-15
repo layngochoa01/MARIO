@@ -10,6 +10,7 @@
 #include "Portal.h"
 #include "BrickQues.h"
 #include "BaseMushroom.h"
+#include "Leaf.h"
 
 #include "Collision.h"
 #include "PlayScene.h"
@@ -83,6 +84,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithBrickQues(e);
 	else if (dynamic_cast<CBaseMushroom*>(e->obj))
 		OnCollisionWithMushroom(e);
+	else if (dynamic_cast<CLeaf*>(e->obj))
+		OnCollisionWithLeaf(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
 }
@@ -150,6 +153,7 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 				if (level > MARIO_LEVEL_SMALL)
 				{
 					level = MARIO_LEVEL_SMALL;
+
 					StartUntouchable();
 				}
 				else
@@ -205,21 +209,28 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 			SetCoin(GetCoin() + 1);
 			CCoin* coin = new CCoin(xT, yT);
 			coin->SetState(COIN_SUM);
-			scene->AddObject(coin);
+			scene->PushObject(coin);
+			questionBrick->SetIsEmpty(true);
 		}
 		else if (questionBrick->GetItemType() == BRICK_QUES_MUSHROOM_RED_OR_LEAF)
 		{
-			if (level == MARIO_LEVEL_SMALL) {
+			if (level == MARIO_LEVEL_SMALL) 
+			{
 				CBaseMushroom* mushroom = new CBaseMushroom(xT, yT, MUSHROOM_TYPE_RED);
-				DebugOut(L"type mushroom  %d \n", mushroom->GetType());
+				//DebugOut(L"type mushroom  %d \n", mushroom->GetType());
 				mushroom->SetState(MUSHROOM_STATE_RISING);
-				scene->AddObject(mushroom);
+				scene->PushObject(mushroom);
+				questionBrick->SetIsEmpty(true);
 			}
-			else if (level >= MARIO_LEVEL_BIG) {
-				DebugOut(L"type mushroom  %d \n", 0);
+			else if (level >= MARIO_LEVEL_BIG) 
+			{
+				CLeaf* leaf = new CLeaf(xT, yT);
+				leaf->SetState(LEAF_STATE_RISE);
+				scene->PushObject(leaf);
+				questionBrick->SetIsEmpty(true);
 			}
 		}
-		questionBrick->SetIsEmpty(true);
+		
 	}
 
 }
@@ -244,6 +255,25 @@ void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 	}
 
 	mushroom->Delete();
+}
+
+void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
+{
+	CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
+		if (!leaf->IsDeleted()) {
+			score += 1000;
+		}
+		if (level == MARIO_LEVEL_RACCOON) {}
+		else if (level == MARIO_LEVEL_BIG)
+		{
+			isRaccoon = true;
+			transform_start = GetTickCount64();
+			SetLevel(MARIO_LEVEL_RACCOON);
+		}
+		else {}
+
+
+	leaf->Delete();
 }
 
 //
@@ -379,6 +409,8 @@ void CMario::Render()
 		aniId = GetAniIdBig();
 	else if (level == MARIO_LEVEL_SMALL)
 		aniId = GetAniIdSmall();
+	else if (level == MARIO_LEVEL_RACCOON) aniId = ID_ANI_MARIO_DIE;
+		//aniId = GetAniIdRaccoon();
 	if (isGrowing) 
 	{
 		if ((GetTickCount64() / 100) % 2 == 0)
@@ -390,6 +422,9 @@ void CMario::Render()
 	{
 		animations->Get(aniId)->Render(x, y); // render bình thường
 	}
+
+
+
 	RenderBoundingBox();
 
 	//DebugOutTitle(L"Coins: %d", coin);

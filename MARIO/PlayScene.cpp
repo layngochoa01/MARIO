@@ -13,6 +13,7 @@
 #include "Pipe.h"
 #include "BrickQues.h"
 #include "BaseMushroom.h"
+#include "Leaf.h"
 
 
 #include "SampleKeyEventHandler.h"
@@ -128,6 +129,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); break;
 
 	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
+
+	case OBJECT_TYPE_LEAF: obj = new CLeaf(x, y); break;
 
 	case OBJECT_TYPE_PLATFORM:
 	{
@@ -360,4 +363,9 @@ void CPlayScene::PurgeDeletedObjects()
 void CPlayScene::AddObject(LPGAMEOBJECT obj)
 {
 	objects.insert(objects.begin() + 1, obj);
+}
+
+void CPlayScene::PushObject(LPGAMEOBJECT obj)
+{
+	objects.push_back(obj);
 }

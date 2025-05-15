@@ -12,7 +12,6 @@ protected:
 	float cellWidth;
 	float cellHeight;
 	int spriteIdBegin, spriteIdMiddle, spriteIdEnd;
-	virtual bool IsPlatform() { return 1; }
 
 public:
 	CPlatform(float x, float y,
@@ -33,7 +32,6 @@ public:
 	void RenderBoundingBox();
 	
 	virtual int IsCollidable() { return 0; }
-	//virtual int IsBlocking() { return (cellHeight == 16); }
 
 	int IsDirectionColliable(float nx, float ny);
 };

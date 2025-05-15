@@ -49,6 +49,7 @@ void CGoomba::OnCollisionWith(LPCOLLISIONEVENT e)
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
+	if (!CheckObjectInCamera(this)) return;
 	vy += ay * dt;
 	vx += ax * dt;
 
