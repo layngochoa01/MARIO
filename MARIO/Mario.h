@@ -40,7 +40,7 @@
 #define MARIO_STATE_SIT_RELEASE		601
 
 #define MARRIO_STATE_GROWING	700
-#define MARIO_GROW_TIME 500
+#define MARIO_CHANGE_TIME 500
 
 
 #pragma region ANIMATION_ID
@@ -133,7 +133,7 @@ class CMario : public CGameObject
 	int targetLevel;
 	int untouchable;
 	ULONGLONG untouchable_start;
-	ULONGLONG grow_start ;//thời gian biến to
+	ULONGLONG grow_start;//thời gian biến to
 	ULONGLONG transform_start;// thời gian biến hình
 	BOOLEAN isOnPlatform;
 	int coin;
@@ -150,8 +150,8 @@ class CMario : public CGameObject
 	int GetAniIdBig();
 	int GetAniIdSmall();
 
-	bool isGrowing ;// xác định mario từ nhỏ biến to
-	bool isRaccoon ;
+	bool isGrowing;// xác định mario đang biến hình từ nhỏ biến to
+	bool isRaccoon;
 
 public:
 	CMario(float x, float y) : CGameObject(x, y)
@@ -200,6 +200,8 @@ public:
 	int GetScore() { return score; }
 	bool GetIsOnPlatform() { return isOnPlatform; }
 	float GetCurrentHeight() const;
+	int IsGrowing() { return isGrowing ; }
+	int IsRaccoon() { return isRaccoon; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);

@@ -29,7 +29,6 @@ void CLeaf::Render()
 void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 
-	if (!CheckObjectInCamera(this)) return;
 	if (isOnPlatform) 
 	{
 		vx = 0; vy = 0;

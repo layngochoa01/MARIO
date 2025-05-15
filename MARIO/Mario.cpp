@@ -27,7 +27,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	
 	if (isGrowing )
 	{
-		if (GetTickCount64() - grow_start > MARIO_GROW_TIME)
+		if (GetTickCount64() - grow_start > MARIO_CHANGE_TIME)
 		{
 			if (level == MARIO_LEVEL_SMALL && targetLevel == MARIO_LEVEL_BIG)
 				y -= 12; // Dịch trước khi gán level
@@ -42,6 +42,22 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			vy = 0;
 		}
 	}
+	if (isRaccoon) 
+	{
+		if (GetTickCount64() - transform_start > MARIO_CHANGE_TIME)
+		{
+			if (level == MARIO_LEVEL_BIG )
+				y -= 12; // Dịch trước khi gán level
+			isRaccoon = false;
+		}
+		else
+		{
+			//stop
+			vx = 0;
+			vy = 0;
+		}
+	}
+
 
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)

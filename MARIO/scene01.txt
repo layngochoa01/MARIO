@@ -95,13 +95,14 @@ leafs.txt
 
 #Goomba
 2	250	175
+2	550	175
 2	970	145
-
+2	1020	145
 #BRICK_MUSHROOM
 8	275	90	2
 
 # MARIO
-0	20	20
+0	850	20
 
 
 
