@@ -18,3 +18,6 @@ height	240
 40	textures\misc_2.png
 50	textures\misc_3.png
 60	textures\bush.png
+70	textures\enemies_2.png
+80	textures\enemies_3.png
+90	textures\enemies_4.png

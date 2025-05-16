@@ -124,7 +124,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 
-	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x, y); break;
+	case OBJECT_TYPE_GOOMBA:
+	{
+		int TYPE = atoi(tokens[3].c_str());
+		obj = new CGoomba(x, y, TYPE);
+		break;
+	}
 
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); break;
 
@@ -215,7 +220,7 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 		if (line[0] == '#') continue;	// skip comment lines	
 
 		if (line == "[SPRITES]") {  section = ASSETS_SECTION_SPRITES; continue; };
-		if (line == "[ANIMATIONS]") {  section = ASSETS_SECTION_ANIMATIONS; continue; };
+		if (line == "[ANIMATIONS]") { section = ASSETS_SECTION_ANIMATIONS; continue; };
 		if (line[0] == '[') {  section = SCENE_SECTION_UNKNOWN; continue; }
 		DebugOut(L"[INFO] section : %d \n",section);
 		//
@@ -224,7 +229,7 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 		switch (section)
 		{
 		case ASSETS_SECTION_SPRITES: _ParseSection_SPRITES(line); break;
-		case ASSETS_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
+		case ASSETS_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); DebugOut(L"in ani \n"); break;
 		}
 	}
 

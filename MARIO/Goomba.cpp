@@ -9,6 +9,7 @@ CGoomba::CGoomba(float x, float y, int t):CGameObject(x, y)
 	this->ay = GOOMBA_GRAVITY;
 	die_start = -1;
 	this->isUpside = false;
+	this->isJump = false;
 	this->isAttack = false;
 	this->isOnGround = false;
 	this->type = t;
@@ -41,30 +42,56 @@ void CGoomba::OnNoCollision(DWORD dt)
 
 void CGoomba::OnCollisionWith(LPCOLLISIONEVENT e)
 {
-	if (!e->obj->IsBlocking()) return;
-	if (dynamic_cast<CGoomba*>(e->obj)) 
+	if (!e->obj->IsBlocking()) { return; } 
+	
+	if (dynamic_cast<CGoomba*>(e->obj) ) 
 	{
-		if (e->nx != 0) 
+		if (type == GOOMBA_TYPE_WING)
 		{
-			vx = -vx;
-			CGoomba* goombaOther = dynamic_cast<CGoomba*>(e->obj);
-			goombaOther->vx = -goombaOther->vx;
-
-			x += e->nx * 1.0f; // đẩy nhẹ ra ngoài theo hướng va chạm
-			goombaOther->x -= e->nx * 1.0f;
+			// Không đổi hướng, xuyên qua Goomba khác
+			return;
 		}
-		return;
+		else
+		{
+			// Goomba thường đổi hướng khi va chạm nhau
+			if (e->nx != 0)
+			{
+				vx = -vx;
+				CGoomba* goombaOther = dynamic_cast<CGoomba*>(e->obj);
+				goombaOther->vx = -goombaOther->vx;
+
+				x += e->nx * 1.0f; // đẩy nhẹ ra ngoài theo hướng va chạm
+				goombaOther->x -= e->nx * 1.0f;
+			}
+			return;
+		}
 	}
 
 	if (e->ny != 0 )
 	{
 		vy = 0;
+		if (e->ny < 0) {
+			isOnGround = true;
+		}
 	}
 	else if (e->nx != 0)
 	{
 		vx = -vx;
 	}
+	if (dynamic_cast<CPlatform*>(e->obj))
+		OnCollisionWithPlatform(e);
+
 }
+
+void CGoomba::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
+{
+	CPlatform* platform = dynamic_cast<CPlatform*>(e->obj);
+	if (e->ny < 0) {
+		isOnGround = true;
+		SetPosition(GetX(), platform->GetY() - GOOMBA_BBOX_HEIGHT + 1);
+	}
+}
+
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -74,8 +101,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	
 	vy += ay * dt;
 	vx += ax * dt;
-
-	if ( (state==GOOMBA_STATE_DIE) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT) )
+	if ( (state == GOOMBA_STATE_DIE) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT) )
 	{
 		isDeleted = true;
 		return;
@@ -85,11 +111,43 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isDeleted = true;
 		return;
 	}
-	else if (type == GOOMBA_TYPE_WING && !isAttack ) 
+	if (!isUpside) 
 	{
-		ULONGLONG now = GetTickCount64();
+		if (type == GOOMBA_TYPE_WING) 
+		{
+			if (!isAttack)
+			{
+				if ((GetTickCount64() - walking_start > TIME_WALKING - TIME_JUMP_SMALL) && !isJump)
+				{
+					if (isOnGround && (jumpCount < 3))
+					{
+						vy = -0.05f;
+						jumpCount++;
+					}
+				}
+				if (GetTickCount64() - walking_start > TIME_WALKING && !isJump)
+				{
+					SetState(GOOMBAPARA_STATE_FLY);
+					if ((vx >= 0) && (mario->GetX() < GetX()))
+					{
+						vx = -GOOMBA_WALKING_SPEED;
+					}
+					else if ((vx <= 0) && (mario->GetX() > GetX()))
+					{
+						vx = GOOMBA_WALKING_SPEED;
+					}
+					walking_start = -1;
+					jumpCount = 0;
+				}
+				else
+				{
+					if (isJump) SetState(GOOMBA_STATE_WALKING);
+				}
+			}
+			else SetState(GOOMBAPARA_STATE_IS_ATTACK);
+		}
+		
 	}
-
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
@@ -154,36 +212,73 @@ void CGoomba::Render()
 
 void CGoomba::SetState(int state)
 {
+	DebugOut(L"[SetState] Đổi state từ %d sang %d\n", this->state, state);
 	CGameObject::SetState(state);
 	switch (state)
 	{
-		case GOOMBA_STATE_DIE:
-			die_start = GetTickCount64();
-			y += (GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE)/2;
-			vx = vy = ay = 0;
-			break;
-		case GOOMBA_STATE_WALKING:
-			vx = -GOOMBA_WALKING_SPEED;
+	case GOOMBA_STATE_DIE:
+	{
+		die_start = GetTickCount64();
+		y += (GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE) / 2;
+		vx = vy = ay = 0;
+		break;
+	}
+	case GOOMBA_STATE_WALKING:
+	{
+		if (type == GOOMBA_TYPE_BASE)
+		{
+			if (vx == 0) vx = -GOOMBA_WALKING_SPEED;
 			ay = GOOMBA_GRAVITY;
-			isUpside = false;
+			isJump = false;
 			isAttack = false;
+			isUpside = false;
 			die_start = 0;
-			break;
-		case GOOMBAPARA_STATE_FLY:
-			vy = -0.2f; // Nhảy lên
-			ay = GOOMBA_GRAVITY;
-			break;
-		case GOOMBAPARA_STATE_IS_ATTACK:
-			vx = -GOOMBA_WALKING_SPEED;
-			ay = GOOMBA_GRAVITY;
-			isAttack = true;
-			break;
-		case GOOMBA_STATE_UPSIDE:
+		}
+		else
+		{
+			if (!isAttack)
+			{
+				isJump = false;
+				isUpside = false;
+				walking_start = GetTickCount64();
+			}
+		}
+		break;
+	}
+		
+	case GOOMBAPARA_STATE_FLY:
+	{
+		vy = -0.2f; // Nhảy lên
+		isJump = true;
+		isOnGround = false;
+		ay = GOOMBA_GRAVITY;
+		break;
+	}
+			
+	case GOOMBAPARA_STATE_IS_ATTACK:
+	{
+		if (vx == 0) vx = -GOOMBA_WALKING_SPEED;
+		ay = GOOMBA_GRAVITY;
+		isAttack = true;
+		isJump = false;
+		isUpside = false;
+		//vx = -GOOMBA_WALKING_SPEED;
+		
+		break;
+	}
+			
+	case GOOMBA_STATE_UPSIDE: 
+	{
+		if (type == GOOMBA_TYPE_BASE || (type == GOOMBA_TYPE_WING && isAttack))
+		{
 			vy = -0.3f;
 			ay = GOOMBA_GRAVITY;
 			vx = 0.05f;
 			isUpside = true;
 			die_start = GetTickCount64();
 			break;
+		}
+		else {}
+	}		
 	}
 }
