@@ -64,8 +64,6 @@ void CPlantEnemies::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (y > minY)
 		{
 			vy = -PLANT_SPEED_UP_DOWN;
-			DebugOut(L"y  = %f\n", y);
-			DebugOut(L"minY  = %f\n\n", minY);
 		}
 		else 
 		{
@@ -89,7 +87,6 @@ void CPlantEnemies::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (GetTickCount64() - time_shoot > TIME_OUT_PIPE) {
 				SetState(PLANT_STATE_DOWN);
-				DebugOut(L"isDowning 1 %d \n", isDowning);
 			}
 		}
 	}
@@ -100,16 +97,15 @@ void CPlantEnemies::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			vy = PLANT_SPEED_UP_DOWN;
 			y += vy * dt;
-			DebugOut(L"vy = %f, y = %f, startY = %f\n", vy, y, startY);
+			//DebugOut(L"vy = %f, y = %f, startY = %f\n", vy, y, startY);
 
 		}
 			
 		else 
 		{
-			DebugOut(L"state %d \n", state);
-			//y = startY + 2;
+			y = startY + 2;
 			vy = 0;
-			//isDowning = false;
+			isDowning = false;
 
 			if (GetTickCount64() - time_down > TIME_DOWN_PIPE)
 			{

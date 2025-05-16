@@ -16,6 +16,7 @@
 #include "Leaf.h"
 #include "FireBall.h"
 #include "PlantEnemies.h"
+#include "Koopa.h"
 #include "SampleKeyEventHandler.h"
 
 using namespace std;
@@ -186,6 +187,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 	
+	case OBJECT_TYPE_KOOPA:
+	{
+		int TYPE = atoi(tokens[3].c_str());
+		obj = new CKoopa(x, y, TYPE);
+		break;
+	}
+
 	case OBJECT_TYPE_PORTAL:
 	{
 		float r = (float)atof(tokens[3].c_str());

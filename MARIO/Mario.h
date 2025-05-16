@@ -12,18 +12,10 @@
 
 #define MARIO_ACCEL_WALK_X	        0.0005f
 #define MARIO_ACCEL_RUN_X		    0.0007f
-
-// Giảm tốc độ nhảy để bật lên chậm hơn
-#define MARIO_JUMP_SPEED_Y		    0.38f		// từ 0.55f
-#define MARIO_JUMP_RUN_SPEED_Y	    0.4f		// từ 0.6f
-
-// Giảm trọng lực để rơi chậm hơn
-#define MARIO_GRAVITY			    0.0005f		// từ 0.002f
-
-// Khi Mario dẫm lên enemy, nhảy bật lên chậm hơn một chút
-#define MARIO_JUMP_DEFLECT_SPEED    0.3f		// từ 0.4f
-
-
+#define MARIO_JUMP_SPEED_Y		    0.38f		
+#define MARIO_JUMP_RUN_SPEED_Y	    0.4f		
+#define MARIO_GRAVITY			    0.0005f		
+#define MARIO_JUMP_DEFLECT_SPEED    0.3f		
 
 #define MARIO_STATE_DIE				-10
 #define MARIO_STATE_IDLE			0
@@ -134,7 +126,7 @@
 #define MARIO_SIT_HEIGHT_ADJUST ((MARIO_BIG_BBOX_HEIGHT-MARIO_BIG_SITTING_BBOX_HEIGHT)/2)
 #define MARIO_RACCOON_SIT_HEIGHT_ADJUST ((MARIO_RACCOON_BBOX_HEIGHT-MARIO_RACCOON_SITTING_BBOX_HEIGHT)/2)
 
-#define MARIO_SMALL_BBOX_WIDTH  13
+#define MARIO_SMALL_BBOX_WIDTH  12
 #define MARIO_SMALL_BBOX_HEIGHT 12
 
 #define MARIO_UNTOUCHABLE_TIME 2500
@@ -175,6 +167,7 @@ class CMario : public CGameObject
 	void OnCollisionWithLeaf(LPCOLLISIONEVENT e);
 	void OnCollisionWithFireBall(LPCOLLISIONEVENT e);
 	void OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e);
+	void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
 
 	int GetAniIdBig();
 	int GetAniIdSmall();

@@ -13,7 +13,7 @@
 #include "Leaf.h"
 #include "FireBall.h"
 #include "PlantEnemies.h"
-
+#include "Koopa.h"
 #include "Collision.h"
 #include "PlayScene.h"
 
@@ -109,6 +109,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithFireBall(e);
 	else if (dynamic_cast<CPlantEnemies*>(e->obj))
 		OnCollisionWithPlantEnemies(e);
+	else if (dynamic_cast<CKoopa*>(e->obj))
+		OnCollisionWithKoopa(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
 }
@@ -256,7 +258,7 @@ void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 	if (mushroom->GetType() == MUSHROOM_TYPE_RED) 
 	{
 		if (!mushroom->IsDeleted()) {
-			score += 1000;
+			score += SCORE_1000;
 			//AddScoreEffect(x, y - MARIO_BIG_BBOX_HEIGHT, 1000);
 		}
 		if (level == MARIO_LEVEL_SMALL)
@@ -274,7 +276,7 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 {
 	CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
 		if (!leaf->IsDeleted()) {
-			score += 1000;
+			score += SCORE_1000;
 		}
 		if (level == MARIO_LEVEL_RACCOON) {}
 		else if (level == MARIO_LEVEL_BIG)
@@ -306,6 +308,48 @@ void CMario::OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e)
 	if (state != MARIO_STATE_DIE)
 	{
 		SetLevelLower();
+	}
+}
+
+void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
+{
+	CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
+	if (koopa->GetState() == KOOPA_STATE_DIE)
+	{
+		e->obj->Delete();
+		return;
+	}
+		
+	if (e->ny < 0)
+	{
+		if (koopa->GetState() == KOOPA_STATE_WALKING)
+		{
+			score += SCORE_100;
+			koopa->SetState(KOOPA_STATE_SHELL);
+			vy = -MARIO_JUMP_DEFLECT_SPEED;
+		}
+		else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING)
+		{
+			koopa->SetState(KOOPA_STATE_SHELL);
+			vy = -MARIO_JUMP_DEFLECT_SPEED;
+		}
+	}
+	else // hit by KOOPA
+	{
+		if (untouchable == 0)
+		{
+			if (koopa->GetState() == KOOPA_STATE_SHELL)
+			{
+				float direction = (x < koopa->GetX()) ? 1.0f : -1.0f; // xác định hướng đá
+				koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+				koopa->SetSpeed(direction * KOOPA_KICKED_SPEED, 0.0f);
+			}
+			// (c) Nếu mai rùa đang chạy hoặc Koopa đang đi thì Mario bị mất level
+			else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING || koopa->GetState() == KOOPA_STATE_WALKING)
+			{
+				SetLevelLower();
+			}
+		}
 	}
 }
 
