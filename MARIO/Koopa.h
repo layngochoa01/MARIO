@@ -1,8 +1,9 @@
 ﻿#pragma once
 #include "GameObject.h"
+#include "Platform.h"
 
-#define KOOPA_GRAVITY         0.001f    
-#define KOOPA_WALK_SPEED      0.04f     // Tốc độ di chuyển
+#define KOOPA_GRAVITY         0.0005f    
+#define KOOPA_WALK_SPEED      0.02f     // Tốc độ di chuyển
 #define KOOPA_KICKED_SPEED    0.18f     // Tốc độ khi bị đá
 #define KOOPA_JUMP_DEFLECT    0.4f      // Lực nảy khi bị giết
 
@@ -30,7 +31,6 @@
 #define KOOPA_STATE_WALKING       1   // Trạng thái di chuyển
 #define KOOPA_STATE_SHELL         2   // Trạng thái mai rùa (normal / upset)
 #define KOOPA_STATE_SHELL_MOVING       3   // Mai rùa move (normal / upset)
-#define KOOPA_STATE_COMEBACK    4
 #define KOOPA_STATE_DIE           10   // Chết KHI SHELL CHẠM GOOMPA OR DÍNH ĐẠN
 
 class CKoopa : public CGameObject
@@ -42,8 +42,10 @@ protected:
     ULONGLONG comeback_start;
     bool isInShell; // mai 
     bool isUpset; // lat ngua
-    bool isHeld; // bi cam
     bool isComeback;
+    bool isHeld;
+    bool isKicked;
+    bool isOnPlatform;
 
     void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
     void Render();
@@ -53,9 +55,21 @@ protected:
     void GetBoundingBox(float& l, float& t, float& r, float& b);
 public:
     CKoopa(float x, float y, int t);
-    void SetState(int state);
-    int GetType() { return this->type; }
+    int IsUpset() { return isUpset; }
 
+    void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
+    void OnCollisionWithBrickQues(LPCOLLISIONEVENT e);
+    void OnCollisionWithFireBall(LPCOLLISIONEVENT e);
+    void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
+    void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
+
+    virtual int IsCollidable() { return 1; }
+    virtual int IsBlocking() { return 1; }
+
+    void SetState(int state);
+    void SetIsUpset(int i) { this->isUpset = i; }
+    int GetType() { return this->type; }
+    void UpdateWalkingOnPlatform(CPlatform* platform);
 
 };
 

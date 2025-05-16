@@ -224,6 +224,8 @@ public:
 	int GetScore() { return score; }
 	bool GetIsOnPlatform() { return isOnPlatform; }
 	float GetCurrentHeight() const;
+	int GetLevel() { return this->level; }
+
 	int IsGrowing() { return isGrowing ; }
 	int IsRaccoon() { return isRaccoon; }
 	int IsUntouchable() { return untouchable; }
