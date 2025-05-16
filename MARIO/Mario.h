@@ -170,10 +170,11 @@ class CMario : public CGameObject
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
-	void OnCollisionWithPlatForm(LPCOLLISIONEVENT e);
 	void OnCollisionWithBrickQues(LPCOLLISIONEVENT e);
 	void OnCollisionWithMushroom(LPCOLLISIONEVENT e);
 	void OnCollisionWithLeaf(LPCOLLISIONEVENT e);
+	void OnCollisionWithFireBall(LPCOLLISIONEVENT e);
+	void OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e);
 
 	int GetAniIdBig();
 	int GetAniIdSmall();
@@ -223,6 +224,7 @@ public:
 	void SetScore(int s) { score = s; }
 	void SetY(int l) { this->y = l; }
 	void SetX(int l) { this->x = l; }
+	void SetLevelLower();
 	void ResetVerticalMovement();
 
 	int GetCoin() { return this->coin; }
@@ -231,6 +233,7 @@ public:
 	float GetCurrentHeight() const;
 	int IsGrowing() { return isGrowing ; }
 	int IsRaccoon() { return isRaccoon; }
+	int IsUntouchable() { return untouchable; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);

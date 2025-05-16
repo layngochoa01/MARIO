@@ -9,6 +9,8 @@ background.txt
 pipe.txt
 coin.txt
 leafs.txt
+fireball.txt
+plant_enemies.txt
 
 
 
@@ -78,9 +80,11 @@ leafs.txt
 
 6	1674	139	60501
 
+
 #pipe with piranha
 7	410	159
-
+#plant red
+12	410	152
 
 # BRICKS_COIN
 8	195	130	1
@@ -102,7 +106,7 @@ leafs.txt
 8	275	90	2
 
 # MARIO
-0	900	20
+0	350	20
 
 
 

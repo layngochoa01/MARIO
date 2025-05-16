@@ -14,8 +14,8 @@
 #include "BrickQues.h"
 #include "BaseMushroom.h"
 #include "Leaf.h"
-
-
+#include "FireBall.h"
+#include "PlantEnemies.h"
 #include "SampleKeyEventHandler.h"
 
 using namespace std;
@@ -134,6 +134,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); break;
 
 	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
+
+	case OBJECT_TYPE_FIREBALL: obj = new CFireBall(x, y); break;
+
+	case OBJECT_TYPE_PLANT: obj = new CPlantEnemies(x, y); break;
 
 	case OBJECT_TYPE_LEAF: obj = new CLeaf(x, y); break;
 

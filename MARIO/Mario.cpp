@@ -11,6 +11,8 @@
 #include "BrickQues.h"
 #include "BaseMushroom.h"
 #include "Leaf.h"
+#include "FireBall.h"
+#include "PlantEnemies.h"
 
 #include "Collision.h"
 #include "PlayScene.h"
@@ -103,6 +105,10 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithMushroom(e);
 	else if (dynamic_cast<CLeaf*>(e->obj))
 		OnCollisionWithLeaf(e);
+	else if (dynamic_cast<CFireBall*>(e->obj))
+		OnCollisionWithFireBall(e);
+	else if (dynamic_cast<CPlantEnemies*>(e->obj))
+		OnCollisionWithPlantEnemies(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
 }
@@ -168,17 +174,7 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 			{
 				if (goomba->GetState() != GOOMBA_STATE_DIE)
 				{
-					if (level > MARIO_LEVEL_SMALL)
-					{
-						level = MARIO_LEVEL_SMALL;
-
-						StartUntouchable();
-					}
-					else
-					{
-						//DebugOut(L">>> Mario DIE >>> \n");
-						SetState(MARIO_STATE_DIE);
-					}
+					SetLevelLower();
 				}
 			}
 		}
@@ -197,10 +193,6 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
 	CPortal* p = (CPortal*)e->obj;
 	CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
-}
-
-void CMario::OnCollisionWithPlatForm(LPCOLLISIONEVENT e)
-{
 }
 
 void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
@@ -295,6 +287,26 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 
 
 	leaf->Delete();
+}
+
+void CMario::OnCollisionWithFireBall(LPCOLLISIONEVENT e)
+{
+	//if (untouchable) return;
+	e->obj->Delete();
+	if (state != MARIO_STATE_DIE)
+	{
+		SetLevelLower();
+	}
+	
+}
+
+void CMario::OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e)
+{
+	if (untouchable) return;
+	if (state != MARIO_STATE_DIE)
+	{
+		SetLevelLower();
+	}
 }
 
 //
@@ -615,5 +627,21 @@ void CMario::SetLevel(int l)
 	level = l;
 }
 
+void CMario::SetLevelLower()
+{
+	if (level > MARIO_LEVEL_BIG)
+	{
+		SetLevel(MARIO_LEVEL_BIG);
 
+		StartUntouchable();
+	}
+	else if (level > MARIO_LEVEL_SMALL)
+	{
+		SetLevel(MARIO_LEVEL_SMALL);
+
+		StartUntouchable();
+	}
+	else
+		SetState(MARIO_STATE_DIE);
+}
 

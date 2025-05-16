@@ -96,7 +96,7 @@ void CGoomba::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
-	if (mario->IsGrowing() || mario->IsRaccoon() || mario->GetState() == MARIO_STATE_DIE) return;
+	if (mario->IsUntouchable() || mario->IsGrowing() || mario->IsRaccoon() || mario->GetState() == MARIO_STATE_DIE) return;
 	if (!CheckObjectInCamera(this)) return;
 	
 	vy += ay * dt;
