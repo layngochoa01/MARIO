@@ -19,19 +19,23 @@ int CEffect::GetEffectAniId()
 
 void CEffect::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
-	l = x -SCORE_BBOX_WIDTH / 2;
-	t = y - SCORE_BBOX_HEIGHT / 2;
-	r = l + SCORE_BBOX_WIDTH;
-	b = t + SCORE_BBOX_HEIGHT;
+	l = r = t = b = 0;
+	
+}
+
+void CEffect::OnNoCollision(DWORD dt)
+{
+	y += vy * dt;
 }
 
 CEffect::CEffect(float x, float y, int t) : CGameObject(x, y)
 {
+
+	DebugOut(L"[SCORE \n\n]");
 	this->vy = -SCORE_SPEED_UP;
-	this->vx = SCORE_SPEED;
 	this->ay = SCORE_GRAVITY;
 	this->isLive = true;
-	this->time_live_start = GetTickCount64();
+	this->time_live_start = GetTickCount64();;
 	this->type = t;
 }
 
@@ -43,17 +47,23 @@ void CEffect::Render()
 
 }
 
-void CEffect::Update(DWORD dt)
+void CEffect::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 
-	vy += SCORE_GRAVITY * dt;
-	y += vy * dt;
-	if(state == EFFECT_SCORE_100 || state == EFFECT_SCORE_1000)
-		if (GetTickCount64() - time_live_start > SCORE_LIFETIME) 
+	vy += ay * dt;
+	if (isLive) 
+	{
+		if (GetTickCount64() - time_live_start > SCORE_LIFETIME)
 		{
 			isLive = false;
 			vx = vy = 0;
+			Delete();
+			
 		}
-		
+		else vy = -SCORE_SPEED_UP;
+	}
+	DebugOut(L"vx %f , vy %f \n\n", vx, vy);
+	CGameObject::Update(dt, coObjects);
+	CCollision::GetInstance()->Process(this, dt, coObjects);
 
 }

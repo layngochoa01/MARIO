@@ -240,7 +240,6 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 				//DebugOut(L"type mushroom  %d \n", mushroom->GetType());
 				mushroom->SetState(MUSHROOM_STATE_RISING);
 				scene->PushObject(mushroom);
-				AddScoreEffect(mushroom->GetX(), mushroom->GetY(), SCORE_1000);
 				questionBrick->SetIsEmpty(true);
 			}
 			else if (level >= MARIO_LEVEL_BIG) 
@@ -248,7 +247,6 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 				CLeaf* leaf = new CLeaf(xT, yT);
 				leaf->SetState(LEAF_STATE_RISE);
 				scene->PushObject(leaf);
-				AddScoreEffect(leaf->GetX(), leaf->GetY(), SCORE_1000);
 				questionBrick->SetIsEmpty(true);
 			}
 		}
@@ -265,8 +263,8 @@ void CMario::OnCollisionWithMushroom(LPCOLLISIONEVENT e)
 	if (mushroom->GetType() == MUSHROOM_TYPE_RED) 
 	{
 		if (!mushroom->IsDeleted()) {
-			score += SCORE_1000;
-			//AddScoreEffect(x, y - MARIO_BIG_BBOX_HEIGHT, 1000);
+			//score += SCORE_1000;
+			AddScoreEffect(x, y - MARIO_BIG_BBOX_HEIGHT, SCORE_1000);
 		}
 		if (level == MARIO_LEVEL_SMALL)
 		{
@@ -283,7 +281,8 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 {
 	CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
 		if (!leaf->IsDeleted()) {
-			score += SCORE_1000;
+			//score += SCORE_1000;
+			AddScoreEffect(x, y - MARIO_BIG_BBOX_HEIGHT, SCORE_1000);
 		}
 		if (level == MARIO_LEVEL_RACCOON) {}
 		else if (level == MARIO_LEVEL_BIG)
@@ -331,7 +330,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 	{
 		if (koopa->GetState() == KOOPA_STATE_WALKING)
 		{
-			AddScoreEffect(koopa->GetX(), koopa->GetY(), SCORE_1000);
+			AddScoreEffect(koopa->GetX(), koopa->GetY(), SCORE_100);
 			koopa->SetState(KOOPA_STATE_SHELL);
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}

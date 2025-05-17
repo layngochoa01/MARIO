@@ -2,8 +2,7 @@
 #include "GameObject.h"
 
 
-#define SCORE_SPEED_UP 0.2f
-#define SCORE_SPEED 0.1f
+#define SCORE_SPEED_UP 0.05f
 #define SCORE_LIFETIME 1000
 #define SCORE_GRAVITY 0.0005f
 
@@ -25,10 +24,11 @@ protected:
 
 	int GetEffectAniId();
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
+	void OnNoCollision(DWORD dt);
 public:
 	CEffect(float x, float y, int t);
 	void Render();
-	void Update(DWORD dt);
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	bool IsLive() { return isLive; }
 	void SetType(int t) { this->type = t; }
 	int GetType() { return this->type; }

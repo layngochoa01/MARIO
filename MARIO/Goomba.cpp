@@ -218,7 +218,7 @@ void CGoomba::Render()
 
 void CGoomba::SetState(int state)
 {
-	DebugOut(L"[SetState] Đổi state từ %d sang %d\n", this->state, state);
+	//DebugOut(L"[SetState] Đổi state từ %d sang %d\n", this->state, state);
 	CGameObject::SetState(state);
 	switch (state)
 	{
