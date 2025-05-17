@@ -12,7 +12,7 @@ leafs.txt
 fireball.txt
 plant_enemies.txt
 koopa.txt
-
+effect.txt
 
 
 [OBJECTS]

@@ -157,27 +157,33 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 int CGoomba::GetAniGoombaPara() {
 	int aniId = -1;
-	if (isAttack) {
-		switch (state)
+	if (type == GOOMBA_TYPE_WING) 
+	{
+		if (isAttack) {
+			switch (state)
+			{
+			case GOOMBA_STATE_UPSIDE:
+				aniId = ID_ANI_GOOMBAPARA_UPSIDE; break;
+			case GOOMBA_STATE_DIE:
+				aniId = ID_ANI_GOOMBAPARA_DIE; break;
+			default:
+				aniId = ID_ANI_GOOMBAPARA_WALKING;
+				break;
+			}
+		}
+		else if (state != GOOMBA_STATE_DIE)
 		{
-		case GOOMBA_STATE_UPSIDE:
-			aniId = ID_ANI_GOOMBAPARA_UPSIDE; break;
-		case GOOMBA_STATE_DIE:
-			aniId = ID_ANI_GOOMBAPARA_DIE; break;
-		default:
-			aniId = ID_ANI_GOOMBAPARA_WALKING;
-			break;
+			if (isUpside) 
+			{
+				aniId = ID_ANI_GOOMBAPARA_UPSIDE;
+			}
+			else if (!isOnGround) {
+				aniId = ID_ANI_GOOMBAPARA_FLY_JUMP;
+			}
+			else aniId = ID_ANI_GOOMBAPARA_FLY_WALKING;
 		}
 	}
-	else {
-		if (isUpside) {
-			aniId = ID_ANI_GOOMBAPARA_UPSIDE;
-		}
-		else if (!isOnGround) {
-			aniId = ID_ANI_GOOMBAPARA_FLY_JUMP;
-		}
-		else aniId = ID_ANI_GOOMBAPARA_FLY_WALKING;
-	}
+	
 	return aniId;
 }
 //

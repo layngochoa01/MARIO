@@ -14,6 +14,7 @@
 #include "FireBall.h"
 #include "PlantEnemies.h"
 #include "Koopa.h"
+#include "Effect.h"
 #include "Collision.h"
 #include "PlayScene.h"
 
@@ -168,7 +169,7 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 					goomba->SetState(GOOMBAPARA_STATE_IS_ATTACK);
 				else  goomba->SetState(GOOMBA_STATE_DIE);
 				vy = -MARIO_JUMP_DEFLECT_SPEED;
-				score += SCORE_100;
+				AddScoreEffect(goomba->GetX(),goomba->GetY(), SCORE_100);
 			}
 		}
 		else // hit by Goomba
@@ -188,6 +189,8 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
+	if(e->obj->GetState() == COIN_NOT_SUM)
+		AddScoreEffect(e->obj->GetX(), e->obj->GetY(), SCORE_100);
 	e->obj->Delete();
 	coin++;
 }
@@ -227,6 +230,7 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 			coin->SetState(COIN_SUM);
 			scene->PushObject(coin);
 			questionBrick->SetIsEmpty(true);
+			AddScoreEffect(coin->GetX(),coin->GetY(), SCORE_100);
 		}
 		else if (questionBrick->GetItemType() == BRICK_QUES_MUSHROOM_RED_OR_LEAF)
 		{
@@ -236,6 +240,7 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 				//DebugOut(L"type mushroom  %d \n", mushroom->GetType());
 				mushroom->SetState(MUSHROOM_STATE_RISING);
 				scene->PushObject(mushroom);
+				AddScoreEffect(mushroom->GetX(), mushroom->GetY(), SCORE_1000);
 				questionBrick->SetIsEmpty(true);
 			}
 			else if (level >= MARIO_LEVEL_BIG) 
@@ -243,6 +248,7 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 				CLeaf* leaf = new CLeaf(xT, yT);
 				leaf->SetState(LEAF_STATE_RISE);
 				scene->PushObject(leaf);
+				AddScoreEffect(leaf->GetX(), leaf->GetY(), SCORE_1000);
 				questionBrick->SetIsEmpty(true);
 			}
 		}
@@ -325,7 +331,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 	{
 		if (koopa->GetState() == KOOPA_STATE_WALKING)
 		{
-			score += SCORE_100;
+			AddScoreEffect(koopa->GetX(), koopa->GetY(), SCORE_1000);
 			koopa->SetState(KOOPA_STATE_SHELL);
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}
@@ -696,10 +702,16 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 void CMario::AddScoreEffect(float xTemp, float yTemp, int scoreAdd)
 {
 	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
-
+	
 	if (scoreAdd == SCORE_100) {
-		//CEffect* effect = new CEffect(xTemp, yTemp, EFFECT_SCORE_100);
-		//scene->AddObject(effect);
+		DebugOut(L"[create effect 100]\n");
+		CEffect* effect = new CEffect(xTemp, yTemp, EFFECT_SCORE_100);
+		scene->AddObject(effect);
+	}
+	else if (scoreAdd == SCORE_1000) 
+	{
+		CEffect* effect = new CEffect(xTemp, yTemp, EFFECT_SCORE_1000);
+		scene->AddObject(effect);
 	}
 	score += scoreAdd;
 }

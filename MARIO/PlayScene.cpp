@@ -17,6 +17,7 @@
 #include "FireBall.h"
 #include "PlantEnemies.h"
 #include "Koopa.h"
+#include "effect.h"
 #include "SampleKeyEventHandler.h"
 
 using namespace std;
@@ -166,6 +167,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 		int sprite_id = atoi(tokens[3].c_str());
 		obj = new CBackgroundOBJ(x, y, sprite_id);
+		break;
+	}
+
+	case OBJECT_TYPE_EFFECT:
+	{
+		int t = atoi(tokens[3].c_str());
+		obj = new CEffect(x, y, t);
 		break;
 	}
 
