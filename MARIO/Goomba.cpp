@@ -207,7 +207,7 @@ void CGoomba::Render()
 		aniId = GetAniGoombaPara();
 
 	CAnimations::GetInstance()->Get(aniId)->Render(x,y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CGoomba::SetState(int state)

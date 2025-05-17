@@ -4,13 +4,13 @@
 
 #define KOOPA_GRAVITY         0.0005f    
 #define KOOPA_WALK_SPEED      0.02f     // Tốc độ di chuyển
-#define KOOPA_KICKED_SPEED    0.18f     // Tốc độ khi bị đá
-#define KOOPA_JUMP_DEFLECT    0.4f      // Lực nảy khi bị giết
+#define KOOPA_KICKED_SPEED    0.3f     // Tốc độ khi bị đá
+#define KOOPA_JUMP_DEFLECT    0.2f      // Lực nảy khi bị giết
 
 
 #define KOOPA_DEFEND_TIMEOUT  8000      // Thời gian ở trong mai (ms)
 #define KOOPA_COMEBACK_TIME   6000      // Thời gian trước khi hồi phục
-#define KOOPA_TIME_DELAY_AROUND 100
+#define KOOPA_TIME_DELAY_AROUND 400
 
 #define KOOPA_TYPE_RED  1
 

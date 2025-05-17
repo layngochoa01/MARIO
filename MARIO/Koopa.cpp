@@ -17,7 +17,7 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += ay * dt;
 
 	vx += ax * dt;
-	DebugOut(L"VX %f ,  VY %f \n\n", vx, vy);
+	
 	if (!isKicked && isInShell)
 	{
 		if (GetTickCount64() - defend_start > KOOPA_COMEBACK_TIME) {
@@ -36,10 +36,13 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (isTurning) {
 		if (GetTickCount64() - turnaround_delay >= KOOPA_TIME_DELAY_AROUND)
 		{
-			vx = -vx;
+			//vx = -vx;
 			isTurning = false;
 		}
-		else { vx = 0; }
+		else { 
+			if (vx > 0) vx = KOOPA_WALK_SPEED;
+			else vx = -KOOPA_WALK_SPEED;
+		}
 	}
 	
 	if (isUpset && !isOnPlatform) {
@@ -61,7 +64,7 @@ void CKoopa::Render()
 	if (!CheckObjectInCamera(this)) return;
 	CAnimations* animations = CAnimations::GetInstance();
 	animations->Get(GetKoopaRedAniId())->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 int CKoopa::GetKoopaRedAniId()
@@ -102,7 +105,7 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
 			vx = -vx;
 		}
 	}
-
+	DebugOut(L"[ONCOLLISION]");
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	else if (dynamic_cast<CPlatform*>(e->obj))
@@ -289,18 +292,21 @@ void CKoopa::UpdateWalkingOnPlatform(CPlatform* platform)
 	if ((type == KOOPA_TYPE_RED) && (state == KOOPA_STATE_WALKING)) 
 	{
 		float leftBound = (platform->GetX() - platform->GetCellWidth() / 2);//- KOOPA_BBOX_WIDTH / 2;
-		float rightBound = (platform->GetX() + platform->GetCellWidth() / 2)  + KOOPA_BBOX_WIDTH / 2;
-		
+		float rightBound = (platform->GetX() + platform->GetCellWidth() / 2);// +KOOPA_BBOX_WIDTH / 2;
+
 		if (GetX() <= leftBound) {
 			x = leftBound;
 			isTurning = true;
 			turnaround_delay = GetTickCount64();
+			vx = KOOPA_WALK_SPEED; // Quay đầu sang phải
 		}
 		else if (GetX() >= rightBound) {
 			x = rightBound;
 			isTurning = true;
 			turnaround_delay = GetTickCount64();
+			vx = -KOOPA_WALK_SPEED; // Quay đầu sang trái
 		}
+
 		
 	}
 }

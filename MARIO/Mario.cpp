@@ -507,7 +507,7 @@ void CMario::Render()
 
 
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 
 	//DebugOutTitle(L"Coins: %d", coin);
 	DebugOutTitle(L"Score: %d", score);
