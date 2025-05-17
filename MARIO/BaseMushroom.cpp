@@ -61,7 +61,7 @@ void CBaseMushroom::Render()
 	// có thể mở rộng cho các nấm màu khác
 	}
 	
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CBaseMushroom::OnNoCollision(DWORD dt)

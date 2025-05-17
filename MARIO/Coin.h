@@ -24,8 +24,8 @@ public:
 	CCoin(float x, float y) : CGameObject(x, y) 
 	{
 		this->state = COIN_NOT_SUM;
-		this->ay = COIN_GRAVITY;
-		this->canCollect = false;
+		this->ay = 0;
+		this->canCollect = true;
 
 	};
 	void Render();

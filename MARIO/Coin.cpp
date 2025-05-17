@@ -8,25 +8,22 @@ void CCoin::Render()
 	CAnimations* animations = CAnimations::GetInstance();
 	animations->Get(ID_ANI_COIN)->Render(x, y);
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	//CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 
-	if (!canCollect) vy += ay * dt;
-
-	//DebugOut(L"[VANTOC] %f\n", vy);
-	if (vy > COIN_SPEED_FALL) {
-		if (!isDeleted) {
-			mario->SetScore(mario->GetScore() + SCORE_100);
+	if (!canCollect)
+	{
+		vy += ay * dt;
+		if (vy > COIN_SPEED_FALL) {
+			Delete();
 		}
-		Delete();
-
-
-
 	}
+	else vy = vx = 0;
+	
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
@@ -49,11 +46,14 @@ void CCoin::SetState(int s)
 {
 	switch (s) {
 	case COIN_SUM:
+		ay = COIN_GRAVITY;
 		vy = -COIN_SPEEP_UP;
 		canCollect = false;
 		break;
 
 	case COIN_NOT_SUM:
+		vy = vx = 0;
+		ay = 0;
 		canCollect = true;
 		break;
 	}

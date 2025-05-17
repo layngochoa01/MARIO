@@ -23,7 +23,7 @@ void CLeaf::Render()
 	aniId = (vx <= 0 ? ID_ANI_LEAF_RIGHT : ID_ANI_LEAF_LEFT);
 	CAnimations* animations = CAnimations::GetInstance();
 	animations->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

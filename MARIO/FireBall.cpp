@@ -60,6 +60,6 @@ void CFireBall::Render()
 	if (!CheckObjectInCamera(this)) return;
 	int aniId = (direction > 0) ? ID_ANI_FIREBALL_RIGHT : ID_ANI_FIREBALL_LEFT;
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 
 }

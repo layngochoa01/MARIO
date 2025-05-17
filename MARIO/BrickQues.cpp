@@ -10,7 +10,7 @@ void CBrickQues::Render()
     int aniId = isEmpty ? ID_ANI_BRICK_EMPTY : ID_ANI_BRICK_QUES;
     
     CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-    RenderBoundingBox();
+  //  RenderBoundingBox();
 }
 
 void CBrickQues::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
