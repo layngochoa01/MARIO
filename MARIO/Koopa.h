@@ -10,6 +10,7 @@
 
 #define KOOPA_DEFEND_TIMEOUT  8000      // Thời gian ở trong mai (ms)
 #define KOOPA_COMEBACK_TIME   6000      // Thời gian trước khi hồi phục
+#define KOOPA_TIME_DELAY_AROUND 100
 
 #define KOOPA_TYPE_RED  1
 
@@ -40,12 +41,15 @@ protected:
     int type;
     ULONGLONG defend_start;      // Thời điểm vào mai
     ULONGLONG comeback_start;
+    ULONGLONG turnaround_delay;
     bool isInShell; // mai 
     bool isUpset; // lat ngua
     bool isComeback;
     bool isHeld;
     bool isKicked;
     bool isOnPlatform;
+    bool isTurning = false;
+
 
     void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
     void Render();

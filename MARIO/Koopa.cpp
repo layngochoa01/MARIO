@@ -33,11 +33,18 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 		}
 	}
-
+	if (isTurning) {
+		if (GetTickCount64() - turnaround_delay >= KOOPA_TIME_DELAY_AROUND)
+		{
+			vx = -vx;
+			isTurning = false;
+		}
+		else { vx = 0; }
+	}
 	
-	/*if (isUpset && !isOnPlatform) {
+	if (isUpset && !isOnPlatform) {
 		vx = -KOOPA_WALK_SPEED;
-	}*/
+	}
 
 	if (state == KOOPA_STATE_DIE)
 	{
@@ -217,10 +224,10 @@ void CKoopa::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 		isOnPlatform = true;
 		
 
-		/*if (state == KOOPA_STATE_WALKING && vx == 0.00000f)
+		if (state == KOOPA_STATE_WALKING && vx == 0)
 		{
 			vx = (type == KOOPA_TYPE_RED) ? -KOOPA_WALK_SPEED : KOOPA_WALK_SPEED;
-		}*/
+		}
 	}
 	UpdateWalkingOnPlatform(platform);
 
@@ -284,17 +291,16 @@ void CKoopa::UpdateWalkingOnPlatform(CPlatform* platform)
 		float leftBound = (platform->GetX() - platform->GetCellWidth() / 2);//- KOOPA_BBOX_WIDTH / 2;
 		float rightBound = (platform->GetX() + platform->GetCellWidth() / 2)  + KOOPA_BBOX_WIDTH / 2;
 		
-		if (GetX() < leftBound) {
-			vx = -vx;
-			x = leftBound ;
-			DebugOut(L"leftBound %f , rightBound %f \n", leftBound, rightBound);
-			DebugOut(L"X %f ,  Y %f \n\n", GetX(), GetY());
-			DebugOut(L"VX %f ,  VY %f \n\n", vx, vy);
+		if (GetX() <= leftBound) {
+			x = leftBound;
+			isTurning = true;
+			turnaround_delay = GetTickCount64();
 		}
-		/*else if (GetX() > rightBound) {
-			SetPosition(rightBound, GetY());*/
-			//vx = -vx;
-		//}
+		else if (GetX() >= rightBound) {
+			x = rightBound;
+			isTurning = true;
+			turnaround_delay = GetTickCount64();
+		}
 		
 	}
 }
