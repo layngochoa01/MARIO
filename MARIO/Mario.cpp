@@ -23,7 +23,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
-	
+	DebugOut(L"ay  :%f\n",ay);
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
@@ -84,21 +84,24 @@ void CMario::OnNoCollision(DWORD dt)
 
 void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 {
+	
 	if (e->ny != 0 && e->obj->IsBlocking())
 	{
-		
+
 		vy = 0;
-		if (e->ny < 0) isOnPlatform = true;
+		if (e->ny < 0)
+		{
+			isOnPlatform = true;
+		}
 	}
 	else
 		if (e->nx != 0 && e->obj->IsBlocking())
 		{
 			vx = 0;
 		}
-
-	if (dynamic_cast<CGoomba*>(e->obj))
+	if (dynamic_cast<CGoomba*>(e->obj)) 
 		OnCollisionWithGoomba(e);
-	else if (dynamic_cast<CCoin*>(e->obj))
+	else if (dynamic_cast<CCoin*>(e->obj)) 
 		OnCollisionWithCoin(e);
 	else if (dynamic_cast<CBrickQues*>(e->obj))
 		OnCollisionWithBrickQues(e);
@@ -112,6 +115,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithPlantEnemies(e);
 	else if (dynamic_cast<CKoopa*>(e->obj))
 		OnCollisionWithKoopa(e);
+	else if (dynamic_cast<CPlatform*>(e->obj))
+		OnCollisionWithPlatform(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
 }
@@ -128,33 +133,24 @@ float CMario::GetCurrentHeight() const
 
 void CMario::ResetVerticalMovement()
 {
-	vy = 0;
+	vy = 0; ay = 0; 
 	isOnPlatform = true;
 }
 
-void CMario::HandleSolidCollision(LPGAMEOBJECT gameobject)
+void CMario::HandleSolidCollision(LPGAMEOBJECT gameobject, float objHeight)
 {
 	
-	float collisionHeight = GetCurrentHeight();
-	float distanceToPlatform = gameobject->GetY() - y;
-	//DebugOut(L"collisionHeight :%f ,distanceToPlatform : %f \n", collisionHeight, distanceToPlatform);
-
-	if (distanceToPlatform < collisionHeight + COLLISION_MARGIN) {
-		float newY = gameobject->GetY() - collisionHeight;
-		//DebugOut(L"newY :%f\n", newY);
-		//DebugOut(L"collisionHeight + COLLISION_MARGIN :%f\n", collisionHeight + COLLISION_MARGIN);
-		if (level == MARIO_LEVEL_SMALL) {
-			newY -= SNAPOFFSET;
-			//DebugOut(L"newY mario small:%f\n", newY);
-		}
-		else if (!isSitting) {
-			newY += SNAPOFFSET;
-			//DebugOut(L"newY mario big:%f\n", newY);
-		}
+	float marioHeight = GetCurrentHeight();
+	float platformY = gameobject->GetY();
+	float marioY = this->y;
+	float marioBottom = marioY + marioHeight / 2;
+	float platformTop = platformY - objHeight / 2;
+	float overlap = marioBottom - platformTop ;
+	if (overlap > -COLLISION_MARGIN && overlap < marioHeight) 
+	{
+		float newY = platformTop - marioHeight / 2;
 		SetPosition(x, newY);
-		ResetVerticalMovement();
 	}
-	
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
@@ -209,7 +205,7 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 		return;
 	if (e->ny < 0) {
 		
-		HandleSolidCollision(questionBrick);
+		HandleSolidCollision(questionBrick, BRICK_QUES_BBOX_HEIGHT);
 		return;
 	}
 
@@ -355,6 +351,21 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 			{
 				SetLevelLower();
 			}
+		}
+	}
+}
+
+void CMario::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
+{
+	CPlatform* platform = dynamic_cast<CPlatform*>(e->obj);
+	if (!platform->IsBlocking() && platform->GetCellHeight() >= 9) 
+	{
+		if (e->ny < 0 && vy > 0 && platform->IsDirectionColliable(e->nx, e->ny))
+		{
+			//isOnPlatform = true;
+			HandleSolidCollision(platform, platform->GetCellHeight());
+			ResetVerticalMovement();
+			
 		}
 	}
 }
@@ -705,12 +716,12 @@ void CMario::AddScoreEffect(float xTemp, float yTemp, int scoreAdd)
 	if (scoreAdd == SCORE_100) {
 		DebugOut(L"[create effect 100]\n");
 		CEffect* effect = new CEffect(xTemp, yTemp, EFFECT_SCORE_100);
-		scene->AddObject(effect);
+		scene->PushObject(effect);
 	}
 	else if (scoreAdd == SCORE_1000) 
 	{
 		CEffect* effect = new CEffect(xTemp, yTemp, EFFECT_SCORE_1000);
-		scene->AddObject(effect);
+		scene->PushObject(effect);
 	}
 	score += scoreAdd;
 }

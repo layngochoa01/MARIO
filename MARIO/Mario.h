@@ -131,7 +131,7 @@
 
 #define MARIO_UNTOUCHABLE_TIME 2500
 
-#define COLLISION_MARGIN  16.0f
+#define COLLISION_MARGIN 8.0f
 
 #define SCORE_100 100
 #define SCORE_1000 1000
@@ -168,6 +168,7 @@ class CMario : public CGameObject
 	void OnCollisionWithFireBall(LPCOLLISIONEVENT e);
 	void OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
+	void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
 
 	int GetAniIdBig();
 	int GetAniIdSmall();
@@ -210,7 +211,7 @@ public:
 
 	void OnNoCollision(DWORD dt);
 	void OnCollisionWith(LPCOLLISIONEVENT e);
-	void HandleSolidCollision(LPGAMEOBJECT gameobject);
+	void HandleSolidCollision(LPGAMEOBJECT gameobject, float objHeight);
 
 	void SetLevel(int l);
 	void SetCoin(int c) { this->coin = c; }

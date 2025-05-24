@@ -1,6 +1,8 @@
 #pragma once
 #include "Brick.h" 
 
+#define BRICK_QUES_BBOX_HEIGHT 15.0f
+#define BRICK_QUES_BBOX_WIDTH 15.0f
 // BRICK MOVE 
 #define BRICK_QUES_SPEED_UP 0.04f
 #define BRICK_QUES_SPEED_DOWN 0.04f

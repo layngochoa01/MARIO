@@ -117,11 +117,11 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			if (!isAttack)
 			{
-				if ((GetTickCount64() - walking_start > TIME_WALKING - TIME_JUMP_SMALL) && !isJump)
+				if (((GetTickCount64() - walking_start) > (TIME_WALKING - TIME_JUMP_SMALL)) && !isJump)
 				{
 					if (isOnGround && (jumpCount < 3))
 					{
-						vy = -0.05f;
+						vy = -0.1f;
 						jumpCount++;
 					}
 				}
@@ -254,7 +254,7 @@ void CGoomba::SetState(int state)
 		
 	case GOOMBAPARA_STATE_FLY:
 	{
-		vy = -0.2f; // Nhảy lên
+		vy = -0.4f; // Nhảy lên
 		isJump = true;
 		isOnGround = false;
 		ay = GOOMBA_GRAVITY;

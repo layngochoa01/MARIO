@@ -30,8 +30,6 @@ void CEffect::OnNoCollision(DWORD dt)
 
 CEffect::CEffect(float x, float y, int t) : CGameObject(x, y)
 {
-
-	DebugOut(L"[SCORE \n\n]");
 	this->vy = -SCORE_SPEED_UP;
 	this->ay = SCORE_GRAVITY;
 	this->isLive = true;
@@ -62,7 +60,7 @@ void CEffect::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 		else vy = -SCORE_SPEED_UP;
 	}
-	DebugOut(L"vx %f , vy %f \n\n", vx, vy);
+	//DebugOut(L"vx %f , vy %f \n\n", vx, vy);
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 

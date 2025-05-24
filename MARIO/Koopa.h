@@ -4,7 +4,7 @@
 
 #define KOOPA_GRAVITY         0.0005f    
 #define KOOPA_WALK_SPEED      0.02f     // Tốc độ di chuyển
-#define KOOPA_KICKED_SPEED    0.3f     // Tốc độ khi bị đá
+#define KOOPA_KICKED_SPEED    0.1f     // Tốc độ khi bị đá
 #define KOOPA_JUMP_DEFLECT    0.2f      // Lực nảy khi bị giết
 
 

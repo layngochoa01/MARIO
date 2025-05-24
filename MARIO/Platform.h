@@ -12,7 +12,7 @@ protected:
 	float cellWidth;
 	float cellHeight;
 	int spriteIdBegin, spriteIdMiddle, spriteIdEnd;
-
+	virtual bool IsPlatform() { return 1; }
 public:
 	CPlatform(float x, float y,
 		float cell_width, float cell_height, int length,
@@ -31,12 +31,11 @@ public:
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void RenderBoundingBox();
 	
-	virtual int IsCollidable() { return 0; }
-	virtual int IsBlocking() { return 1; }
 	int GetLength() { return length; }
 	float GetCellWidth() { return cellWidth; };
 	float GetCellHeight() { return cellHeight; };
 	int IsDirectionColliable(float nx, float ny);
+	virtual int IsBlocking() { return (cellHeight >= 16); };
 };
 
 typedef CPlatform* LPPLATFORM;
