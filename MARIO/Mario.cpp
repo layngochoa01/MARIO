@@ -23,7 +23,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
-	DebugOut(L"ay  :%f\n",ay);
+	
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
@@ -363,6 +363,7 @@ void CMario::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 		if (e->ny < 0 && vy > 0 && platform->IsDirectionColliable(e->nx, e->ny))
 		{
 			//isOnPlatform = true;
+			
 			HandleSolidCollision(platform, platform->GetCellHeight());
 			ResetVerticalMovement();
 			

@@ -35,7 +35,7 @@ public:
 	float GetCellWidth() { return cellWidth; };
 	float GetCellHeight() { return cellHeight; };
 	int IsDirectionColliable(float nx, float ny);
-	virtual int IsBlocking() { return (cellHeight >= 16); };
+	virtual int IsBlocking() { return (cellHeight >= 9); };
 };
 
 typedef CPlatform* LPPLATFORM;

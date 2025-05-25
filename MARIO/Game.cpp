@@ -8,6 +8,8 @@
 #include "Animations.h"
 #include "PlayScene.h"
 
+
+
 CGame * CGame::__instance = NULL;
 
 /*
@@ -26,6 +28,7 @@ void CGame::Init(HWND hWnd, HINSTANCE hInstance)
 
 	backBufferWidth = r.right + 1;
 	backBufferHeight = r.bottom + 1;
+
 
 	DebugOut(L"[INFO] Window's client area: width= %d, height= %d\n", r.right - 1, r.bottom - 1);
 
@@ -151,7 +154,6 @@ void CGame::Init(HWND hWnd, HINSTANCE hInstance)
 	pD3DDevice->CreateBlendState(&StateDesc, &this->pBlendStateAlpha);
 
 	DebugOut((wchar_t*)L"[INFO] InitDirectX has been successful\n");
-
 	return;
 }
 

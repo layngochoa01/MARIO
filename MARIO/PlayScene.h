@@ -30,6 +30,7 @@ public:
 
 	virtual void Load();
 	virtual void Update(DWORD dt);
+	virtual void UpdateCamera(LPGAMEOBJECT player);
 	virtual void Render();
 	virtual void Unload();
 

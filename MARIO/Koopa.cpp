@@ -105,7 +105,6 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
 			vx = -vx;
 		}
 	}
-	DebugOut(L"[ONCOLLISION]");
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	else if (dynamic_cast<CPlatform*>(e->obj))
@@ -291,9 +290,8 @@ void CKoopa::UpdateWalkingOnPlatform(CPlatform* platform)
 {
 	if ((type == KOOPA_TYPE_RED) && (state == KOOPA_STATE_WALKING)) 
 	{
-		float leftBound = (platform->GetX() - platform->GetCellWidth() / 2);//- KOOPA_BBOX_WIDTH / 2;
-		float rightBound = (platform->GetX() + platform->GetCellWidth() / 2);// +KOOPA_BBOX_WIDTH / 2;
-
+		float leftBound = platform->GetX() ;
+		float rightBound = (platform->GetX() + platform->GetCellWidth() * platform->GetLength() - KOOPA_BBOX_WIDTH / 2);
 		if (GetX() <= leftBound) {
 			x = leftBound;
 			isTurning = true;

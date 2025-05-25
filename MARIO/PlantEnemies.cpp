@@ -130,7 +130,7 @@ void CPlantEnemies::Render()
 	if (!CheckObjectInCamera(this)) return;
 	int aniId = GetPlantAniId();
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CPlantEnemies::OnNoCollision(DWORD dt)

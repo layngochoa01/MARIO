@@ -233,7 +233,7 @@ void CGoomba::SetState(int state)
 	{
 		if (type == GOOMBA_TYPE_BASE)
 		{
-			if (vx == 0) vx = -GOOMBA_WALKING_SPEED;
+			//if (vx == 0) vx = -GOOMBA_WALKING_SPEED;
 			ay = GOOMBA_GRAVITY;
 			isJump = false;
 			isAttack = false;
