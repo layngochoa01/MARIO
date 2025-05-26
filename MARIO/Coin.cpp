@@ -6,7 +6,11 @@ void CCoin::Render()
 {
 	if (!CheckObjectInCamera(this)) return;
 	CAnimations* animations = CAnimations::GetInstance();
-	animations->Get(ID_ANI_COIN)->Render(x, y);
+	if (isCoinSwitch) 
+	{
+		animations->Get(ID_ANI_COIN_SWITCH)->Render(x, y);
+	}
+	else animations->Get(ID_ANI_COIN)->Render(x, y);
 
 	//RenderBoundingBox();
 }
@@ -56,6 +60,11 @@ void CCoin::SetState(int s)
 		ay = 0;
 		canCollect = true;
 		break;
+	case COIN_SWITCH_NOT_SUM:
+		vy = vx = 0;
+		ay = 0;
+		canCollect = true;
+		isCoinSwitch = true;
 	}
 	CGameObject::SetState(s);
 }

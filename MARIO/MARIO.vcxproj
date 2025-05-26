@@ -135,6 +135,7 @@
     <ClInclude Include="BaseMushroom.h" />
     <ClInclude Include="Brick.h" />
     <ClInclude Include="BackgroundOBJ.h" />
+    <ClInclude Include="BrickPSwitch.h" />
     <ClInclude Include="BrickQues.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="FireBall.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="Platform.h" />
     <ClInclude Include="PlayScene.h" />
     <ClInclude Include="Portal.h" />
+    <ClInclude Include="PSwitch.h" />
     <ClInclude Include="SampleKeyEventHandler.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Sprite.h" />
@@ -167,6 +169,7 @@
     <ClCompile Include="BaseMushroom.cpp" />
     <ClCompile Include="Brick.cpp" />
     <ClCompile Include="BackgroundOBJ.cpp" />
+    <ClCompile Include="BrickPSwitch.cpp" />
     <ClCompile Include="BrickQues.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="FireBall.cpp" />
@@ -185,6 +188,7 @@
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="PlayScene.cpp" />
     <ClCompile Include="Portal.cpp" />
+    <ClCompile Include="PSwitch.cpp" />
     <ClCompile Include="SampleKeyEventHandler.cpp" />
     <ClCompile Include="Scence.cpp" />
     <ClCompile Include="Sprite.cpp" />

@@ -38,7 +38,7 @@ protected:
 	int itemType;
 
 public:
-	CBrickQues(float x, float y, int item) : CBrick(x, y)
+	CBrickQues(float x, float y, int item) : CBrick(x, y, 2)
 	{
 		this->ay = 0;
 		this->minY = y - BRICK_BBOX_HEIGHT + JUMP_OFFSET;

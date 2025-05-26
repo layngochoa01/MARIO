@@ -169,7 +169,7 @@ class CMario : public CGameObject
 	void OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
 	void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
-
+	void OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e);
 	int GetAniIdBig();
 	int GetAniIdSmall();
 	int GetAniIdRaccoon();

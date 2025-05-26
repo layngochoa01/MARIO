@@ -17,6 +17,8 @@
 #include "FireBall.h"
 #include "PlantEnemies.h"
 #include "Koopa.h"
+#include "BrickPSwitch.h"
+
 #include "effect.h"
 #include "SampleKeyEventHandler.h"
 
@@ -133,7 +135,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 
-	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); break;
+	case OBJECT_TYPE_BRICK:
+	{
+		int TYPE = atoi(tokens[3].c_str());
+		obj = new CBrick(x, y, TYPE);
+		break;
+	}
 
 	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
 
@@ -187,11 +194,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 
+	case OBJECT_TYPE_BRICK_PSWITCH: obj = new CBrickPSwitch(x, y); DebugOut(L"[BRICK_SWITCH]\n"); break;
+
 	case OBJECT_TYPE_MUSHROOM:
 	{
 		int TYPE = atoi(tokens[3].c_str());
 		obj = new CBaseMushroom(x, y, TYPE);
-		DebugOut(L"mushroom type: %d\n", TYPE);
 		break;
 	}
 	
@@ -249,7 +257,7 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 		switch (section)
 		{
 		case ASSETS_SECTION_SPRITES: _ParseSection_SPRITES(line); break;
-		case ASSETS_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); DebugOut(L"in ani \n"); break;
+		case ASSETS_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
 		}
 	}
 

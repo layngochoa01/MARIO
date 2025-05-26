@@ -9,6 +9,7 @@
 #include "Platform.h"
 #include "Portal.h"
 #include "BrickQues.h"
+#include "BrickPSwitch.h"
 #include "BaseMushroom.h"
 #include "Leaf.h"
 #include "FireBall.h"
@@ -23,7 +24,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
-	
+	//DebugOut(L"MARIO POSITION : %f , %f\n", x, y);
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
@@ -117,6 +118,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithKoopa(e);
 	else if (dynamic_cast<CPlatform*>(e->obj))
 		OnCollisionWithPlatform(e);
+	else if (dynamic_cast<CBrickPSwitch*>(e->obj))
+		OnCollisionWithBrickPSwitch(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
 }
@@ -368,6 +371,26 @@ void CMario::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 			ResetVerticalMovement();
 			
 		}
+	}
+}
+
+void CMario::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
+{
+	DebugOut(L"[VA CHAM VOI BRICK PSWITCH]\n");
+	CBrickPSwitch* bricksp = dynamic_cast<CBrickPSwitch*>(e->obj);
+	if (!bricksp || bricksp->IsEmpty()) 
+	{
+		return;
+	}
+		
+	if (e->ny < 0) {
+		HandleSolidCollision( bricksp , PSWITCH_BBOX_HEIGHT);
+		return;
+	}
+	if (e->ny > 0) 
+	{
+		bricksp->SetState(BRICK_STATE_NO_PSWITCH);
+		CPSwitch *button = new CPSwitch(bricksp->GetX(), bricksp->GetY());
 	}
 }
 
