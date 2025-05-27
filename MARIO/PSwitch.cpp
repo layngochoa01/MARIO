@@ -1,17 +1,27 @@
 ﻿#include "PSwitch.h"
+#include "Debug.h"
 
 void CPSwitch::Render()
 {
-	if(activated || isFinish) CAnimations::GetInstance()->Get(ANI_ID_PSWITCH_ACTIVE)->Render(x, y);
+	if(activated || isFinish) CAnimations::GetInstance()->Get(ANI_ID_PSWITCH_ACTIVE)->Render(x, y + 5.0f);
 	else CAnimations::GetInstance()->Get(ANI_ID_PSWITCH_NOT_ACTIVE)->Render(x, y);
-
 }
 
 void CPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 
-	vy += ay * dt;
 	
+	if (visible)
+	{
+		vy = - PSWITCH_SPEED_RISING;  // tiếp tục đi lên
+		y += vy * dt;
+
+		if (startY - y >= PSWITCH_NO_ACTIVE_BBOX_HEIGHT)
+		{
+			y = startY - PSWITCH_NO_ACTIVE_BBOX_HEIGHT;  // giới hạn lên
+			SetState(PSWITCH_STATE_IDLE);
+		}
+	}
 
 	if (y <= startY - 16.0f) // Trồi lên 1 block
 	{
@@ -19,6 +29,10 @@ void CPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vy = 0;
 		ay = 0;
 		SetState(PSWITCH_STATE_IDLE);
+	}
+	else 
+	{
+	
 	}
 
 	if (state == PSWITCH_STATE_ACTIVE)
@@ -73,10 +87,13 @@ void CPSwitch::SetState(int s)
 
 void  CPSwitch::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
+	float height;
+	if (activated || isFinish) height = PSWITCH_ACTIVE_BBOX_HEIGHT;
+	else height = PSWITCH_NO_ACTIVE_BBOX_HEIGHT ;
 	left = x - PSWITCH_BBOX_WIDTH / 2;
-	top = y - PSWITCH_BBOX_HEIGHT / 2;
+	top = y - height / 2;
 	right = left + PSWITCH_BBOX_WIDTH;
-	bottom = top + PSWITCH_BBOX_HEIGHT;
+	bottom = top + height;
 }
 
 void CPSwitch::OnNoCollision(DWORD dt)

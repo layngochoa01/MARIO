@@ -184,6 +184,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 
+	case OBJECT_TYPE_PSWITCH: obj = new CPSwitch(x, y);  break;
+
 	case OBJECT_TYPE_PIPE:	obj = new CPipe(x, y); break;
 
 	case OBJECT_TYPE_BRICK_QUES:
@@ -194,7 +196,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 
-	case OBJECT_TYPE_BRICK_PSWITCH: obj = new CBrickPSwitch(x, y); DebugOut(L"[BRICK_SWITCH]\n"); break;
+	case OBJECT_TYPE_BRICK_PSWITCH: obj = new CBrickPSwitch(x, y);  break;
 
 	case OBJECT_TYPE_MUSHROOM:
 	{

@@ -120,6 +120,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithPlatform(e);
 	else if (dynamic_cast<CBrickPSwitch*>(e->obj))
 		OnCollisionWithBrickPSwitch(e);
+	else if (dynamic_cast<CPSwitch*>(e->obj))
+		OnCollisionWithPSwitch(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
 }
@@ -376,7 +378,6 @@ void CMario::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 {
-	DebugOut(L"[VA CHAM VOI BRICK PSWITCH]\n");
 	CBrickPSwitch* bricksp = dynamic_cast<CBrickPSwitch*>(e->obj);
 	if (!bricksp || bricksp->IsEmpty()) 
 	{
@@ -384,14 +385,35 @@ void CMario::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 	}
 		
 	if (e->ny < 0) {
-		HandleSolidCollision( bricksp , PSWITCH_BBOX_HEIGHT);
+		HandleSolidCollision( bricksp , BRICK_PSWITCH_BBOX_HEIGHT);
 		return;
 	}
 	if (e->ny > 0) 
 	{
+		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 		bricksp->SetState(BRICK_STATE_NO_PSWITCH);
 		CPSwitch *button = new CPSwitch(bricksp->GetX(), bricksp->GetY());
+		scene->PushObject(button);
 	}
+}
+
+void CMario::OnCollisionWithPSwitch(LPCOLLISIONEVENT e)
+{
+	CPSwitch* PS = dynamic_cast<CPSwitch*>(e->obj);
+	if (!PS || PS->IsFinish() || PS->IsActivated())
+	{
+		HandleSolidCollision(PS, PSWITCH_ACTIVE_BBOX_HEIGHT);
+		return;
+	}
+
+	if (e->ny < 0) 
+	{
+		//DebugOut(L"COLLISION WITH PSWITCH\n");
+		PS->SetState(PSWITCH_STATE_ACTIVE);
+		HandleSolidCollision(PS, PSWITCH_ACTIVE_BBOX_HEIGHT);
+		return;
+	}
+	
 }
 
 //

@@ -4,8 +4,9 @@
 #define PSWITCH_GRAVITY 0.0005f
 #define PSWITCH_SPEED_RISING 0.03f
 
-#define PSWITCH_BBOX_WIDTH 10
-#define PSWITCH_BBOX_HEIGHT 16
+#define PSWITCH_BBOX_WIDTH 15
+#define PSWITCH_NO_ACTIVE_BBOX_HEIGHT 15
+#define PSWITCH_ACTIVE_BBOX_HEIGHT 6
 
 #define TIME_LIVE_PSWITCH_ACTIVE 5000
 
@@ -23,22 +24,22 @@ protected:
 	float startY;
 	bool isFinish; // het time bien doi thanh coin
 	bool activated;// mario dap nut
-	bool visible; // 1: mario va cham brick/ duoi raccoon danh vao
+	bool visible; // 1: bi marrio dam, dang troi len
 	float time_live; // thời gian tro lai cua COIN
 
 
-	void SetVisible(bool v) { visible = v; }
+	//void SetVisible(bool v) { visible = v; }
 	bool IsVisible() const { return visible; }
-
-	bool IsActivated() const { return activated; }
+	
+	
 
 public:
 	CPSwitch(float x, float y) : CGameObject(x, y) 
 	{
-		ay = 0;
-		vy = -0;
+		ay = PSWITCH_GRAVITY;
+		vy = -PSWITCH_SPEED_RISING;
 		startY = y;
-		visible = false;
+		visible = true;
 		activated = false;
 		isFinish = false;
 		time_live = 0;
@@ -49,5 +50,7 @@ public:
 	void SetState(int s);
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void OnNoCollision(DWORD dt);
+	bool IsActivated() const { return activated; }
+	bool IsFinish() { return isFinish; }
 };
 
