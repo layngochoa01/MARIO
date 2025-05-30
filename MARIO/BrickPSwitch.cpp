@@ -8,6 +8,7 @@ void CBrickPSwitch::SetState(int s)
     {
         vy = 0;
         isEmpty = false;
+        isTransformedToCoin = false;
         break;
     }    
     case BRICK_STATE_NO_PSWITCH: 
@@ -42,10 +43,22 @@ void CBrickPSwitch::CreatePSwitch()
     PS->SetState(PSWITCH_STATE_RISING);
     CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
     scene->PushObject(PS);  
+
+
+    for (auto obj : *scene->GetAllGameObjects())
+    {
+        CBrickPSwitch* brick = dynamic_cast<CBrickPSwitch*>(obj);
+        if (brick && brick->GetModel() == MODEL_COIN)
+        {
+            brick->SetPSwitch(PS);
+        }
+    }
+
 }
 
 void CBrickPSwitch::Render()
 {
+    if (!IsVisible()) return;
     if (!CheckObjectInCamera(this)) return;
     int aniId = ID_ANI_BRICK_MODEL;
 
@@ -55,7 +68,7 @@ void CBrickPSwitch::Render()
     }
     else if (model == MODEL_COIN)
     {
-        aniId = isTransformedToCoin ? ID_ANI_COIN_SWITCH : ID_ANI_BRICK_MODEL;
+        //aniId = isTransformedToCoin ? ID_ANI_COIN_SWITCH : ID_ANI_BRICK_MODEL;
     }
 
     CAnimations::GetInstance()->Get(aniId)->Render(x, y);
@@ -64,20 +77,26 @@ void CBrickPSwitch::Render()
 
 void CBrickPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-    if ( PS != nullptr)  DebugOut(L"[PS ACTIVE]\n");
     if (model == MODEL_COIN && PS != nullptr)
     {
-        DebugOut(L"PS ACTIVE %d, FINISH %d \n\n", PS->IsActivated(), PS->IsFinish());
-
         if (PS->IsActivated() && !isTransformedToCoin)
         {
             SetState(BRICK_STATE_COIN);
+            CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+            coin = new CCoin(x, y);
+            coin->SetState(COIN_SWITCH_NOT_SUM);
+            scene->PushObject(coin);
+            SetVisible(false);
         }
         else if (PS->IsFinish() && isTransformedToCoin)
         {
+            SetVisible(true);
             SetState(BRICK_STATE_HAS_MODEL); // Biến lại thành brick
         }
-
+        if (coin != nullptr && coin->IsDeleted())
+        {
+            this->Delete(); // Xóa brick khi coin đã bị ăn
+        }
     }
  
     if (isStateUpDown)
@@ -105,10 +124,16 @@ void CBrickPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CBrickPSwitch::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
-    l = x - BRICK_MODEL_BBOX_WIDTH / 2;
-    t = y - BRICK_MODEL_BBOX_HEIGHT / 2;
-    r = l + BRICK_MODEL_BBOX_WIDTH;
-    b = t + BRICK_MODEL_BBOX_HEIGHT;
+    if (!IsVisible()) {
+        l = t = r = b = 0;
+    }
+    else {
+        l = x - BRICK_MODEL_BBOX_WIDTH / 2;
+        t = y - BRICK_MODEL_BBOX_HEIGHT / 2;
+        r = l + BRICK_MODEL_BBOX_WIDTH;
+        b = t + BRICK_MODEL_BBOX_HEIGHT;
+    }
+    
 }
 
 void CBrickPSwitch::OnNoCollision(DWORD dt)

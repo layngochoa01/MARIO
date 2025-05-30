@@ -27,10 +27,14 @@ protected:
 	int nx;	 
 
 	int state;
-
+	bool show = true;
 	bool isDeleted; 
 
 public: 
+
+	void SetVisible(bool v) { show = v; }
+	bool IsVisible() const { return show; }
+
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
 	void GetPosition(float &x, float &y) { x = this->x; y = this->y; }

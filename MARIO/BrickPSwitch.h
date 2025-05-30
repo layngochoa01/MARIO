@@ -31,6 +31,8 @@ protected:
 	float startX, startY;
 
 	CPSwitch* PS;
+	CCoin* coin;
+
 	bool isEmpty;
 	bool isBroken;
 	int state;
@@ -68,6 +70,7 @@ public:
 			isCoin = false;
 		}
 		PS = nullptr;
+		coin = nullptr;
 	};
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = nullptr);
