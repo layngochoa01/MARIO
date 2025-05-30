@@ -51,6 +51,6 @@ public:
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void OnNoCollision(DWORD dt);
 	bool IsActivated() const { return activated; }
-	bool IsFinish() { return isFinish; }
+	bool IsFinish() { return this->isFinish; }
 };
 

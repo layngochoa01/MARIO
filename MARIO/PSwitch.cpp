@@ -5,12 +5,11 @@ void CPSwitch::Render()
 {
 	if(activated || isFinish) CAnimations::GetInstance()->Get(ANI_ID_PSWITCH_ACTIVE)->Render(x, y + 5.0f);
 	else CAnimations::GetInstance()->Get(ANI_ID_PSWITCH_NOT_ACTIVE)->Render(x, y);
+	//RenderBoundingBox();
 }
 
 void CPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-
-	
 	if (visible)
 	{
 		vy = - PSWITCH_SPEED_RISING;  // tiếp tục đi lên
@@ -42,6 +41,7 @@ void CPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			activated = false;
 			isFinish = true;
 			// TODO: Gọi logic để biến coin trở lại brick nếu cần
+			SetState(PSWITCH_STATE_IDLE);
 		}
 	}
 
@@ -87,13 +87,18 @@ void CPSwitch::SetState(int s)
 
 void  CPSwitch::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	float height;
-	if (activated || isFinish) height = PSWITCH_ACTIVE_BBOX_HEIGHT;
-	else height = PSWITCH_NO_ACTIVE_BBOX_HEIGHT ;
+	if (activated || isFinish)
+	{
+		left = x - PSWITCH_BBOX_WIDTH / 2;
+		top = y + 4.0f - PSWITCH_ACTIVE_BBOX_HEIGHT / 2;
+		right = left + PSWITCH_BBOX_WIDTH;
+		bottom = top + PSWITCH_ACTIVE_BBOX_HEIGHT;
+		return;
+	}
 	left = x - PSWITCH_BBOX_WIDTH / 2;
-	top = y - height / 2;
+	top = y - PSWITCH_NO_ACTIVE_BBOX_HEIGHT / 2;
 	right = left + PSWITCH_BBOX_WIDTH;
-	bottom = top + height;
+	bottom = top + PSWITCH_NO_ACTIVE_BBOX_HEIGHT;
 }
 
 void CPSwitch::OnNoCollision(DWORD dt)

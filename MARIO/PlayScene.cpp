@@ -196,7 +196,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 
-	case OBJECT_TYPE_BRICK_PSWITCH: obj = new CBrickPSwitch(x, y);  break;
+	case OBJECT_TYPE_BRICK_PSWITCH: 
+	{
+		int item = atoi(tokens[3].c_str());
+		obj = new CBrickPSwitch(x, y, item);
+		break;
+	}
 
 	case OBJECT_TYPE_MUSHROOM:
 	{

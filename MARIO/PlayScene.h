@@ -35,6 +35,7 @@ public:
 	virtual void Unload();
 
 	LPGAMEOBJECT GetPlayer() { return player; }
+	vector<LPGAMEOBJECT>* GetAllGameObjects() { return &objects; }
 
 	void Clear();
 	void PurgeDeletedObjects();

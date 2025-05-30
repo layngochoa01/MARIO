@@ -379,21 +379,32 @@ void CMario::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 void CMario::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 {
 	CBrickPSwitch* bricksp = dynamic_cast<CBrickPSwitch*>(e->obj);
+	//DebugOut(L"[BUTTON SWITCH MODEL :%d]\n", bricksp->GetModel());
 	if (!bricksp || bricksp->IsEmpty()) 
 	{
 		return;
 	}
 		
 	if (e->ny < 0) {
-		HandleSolidCollision( bricksp , BRICK_PSWITCH_BBOX_HEIGHT);
+		HandleSolidCollision( bricksp , BRICK_MODEL_BBOX_HEIGHT);
 		return;
 	}
 	if (e->ny > 0) 
 	{
-		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
-		bricksp->SetState(BRICK_STATE_NO_PSWITCH);
-		CPSwitch *button = new CPSwitch(bricksp->GetX(), bricksp->GetY());
-		scene->PushObject(button);
+		
+		if (bricksp->GetModel() == MODEL_PSWITCH) 
+		{
+			DebugOut(L"\t[STATE PSWITCH]\n\n");
+			bricksp->SetState(BRICK_STATE_NO_PSWITCH);
+			bricksp->CreatePSwitch();
+		}
+		else if (bricksp->GetModel() == MODEL_COIN) 
+		{
+			DebugOut(L"\t[STATE COIN]\n\n");
+			bricksp->SetState(BRICK_MODEL_STATE_UP);
+			
+		}
+		
 	}
 }
 
