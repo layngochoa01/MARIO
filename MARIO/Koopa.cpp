@@ -2,6 +2,7 @@
 #include "Goomba.h"
 
 #include "BrickQues.h"
+#include "BrickPSwitch.h"
 #include "FireBall.h"
 #include "Mario.h"
 #include "Coin.h"
@@ -208,6 +209,11 @@ void CKoopa::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 		}
 	}
 	
+
+}
+
+void CKoopa::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
+{
 
 }
 

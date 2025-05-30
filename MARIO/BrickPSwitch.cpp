@@ -87,10 +87,12 @@ void CBrickPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
             coin->SetState(COIN_SWITCH_NOT_SUM);
             scene->PushObject(coin);
             SetVisible(false);
+            coin->SetVisible(true);
         }
         else if (PS->IsFinish() && isTransformedToCoin)
         {
             SetVisible(true);
+            coin->SetVisible(false);
             SetState(BRICK_STATE_HAS_MODEL); // Biến lại thành brick
         }
         if (coin != nullptr && coin->IsDeleted())

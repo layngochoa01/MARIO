@@ -63,6 +63,7 @@ public:
 
     void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
     void OnCollisionWithBrickQues(LPCOLLISIONEVENT e);
+    void OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e);
     void OnCollisionWithFireBall(LPCOLLISIONEVENT e);
     void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
     void OnCollisionWithKoopa(LPCOLLISIONEVENT e);

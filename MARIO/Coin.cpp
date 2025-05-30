@@ -4,6 +4,7 @@
 #include "PlayScene.h"
 void CCoin::Render()
 {
+	if (!IsVisible()) return;
 	if (!CheckObjectInCamera(this)) return;
 	CAnimations* animations = CAnimations::GetInstance();
 	if (isCoinSwitch) 
