@@ -3,7 +3,7 @@
 
 void CBackgroundOBJ::Render()
 {
-
+    if (!IsVisible()) return;
     CSprites* s = CSprites::GetInstance();
     s->Get(this->spriteIDBGOBJ)->Draw(x, y);
 }

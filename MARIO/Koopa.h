@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include "GameObject.h"
 #include "Platform.h"
-
+#include "BrickPSwitch.h"
 #define KOOPA_GRAVITY         0.0005f    
 #define KOOPA_WALK_SPEED      0.02f     // Tốc độ di chuyển
-#define KOOPA_KICKED_SPEED    0.1f     // Tốc độ khi bị đá
+#define KOOPA_KICKED_SPEED    0.2f     // Tốc độ khi bị đá
 #define KOOPA_JUMP_DEFLECT    0.2f      // Lực nảy khi bị giết
 
 
@@ -74,7 +74,10 @@ public:
     void SetState(int state);
     void SetIsUpset(int i) { this->isUpset = i; }
     int GetType() { return this->type; }
+
     void UpdateWalkingOnPlatform(CPlatform* platform);
+    void UpdateWalkingOnPSwitch(CBrickPSwitch* brick);
+    void UpdateWalkingOnEdge(float leftBound, float rightBound);
 
 };
 

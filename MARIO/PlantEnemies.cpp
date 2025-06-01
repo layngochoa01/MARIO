@@ -137,7 +137,7 @@ void CPlantEnemies::OnNoCollision(DWORD dt)
 {
 	x += vx * dt;
 	y += vy * dt;
-	DebugOut(L"[OnNoCollision] vy = %f, dt = %d, y = %f\n", vy, dt, y);
+	//DebugOut(L"[OnNoCollision] vy = %f, dt = %d, y = %f\n", vy, dt, y);
 }
 
 void CPlantEnemies::SetState(int state)

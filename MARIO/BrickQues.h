@@ -1,5 +1,5 @@
 #pragma once
-#include "Brick.h" 
+#include "GameObject.h" 
 
 #define BRICK_QUES_BBOX_HEIGHT 15.0f
 #define BRICK_QUES_BBOX_WIDTH 15.0f
@@ -26,34 +26,33 @@
 
 
 
-class CBrickQues : public CBrick
+class CBrickQues : public CGameObject
 {
 protected:
 	float ay, minY;
 	float startX, startY;// vi tri ban dau cua brick
 
 	bool isUnbox = false;// brick up, con dau cham hoi
-	bool isEmpty = false;// brick rong khong con nhay len hay item ben trong
-
+	bool isEmpty = false;
 	int itemType;
-
+	
+	int IsCollidable() { return 1; }
+	int IsBlocking() { return 1; }
 public:
-	CBrickQues(float x, float y, int item) : CBrick(x, y, 2)
+	CBrickQues(float x, float y, int item) : CGameObject(x, y)
 	{
 		this->ay = 0;
-		this->minY = y - BRICK_BBOX_HEIGHT + JUMP_OFFSET;
+		this->minY = y - BRICK_QUES_BBOX_HEIGHT + JUMP_OFFSET;
 		this->startX = x;
 		this->startY = y;
 		this->itemType = item;
 
 	}
+	
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = nullptr);
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void OnNoCollision(DWORD dt);
-
-	int IsCollidable() { return 1; }
-	int IsBlocking() { return 1; }
 
 	float GetMinY() { return minY; }
 	BOOLEAN GetIsUnbox() { return isUnbox; }

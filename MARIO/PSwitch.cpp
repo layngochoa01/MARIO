@@ -3,13 +3,15 @@
 
 void CPSwitch::Render()
 {
+	if (!CheckObjectInCamera(this)) return;
 	if(activated || isFinish) CAnimations::GetInstance()->Get(ANI_ID_PSWITCH_ACTIVE)->Render(x, y + 5.0f);
 	else CAnimations::GetInstance()->Get(ANI_ID_PSWITCH_NOT_ACTIVE)->Render(x, y);
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	if (!CheckObjectInCamera(this)) return;
 	if (visible)
 	{
 		vy = - PSWITCH_SPEED_RISING;  // tiếp tục đi lên

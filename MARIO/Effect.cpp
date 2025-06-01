@@ -39,6 +39,7 @@ CEffect::CEffect(float x, float y, int t) : CGameObject(x, y)
 
 void CEffect::Render()
 {
+	//if (!CheckObjectInCamera(this)) return;
 	int aniId = GetEffectAniId();
 	CAnimations* animations = CAnimations::GetInstance();
 	animations->Get(aniId)->Render(x, y);
@@ -47,7 +48,7 @@ void CEffect::Render()
 
 void CEffect::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-
+	//if (!CheckObjectInCamera(this)) return;
 	vy += ay * dt;
 	if (isLive) 
 	{

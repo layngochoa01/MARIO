@@ -8,13 +8,14 @@ void CBrickQues::Render()
 {
     if (!CheckObjectInCamera(this)) return;
     int aniId = isEmpty ? ID_ANI_BRICK_EMPTY : ID_ANI_BRICK_QUES;
-    
+
     CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-  //  RenderBoundingBox();
+    RenderBoundingBox();
 }
 
 void CBrickQues::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+    if (!CheckObjectInCamera(this)) return;
     if (x != startX) {
         x = startX;
     }
@@ -31,7 +32,7 @@ void CBrickQues::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
         x = startX;
     }
     else {
-        vy += ay * dt;
+        y += vy * dt;
         if (y <= minY)
         {
             vy = BRICK_QUES_SPEED_DOWN;
@@ -44,19 +45,25 @@ void CBrickQues::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
             isUnbox = true;
         }
     }
-
+    
     CGameObject::Update(dt, coObjects);
     CCollision::GetInstance()->Process(this, dt, coObjects);
 }
 
 void CBrickQues::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
-    CBrick::GetBoundingBox(l, t, r, b);
+    l = x - BRICK_QUES_BBOX_WIDTH / 2;
+    t = y - BRICK_QUES_BBOX_HEIGHT / 2;
+    r = l + BRICK_QUES_BBOX_WIDTH;
+    b = t + BRICK_QUES_BBOX_HEIGHT;
+   // DebugOut(L"[BRICKQ] bbox: %f %f %f %f\n", l, t, r, b);
 }
 
 void CBrickQues::OnNoCollision(DWORD dt)
 {
-    y += vy * dt;
+    if (state == BRICK_QUES_STATE_UP) vx = 0;
+    else vx = vy = 0;
+    
 }
 
 void CBrickQues::SetState(int state)

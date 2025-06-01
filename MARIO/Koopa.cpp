@@ -2,7 +2,7 @@
 #include "Goomba.h"
 
 #include "BrickQues.h"
-#include "BrickPSwitch.h"
+
 #include "FireBall.h"
 #include "Mario.h"
 #include "Coin.h"
@@ -112,6 +112,8 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
 		OnCollisionWithPlatform(e);
 	else if (dynamic_cast<CBrickQues*>(e->obj))
 		OnCollisionWithBrickQues(e);
+	else if (dynamic_cast<CBrickPSwitch*>(e->obj))
+		OnCollisionWithBrickPSwitch(e);
 	else if (dynamic_cast<CFireBall*>(e->obj))
 		OnCollisionWithFireBall(e);
 	else if (dynamic_cast<CKoopa*>(e->obj))
@@ -119,7 +121,6 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
 
 	
 }
-
 
 void CKoopa::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
@@ -170,7 +171,7 @@ void CKoopa::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 
 void CKoopa::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 {
-	
+	DebugOut(L"ĐANG VA CHẠM VỚI BRICKQUES \n\n");
 	CBrickQues* questionBrick = dynamic_cast<CBrickQues*>(e->obj);
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	if (!questionBrick || questionBrick->GetIsUnbox() || questionBrick->GetIsEmpty())
@@ -215,7 +216,47 @@ void CKoopa::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 void CKoopa::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 {
 
+	DebugOut(L"ĐANG VA CHẠM VỚI BRICKPSWITCH \n\n");
+	CBrickPSwitch* brick = dynamic_cast<CBrickPSwitch*>(e->obj);
+	if (!brick) return;
+	if (e->ny < 0) 
+	{
+		vy = 0;
+		isOnPlatform = true;
+
+		if (state == KOOPA_STATE_WALKING && vx == 0)
+		{
+			vx = (type == KOOPA_TYPE_RED) ? -KOOPA_WALK_SPEED : KOOPA_WALK_SPEED;
+		}
+		
+	//	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+	//	for (auto obj : *scene->GetAllGameObjects())
+	//	{
+	//		CBrickPSwitch* other = dynamic_cast<CBrickPSwitch*>(obj);
+	//		if (other && other != brick)
+	//		{
+	//			float xOther = other->GetX();
+	//			float OtherLeftBound = xOther - BRICK_MODEL_BBOX_WIDTH / 2;
+	//			float OtherRightBound = OtherLeftBound + BRICK_MODEL_BBOX_WIDTH;
+
+	//			if (abs(other->GetY() - brick->GetY()) < 1.0f) // Cùng hàng
+	//			{
+	//				if (abs(OtherLeftBound - rightBound) < 1.0f || abs(OtherRightBound - leftBound) < 1.0f)
+	//				{
+	//					leftBound = min(leftBound, OtherLeftBound);
+	//					rightBound = max(rightBound, OtherRightBound);
+	//				}
+	//			}
+
+	//		}
+	//	}
+
+
+	}
+	//UpdateWalkingOnPSwitch(brick);
 }
+
+
 
 void CKoopa::OnCollisionWithFireBall(LPCOLLISIONEVENT e)
 {
@@ -225,6 +266,7 @@ void CKoopa::OnCollisionWithFireBall(LPCOLLISIONEVENT e)
 
 void CKoopa::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 {
+	//DebugOut(L"ĐANG VA CHẠM VỚI PLATFORM \n\n");
 	CPlatform* platform = dynamic_cast<CPlatform*>(e->obj);
 	if (e->ny < 0)
 	{
@@ -238,7 +280,6 @@ void CKoopa::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 		}
 	}
 	UpdateWalkingOnPlatform(platform);
-
 }
 
 void CKoopa::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
@@ -292,12 +333,24 @@ void CKoopa::SetState(int state)
 	CGameObject::SetState(state);
 }
 
-void CKoopa::UpdateWalkingOnPlatform(CPlatform* platform) 
+void CKoopa::UpdateWalkingOnPlatform(CPlatform* platform)
+{
+	float leftBound = platform->GetX();
+	float rightBound = (platform->GetX() + platform->GetCellWidth() * platform->GetLength() - KOOPA_BBOX_WIDTH / 2);
+	UpdateWalkingOnEdge(leftBound, rightBound);
+}
+
+void CKoopa::UpdateWalkingOnPSwitch(CBrickPSwitch* brick)
+{
+	
+}
+
+
+
+void CKoopa::UpdateWalkingOnEdge(float leftBound, float rightBound)
 {
 	if ((type == KOOPA_TYPE_RED) && (state == KOOPA_STATE_WALKING)) 
 	{
-		float leftBound = platform->GetX() ;
-		float rightBound = (platform->GetX() + platform->GetCellWidth() * platform->GetLength() - KOOPA_BBOX_WIDTH / 2);
 		if (GetX() <= leftBound) {
 			x = leftBound;
 			isTurning = true;

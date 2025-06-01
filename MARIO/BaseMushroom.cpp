@@ -27,6 +27,7 @@ void CBaseMushroom::GetBoundingBox(float& left, float& top, float& right, float&
 
 void CBaseMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	if (!IsVisible()) return;
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	if (isPoppingUp)
 	{

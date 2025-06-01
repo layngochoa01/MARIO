@@ -19,7 +19,8 @@ void CCoin::Render()
 void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	//CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
-
+	if (!IsVisible()) return;
+	if (!CheckObjectInCamera(this)) return;
 	if (!canCollect)
 	{
 		vy += ay * dt;

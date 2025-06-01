@@ -2,6 +2,7 @@
 
 void CBrick::Render()
 {
+	//if (!IsVisible()) return;
 	CAnimations* animations = CAnimations::GetInstance();
 	switch (type) 
 	{

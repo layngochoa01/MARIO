@@ -77,6 +77,7 @@ void CBrickPSwitch::Render()
 
 void CBrickPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+    if (!CheckObjectInCamera(this)) return;
     if (model == MODEL_COIN && PS != nullptr)
     {
         if (PS->IsActivated() && !isTransformedToCoin)
@@ -103,7 +104,7 @@ void CBrickPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
  
     if (isStateUpDown)
     {
-        DebugOut(L"[BrickPSwitch] y = %.2f, vy = %.2f, minY = %.2f, startY = %.2f\n", y, vy, minY, startY);
+       // DebugOut(L"[BrickPSwitch] y = %.2f, vy = %.2f, minY = %.2f, startY = %.2f\n", y, vy, minY, startY);
         y += vy * dt;
 
         if (y <= minY)
