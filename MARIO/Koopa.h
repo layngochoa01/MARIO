@@ -24,7 +24,7 @@
 #define ID_ANI_RED_SHELL_UPSET_BACK	16007
 
 #define KOOPA_BBOX_WIDTH 15
-#define KOOPA_BBOX_HEIGHT 25
+#define KOOPA_BBOX_HEIGHT 28
 
 #define KOOPA_SHELL_BBOX_WIDTH 16
 #define KOOPA_SHELL_BBOX_HEIGHT 15
@@ -76,7 +76,7 @@ public:
     int GetType() { return this->type; }
 
     void UpdateWalkingOnPlatform(CPlatform* platform);
-    void UpdateWalkingOnPSwitch(CBrickPSwitch* brick);
+    void UpdateWalkingOnBrickPSwitch(CBrickPSwitch* brick);
     void UpdateWalkingOnEdge(float leftBound, float rightBound);
 
 };

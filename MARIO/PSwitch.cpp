@@ -31,9 +31,9 @@ void CPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		ay = 0;
 		SetState(PSWITCH_STATE_IDLE);
 	}
-	else 
+	else
 	{
-	
+
 	}
 
 	if (state == PSWITCH_STATE_ACTIVE)
@@ -51,6 +51,7 @@ void CPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
+
 
 void CPSwitch::SetState(int s)
 {

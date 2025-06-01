@@ -8,7 +8,7 @@
 #define PSWITCH_NO_ACTIVE_BBOX_HEIGHT 15
 #define PSWITCH_ACTIVE_BBOX_HEIGHT 6
 
-#define TIME_LIVE_PSWITCH_ACTIVE 5000
+#define TIME_LIVE_PSWITCH_ACTIVE 2000
 
 #define PSWITCH_STATE_IDLE 1
 #define PSWITCH_STATE_RISING 2
@@ -25,10 +25,10 @@ protected:
 	bool isFinish; // het time bien doi thanh coin
 	bool activated;// mario dap nut
 	bool visible; // 1: bi marrio dam, dang troi len
-	float time_live; // thời gian tro lai cua COIN
+	ULONGLONG time_live; // thời gian tro lai cua COIN
 
 
-	//void SetVisible(bool v) { visible = v; }
+	void SetVisible(bool v) { visible = v; }
 	bool IsVisible() const { return visible; }
 	
 	
@@ -52,5 +52,6 @@ public:
 	virtual void OnNoCollision(DWORD dt);
 	bool IsActivated() const { return activated; }
 	bool IsFinish() { return this->isFinish; }
+	void SetFinish(int s) { isFinish = s; }
 };
 

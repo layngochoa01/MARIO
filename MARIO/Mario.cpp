@@ -333,11 +333,19 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 		{
 			AddScoreEffect(koopa->GetX(), koopa->GetY(), SCORE_100);
 			koopa->SetState(KOOPA_STATE_SHELL);
+			koopa->SetSpeed(0.0f, 0.0f);
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}
 		else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING)
 		{
 			koopa->SetState(KOOPA_STATE_SHELL);
+			vy = -MARIO_JUMP_DEFLECT_SPEED;
+		}
+		else if (koopa->GetState() == KOOPA_STATE_SHELL)
+		{
+			float direction = (x < koopa->GetX() + 4.0f) ? 1.0f : -1.0f;
+			koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+			koopa->SetSpeed(direction * KOOPA_KICKED_SPEED, 0.0f);
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}
 	}
@@ -394,13 +402,13 @@ void CMario::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 		
 		if (bricksp->GetModel() == MODEL_PSWITCH) 
 		{
-			DebugOut(L"\t[STATE PSWITCH]\n\n");
+			DebugOut(L"\t[STATE BRICK PSWITCH]\n\n");
 			bricksp->SetState(BRICK_STATE_NO_PSWITCH);
 			bricksp->CreatePSwitch();
 		}
 		else if (bricksp->GetModel() == MODEL_COIN) 
 		{
-			DebugOut(L"\t[STATE COIN]\n\n");
+			//DebugOut(L"\t[STATE COIN]\n\n");
 			bricksp->SetState(BRICK_MODEL_STATE_UP);
 			
 		}
@@ -417,10 +425,15 @@ void CMario::OnCollisionWithPSwitch(LPCOLLISIONEVENT e)
 		return;
 	}
 
-	if (e->ny < 0) 
+	if (e->ny < 0)
 	{
-		//DebugOut(L"COLLISION WITH PSWITCH\n");
-		PS->SetState(PSWITCH_STATE_ACTIVE);
+		DebugOut(L"COLLISION WITH PSWITCH\n");
+		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+		if (!PS->IsFinish()) 
+		{
+			PS->SetState(PSWITCH_STATE_ACTIVE);
+		}
+		
 		HandleSolidCollision(PS, PSWITCH_ACTIVE_BBOX_HEIGHT);
 		return;
 	}

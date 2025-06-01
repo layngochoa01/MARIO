@@ -284,12 +284,7 @@ void CGoomba::SetState(int state)
 			
 	case GOOMBAPARA_STATE_IS_ATTACK:
 	{
-		if (vx == 0) vx = -GOOMBA_WALKING_SPEED;
-		ay = GOOMBA_GRAVITY;
-		isAttack = true;
-		isJump = false;
-		isUpside = false;
-		//vx = -GOOMBA_WALKING_SPEED;
+		vx = -GOOMBA_WALKING_SPEED;
 		if (type == GOOMBA_TYPE_WING) {
 			if (!isAttack) {
 				isAttack = true;

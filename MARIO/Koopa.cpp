@@ -65,7 +65,7 @@ void CKoopa::Render()
 	if (!CheckObjectInCamera(this)) return;
 	CAnimations* animations = CAnimations::GetInstance();
 	animations->Get(GetKoopaRedAniId())->Render(x, y);
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 int CKoopa::GetKoopaRedAniId()
@@ -180,7 +180,7 @@ void CKoopa::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 
 	if (e->nx != 0 && isKicked) {
 		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
-		float xT, yT, minY;
+		float xT, yT;
 		questionBrick->GetPosition(xT, yT);
 
 		if (questionBrick->GetItemType() == BRICK_QUES_COIN)
@@ -216,8 +216,27 @@ void CKoopa::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 void CKoopa::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 {
 
-	DebugOut(L"ĐANG VA CHẠM VỚI BRICKPSWITCH \n\n");
+	//DebugOut(L"ĐANG VA CHẠM VỚI BRICKPSWITCH \n\n");
 	CBrickPSwitch* brick = dynamic_cast<CBrickPSwitch*>(e->obj);
+	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	if (!brick || (brick->GetModel() == MODEL_PSWITCH && brick->IsEmpty()))
+		return;
+
+	if (e->nx != 0 && isKicked )
+	{
+		if (brick->GetModel() == MODEL_PSWITCH) 
+		{
+			brick->SetState(BRICK_STATE_NO_PSWITCH);
+			brick->CreatePSwitch();
+		}
+		else 
+		{
+			brick->SetState(BRICK_STATE_BREAK);
+		}
+		
+	}
+
+	
 	if (!brick) return;
 	if (e->ny < 0) 
 	{
@@ -228,32 +247,12 @@ void CKoopa::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 		{
 			vx = (type == KOOPA_TYPE_RED) ? -KOOPA_WALK_SPEED : KOOPA_WALK_SPEED;
 		}
-		
-	//	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
-	//	for (auto obj : *scene->GetAllGameObjects())
-	//	{
-	//		CBrickPSwitch* other = dynamic_cast<CBrickPSwitch*>(obj);
-	//		if (other && other != brick)
-	//		{
-	//			float xOther = other->GetX();
-	//			float OtherLeftBound = xOther - BRICK_MODEL_BBOX_WIDTH / 2;
-	//			float OtherRightBound = OtherLeftBound + BRICK_MODEL_BBOX_WIDTH;
-
-	//			if (abs(other->GetY() - brick->GetY()) < 1.0f) // Cùng hàng
-	//			{
-	//				if (abs(OtherLeftBound - rightBound) < 1.0f || abs(OtherRightBound - leftBound) < 1.0f)
-	//				{
-	//					leftBound = min(leftBound, OtherLeftBound);
-	//					rightBound = max(rightBound, OtherRightBound);
-	//				}
-	//			}
-
-	//		}
-	//	}
-
-
+		if ((type == KOOPA_TYPE_RED) && (state == KOOPA_STATE_WALKING))
+		{
+			UpdateWalkingOnBrickPSwitch(brick);
+		}
 	}
-	//UpdateWalkingOnPSwitch(brick);
+	
 }
 
 
@@ -272,14 +271,18 @@ void CKoopa::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 	{
 		vy = 0;
 		isOnPlatform = true;
-		
+
 
 		if (state == KOOPA_STATE_WALKING && vx == 0)
 		{
 			vx = (type == KOOPA_TYPE_RED) ? -KOOPA_WALK_SPEED : KOOPA_WALK_SPEED;
 		}
+		if ((type == KOOPA_TYPE_RED) && (state == KOOPA_STATE_WALKING))
+		{
+			UpdateWalkingOnPlatform(platform);
+		}
 	}
-	UpdateWalkingOnPlatform(platform);
+	
 }
 
 void CKoopa::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
@@ -339,10 +342,12 @@ void CKoopa::UpdateWalkingOnPlatform(CPlatform* platform)
 	float rightBound = (platform->GetX() + platform->GetCellWidth() * platform->GetLength() - KOOPA_BBOX_WIDTH / 2);
 	UpdateWalkingOnEdge(leftBound, rightBound);
 }
-
-void CKoopa::UpdateWalkingOnPSwitch(CBrickPSwitch* brick)
+// chỉ mới 1 ô
+void CKoopa::UpdateWalkingOnBrickPSwitch(CBrickPSwitch* brick)
 {
-	
+	float leftBound = brick->GetX() - BRICK_MODEL_BBOX_HEIGHT / 2;
+	float rightBound = leftBound + BRICK_MODEL_BBOX_HEIGHT;
+	UpdateWalkingOnEdge(leftBound, rightBound);
 }
 
 

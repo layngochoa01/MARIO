@@ -42,19 +42,20 @@ void CBrickPSwitch::CreatePSwitch()
     PS = new CPSwitch(x, y);  
     PS->SetState(PSWITCH_STATE_RISING);
     CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
-    scene->PushObject(PS);  
-
+    scene->AddObject(PS);
 
     for (auto obj : *scene->GetAllGameObjects())
     {
         CBrickPSwitch* brick = dynamic_cast<CBrickPSwitch*>(obj);
         if (brick && brick->GetModel() == MODEL_COIN)
         {
+            DebugOut(L"[CBrickPSwitch] COPY \n\n\n");
             brick->SetPSwitch(PS);
         }
     }
 
 }
+
 
 void CBrickPSwitch::Render()
 {
@@ -72,7 +73,7 @@ void CBrickPSwitch::Render()
     }
 
     CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-     RenderBoundingBox();
+    RenderBoundingBox();
 }
 
 void CBrickPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -80,22 +81,22 @@ void CBrickPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
     if (!CheckObjectInCamera(this)) return;
     if (model == MODEL_COIN && PS != nullptr)
     {
+        DebugOut(L"PS ACTIVE %d, FINISH %d \n\n", PS->IsActivated(), PS->IsFinish());
         if (PS->IsActivated() && !isTransformedToCoin)
         {
             SetState(BRICK_STATE_COIN);
             CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
             coin = new CCoin(x, y);
             coin->SetState(COIN_SWITCH_NOT_SUM);
-            scene->PushObject(coin);
+            scene->AddObject(coin);
             SetVisible(false);
-            coin->SetVisible(true);
         }
         else if (PS->IsFinish() && isTransformedToCoin)
         {
             SetVisible(true);
-            coin->SetVisible(false);
             SetState(BRICK_STATE_HAS_MODEL); // Biến lại thành brick
         }
+
         if (coin != nullptr && coin->IsDeleted())
         {
             this->Delete(); // Xóa brick khi coin đã bị ăn
@@ -120,7 +121,11 @@ void CBrickPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
             SetState(BRICK_STATE_HAS_MODEL);
         }
     }
-    
+    if (isBroken) 
+    {
+        isDeleted = true;
+        this->Delete();
+    }
     CGameObject::Update(dt, coObjects);
     CCollision::GetInstance()->Process(this, dt, coObjects);
 }
@@ -130,7 +135,8 @@ void CBrickPSwitch::GetBoundingBox(float& l, float& t, float& r, float& b)
     if (!IsVisible()) {
         l = t = r = b = 0;
     }
-    else {
+    else 
+    {
         l = x - BRICK_MODEL_BBOX_WIDTH / 2;
         t = y - BRICK_MODEL_BBOX_HEIGHT / 2;
         r = l + BRICK_MODEL_BBOX_WIDTH;
@@ -144,3 +150,5 @@ void CBrickPSwitch::OnNoCollision(DWORD dt)
     if (isStateUpDown) vx = 0;
     else vx = vy = 0;
 }
+
+

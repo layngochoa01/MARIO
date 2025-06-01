@@ -8,7 +8,7 @@
 #define ID_ANI_BRICK_EMPTY 10000
 
 #define BRICK_MODEL_BBOX_WIDTH 16
-#define BRICK_MODEL_BBOX_HEIGHT 16
+#define BRICK_MODEL_BBOX_HEIGHT 15
 
 #define BRICK_MODEL_SPEED_UP 0.05f
 #define BRICK_MODEL_SPEED_DOWN 0.04f
@@ -43,6 +43,7 @@ protected:
 	bool isStateUpDown = false;
 	int IsCollidable() { return 1; }
 	int IsBlocking() { return 1; }
+	virtual bool IsPlatform() { return 1; }
 public:
 	CBrickPSwitch(float x, float y, int m) : CGameObject(x, y) 
 	{
