@@ -25,7 +25,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
 	//DebugOut(L"MARIO POSITION : %f , %f\n", x, y);
-	DebugOut(L"[MARIO ] IS HOLDING RUN KEY %d\n", isHoldingRunKey);
+	//DebugOut(L"[MARIO ] IS HOLDING RUN KEY %d\n", isHoldingRunKey);
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
@@ -80,7 +80,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (holdingShell && holdingShell->IsComeback()) {
 			isHoldingShell = false;
 			holdingShell->SetHeld(false);
-			//float dir = nx >= 0 ? 1.0f : -1.0f;
 		}
 	}
 	// reset untouchable timer if untouchable time has passed
@@ -350,7 +349,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 		
 	if (e->ny < 0)
 	{
-		DebugOut(L"[VA CHAM VOI KOOPA TU TREN XUONG]ISWING %d, state %d\n", koopa->IsWing(), koopa->GetState());
+		//DebugOut(L"[VA CHAM VOI KOOPA TU TREN XUONG]ISWING %d, state %d\n", koopa->IsWing(), koopa->GetState());
 		if (!koopa->IsWing()) 
 		{
 			if (koopa->GetState() == KOOPA_STATE_WALKING)

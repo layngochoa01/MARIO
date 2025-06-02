@@ -59,12 +59,15 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (isHeld) vx = vy = 0;
 		vx = 0;
 		if (GetTickCount64() - defend_start > KOOPA_COMEBACK_TIME) {
+			//DebugOut(L"\t\t[KOOPA] BAT DAU BIEN DOI TRO LAI \n");
 			isComeback = true;
 			isHeld = false;
+			//DebugOut(L"\t\t[KOOPA] STATE %d\n",state);
 		}
 
 		if (GetTickCount64() - defend_start > KOOPA_DEFEND_TIMEOUT) {
 			if (isComeback) {
+				//DebugOut(L"[KOOPA] DA BIEN DOI TRO LAI \n");
 				SetState(KOOPA_STATE_WALKING);
 				vy = -0.1f; // Nhảy nhẹ khi hồi phục
 				defend_start = 0;
@@ -127,7 +130,7 @@ int CKoopa::GetKoopaRedAniId()
 	{
 		if (state == KOOPA_STATE_WALKING)
 			return ((vx > 0) ? ID_ANI_RED_WALK_RIGHT : ID_ANI_RED_WALK_LEFT);
-		else if (state == KOOPA_STATE_SHELL) return ID_ANI_RED_SHELL;
+		else if (state == KOOPA_STATE_SHELL && !isComeback) return ID_ANI_RED_SHELL;
 		else if (isComeback) return ID_ANI_RED_SHELL_BACK;
 		else return ID_ANI_RED_SHELL_MOVING;
 	}
@@ -226,7 +229,7 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
 		}
 	}
 
-
+	
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	else if (dynamic_cast<CPlatform*>(e->obj))
@@ -235,6 +238,8 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
 		OnCollisionWithBrickQues(e);
 	else if (dynamic_cast<CBrickPSwitch*>(e->obj))
 		OnCollisionWithBrickPSwitch(e);
+	else if (dynamic_cast<CPlantEnemies*>(e->obj))
+		OnCollisionWithPlantEnemies(e);
 	else if (dynamic_cast<CFireBall*>(e->obj))
 		OnCollisionWithFireBall(e);
 	else if (dynamic_cast<CKoopa*>(e->obj))
@@ -403,6 +408,7 @@ void CKoopa::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 
 void CKoopa::OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e)
 {
+	DebugOut(L"[SHELL COLLISION WITH PLANT]\n");
 	if (isKicked) {
 		CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 		mario->SetScore(mario->GetScore() + SCORE_100);

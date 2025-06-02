@@ -49,12 +49,12 @@
 #define KOOPA_GREEN_WING_BBOX_WIDTH 15
 #define KOOPA_GREEN_WING_BBOX_HEIGHT 26
 
-#define KOOPA_STATE_WALKING       1   // Trạng thái di chuyển
-#define KOOPA_STATE_SHELL         2   // Trạng thái mai rùa (normal / upset)
-#define KOOPA_STATE_SHELL_MOVING       3   // Mai rùa move (normal / upset)
-#define KOOPA_STATE_DIE           10   // Chết KHI SHELL CHẠM GOOMPA OR DÍNH ĐẠN
-#define KOOPA_STATE_JUMP    4
-#define KOOPA_STATE_HELD 5
+#define KOOPA_STATE_WALKING       101   // Trạng thái di chuyển
+#define KOOPA_STATE_SHELL         102   // Trạng thái mai rùa (normal / upset)
+#define KOOPA_STATE_SHELL_MOVING       103   // Mai rùa move (normal / upset)
+#define KOOPA_STATE_DIE           100   // Chết KHI SHELL CHẠM GOOMPA OR DÍNH ĐẠN
+#define KOOPA_STATE_JUMP   104
+#define KOOPA_STATE_HELD 105
 class CKoopa : public CGameObject
 {
 protected:
