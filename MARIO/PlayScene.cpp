@@ -146,7 +146,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	case OBJECT_TYPE_FIREBALL: obj = new CFireBall(x, y); break;
 
-	case OBJECT_TYPE_PLANT: obj = new CPlantEnemies(x, y); break;
+	case OBJECT_TYPE_PLANT: 
+	{
+		int model = atoi(tokens[3].c_str());
+		obj = new CPlantEnemies(x, y, model);
+		break;
+	}
 
 	case OBJECT_TYPE_LEAF: obj = new CLeaf(x, y); break;
 

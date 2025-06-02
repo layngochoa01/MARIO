@@ -300,8 +300,10 @@ pswitch.txt
 4	1290	860
 4	1310	830
 
-#plant red
-12	400	957
+#PLANT
+12	2130	960	1
+12	400	965	0
+12	2060	975	2
 
 #pipe with piranha
 7	400	964
@@ -365,8 +367,7 @@ pswitch.txt
 2	1080	945	1
 
 # MARIO
-0	30	870
-
+0	2030	870
 
 
 #Portal 
