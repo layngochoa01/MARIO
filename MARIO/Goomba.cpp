@@ -114,7 +114,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isDeleted = true;
 		return;
 	}
-	if ((isUpside == true) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT * 6))
+	if ((isUpside == true ) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT ))
 	{
 		isDeleted = true;
 		return;
@@ -201,6 +201,7 @@ int CGoomba::GetAniGoombaBase() {
 	switch (state)
 	{
 	case GOOMBA_STATE_UPSIDE:
+		DebugOut(L"[GOOMBA] RENDER UPSIDE \n");
 		return ID_ANI_GOOMBA_UPSIDE;
 	case GOOMBA_STATE_DIE:
 		return ID_ANI_GOOMBA_DIE;
@@ -213,12 +214,15 @@ int CGoomba::GetAniGoombaBase() {
 void CGoomba::Render()
 {
 	if (!CheckObjectInCamera(this)) return;
-	int aniId = ID_ANI_GOOMBA_WALKING;
+	int aniId = -1;
 	if (type == GOOMBA_TYPE_BASE)
 		aniId = GetAniGoombaBase();
-	else 
+	else if(type == GOOMBA_TYPE_WING)
 		aniId = GetAniGoombaPara();
-
+	else {
+		if (aniId == -1)
+			DebugOut(L"[GOOMBA ] NOT HAVE ANIID \n");
+	}
 	CAnimations::GetInstance()->Get(aniId)->Render(x,y);
 	RenderBoundingBox();
 }
@@ -314,6 +318,7 @@ void CGoomba::SetState(int state)
 	{
 		vy = -GOOMBA_JUMP_DEFLECT_SPEED;
 		isUpside = true;
+		isDie = true;
 		die_start = GetTickCount64();
 		break;
 	}		

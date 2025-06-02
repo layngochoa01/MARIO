@@ -74,7 +74,7 @@ class CPlantEnemies : public CGameObject
 		
 		virtual int IsCollidable() { return 1; };
 		virtual int IsBlocking() { return 0; }
-
+		bool IsEnemy() { return true; }
 	public:
 		CPlantEnemies(float x, float y, int m) ;
 		virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom) ;

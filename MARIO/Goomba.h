@@ -66,6 +66,7 @@ protected:
 
 	int GetAniGoombaBase();
 	int GetAniGoombaPara();
+	bool IsEnemy() { return true; }
 
 public:
 	bool IsOnGround() { return isOnGround; }

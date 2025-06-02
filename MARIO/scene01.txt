@@ -367,7 +367,7 @@ pswitch.txt
 2	1080	945	1
 
 # MARIO
-0	2030	870
+0	300	880
 
 
 #Portal 

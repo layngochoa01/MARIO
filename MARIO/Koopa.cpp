@@ -2,7 +2,7 @@
 #include "Goomba.h"
 
 #include "BrickQues.h"
-
+#include "PlantEnemies.h"
 #include "FireBall.h"
 #include "Mario.h"
 #include "Coin.h"
@@ -94,7 +94,7 @@ void CKoopa::OnNoCollision(DWORD dt)
 }
 
 void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
-	if (!e->obj->IsBlocking()) { return; }
+	if (!e->obj->IsBlocking() && !e->obj->IsEnemy()) { return; }
 	if (!dynamic_cast<CGoomba*>(e->obj)) {
 		if (e->ny < 0) {
 			
@@ -161,11 +161,12 @@ CKoopa::CKoopa(float x, float y, int t) : CGameObject(x, y)
 void CKoopa::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 {
 	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
-
+	DebugOut(L"[KOOPA] COLLISION WITH GOOMBA\n");
 	if (isKicked) {
 		CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 		mario->SetScore(mario->GetScore() + SCORE_100);
-		goomba->SetState(GOOMBA_STATE_DIE);
+		mario->AddScoreEffect(e->obj->GetX(), e->obj->GetY(), SCORE_100);
+		goomba->SetState(GOOMBA_STATE_UPSIDE);
 	}
 }
 
@@ -288,6 +289,16 @@ void CKoopa::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 void CKoopa::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 {
 
+}
+
+void CKoopa::OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e)
+{
+	if (isKicked) {
+		CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+		mario->SetScore(mario->GetScore() + SCORE_100);
+		mario->AddScoreEffect(e->obj->GetX(), e->obj->GetY(), SCORE_100);
+		e->obj->Delete();
+	}
 }
 
 void CKoopa::SetState(int state)

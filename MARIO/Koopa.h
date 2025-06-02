@@ -67,6 +67,7 @@ public:
     void OnCollisionWithFireBall(LPCOLLISIONEVENT e);
     void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
     void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
+    void OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e);
 
     virtual int IsCollidable() { return 1; }
     virtual int IsBlocking() { return 1; }

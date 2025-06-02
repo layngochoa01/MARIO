@@ -18,22 +18,24 @@ class CGameObject
 {
 protected:
 
-	float x; 
+	float x;
 	float y;
 
 	float vx;
 	float vy;
 
-	int nx;	 
+	int nx;
 
 	int state;
 	bool show = true;
-	bool isDeleted; 
+	bool isDeleted;
 
-public: 
+public:
 
-	void SetVisible(bool v) { show = v; }
-	bool IsVisible() const { return show; }
+	virtual void SetVisible(bool v) { show = v; }
+	virtual bool IsVisible() const { return show; }
+
+	virtual bool IsEnemy() { return 0; };
 
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
