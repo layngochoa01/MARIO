@@ -4,7 +4,7 @@
 
 #include "Animation.h"
 #include "Animations.h"
-
+#include "Koopa.h"
 #include "debug.h"
 
 #define MARIO_WALKING_SPEED		    0.1f
@@ -156,7 +156,8 @@ class CMario : public CGameObject
 	ULONGLONG grow_start;//thời gian biến to
 	ULONGLONG transform_start;// thời gian biến hình
 	BOOLEAN isOnPlatform;
-	bool isHoldingRunKey ;
+	bool isHoldingRunKey;
+	bool isHoldingShell ;
 	int coin;
 	int score;
 
@@ -179,6 +180,8 @@ class CMario : public CGameObject
 	bool isGrowing;// xác định mario đang biến hình từ nhỏ biến to
 	bool isRaccoon;
 
+	CKoopa* holdingShell = nullptr;
+
 public:
 	CMario(float x, float y) : CGameObject(x, y)
 	{
@@ -198,6 +201,7 @@ public:
 		isGrowing = false;
 		isRaccoon = false;
 		isHoldingRunKey = false;
+		isHoldingShell = false;
 		targetLevel = -1;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
@@ -239,4 +243,6 @@ public:
 	
 	bool IsHoldingRunKey() { return isHoldingRunKey; }
 	void SetHoldingRunKey(int s) { isHoldingRunKey = s; }
+
+	void PickUpShell(CKoopa* shell);
 };

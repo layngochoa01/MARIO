@@ -72,6 +72,7 @@ protected:
     bool isOnPlatform;
     bool isTurning = false;
     bool isWing;
+    bool isBeingHeld = false;
 
     void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
     void Render();
@@ -97,12 +98,16 @@ public:
     virtual int IsCollidable() { return 1; }
     virtual int IsBlocking() { return 1; }
 
+    void SetBeingHeld(bool held) { isBeingHeld = held; }
     void SetState(int state);
     void SetIsUpset(int i) { this->isUpset = i; }
     void SetType(int j) { this->type = j; }
+    
     int GetType() { return this->type; }
-    int IsWing() { return this->isWing; }
-
+    
+    bool IsWing() { return this->isWing; }
+    bool IsBeingHeld() const { return isBeingHeld; }
+    
     void UpdateWalkingOnPlatform(CPlatform* platform);
     void UpdateWalkingOnBrickPSwitch(CBrickPSwitch* brick);
     void UpdateWalkingOnEdge(float leftBound, float rightBound);

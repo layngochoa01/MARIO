@@ -55,6 +55,7 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	if (!isKicked && isInShell)
 	{
+		if (isBeingHeld) vx = vy = 0;
 		vx = 0;
 		if (GetTickCount64() - defend_start > KOOPA_COMEBACK_TIME) {
 			isComeback = true;
@@ -68,6 +69,7 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				isComeback = false;
 			}
 		}
+		
 	}
 	if (isTurning) {
 		if (GetTickCount64() - turnaround_delay >= KOOPA_TIME_DELAY_AROUND)

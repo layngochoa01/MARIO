@@ -14,14 +14,14 @@
 #include "Leaf.h"
 #include "FireBall.h"
 #include "PlantEnemies.h"
-#include "Koopa.h"
+
 #include "Effect.h"
 #include "Collision.h"
 #include "PlayScene.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	
+
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
 	//DebugOut(L"MARIO POSITION : %f , %f\n", x, y);
@@ -29,8 +29,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
-	
-	if (isGrowing )
+
+	if (isGrowing)
 	{
 		if (GetTickCount64() - grow_start > MARIO_CHANGE_TIME)
 		{
@@ -38,7 +38,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				y -= 12; // Dịch trước khi gán level
 			isGrowing = false;
 			level = targetLevel;
-			targetLevel = -1; 
+			targetLevel = -1;
 		}
 		else
 		{
@@ -47,11 +47,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			vy = 0;
 		}
 	}
-	if (isRaccoon) 
+
+	if (isRaccoon)
 	{
 		if (GetTickCount64() - transform_start > MARIO_CHANGE_TIME)
 		{
-			if (level == MARIO_LEVEL_BIG )
+			if (level == MARIO_LEVEL_BIG)
 				y -= 12; // Dịch trước khi gán level
 			// xử lý hiệu ứng cho mario bùm biến thành raccoon 
 			isRaccoon = false;
@@ -64,13 +65,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
+	if (isHoldingShell && !isHoldingRunKey){
+		isHoldingShell = false;
 
+	}
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
 		untouchable_start = 0;
 		untouchable = 0;
 	}
+
 	if (vy > 0.0f)
 		isOnPlatform = false;
 	CCollision::GetInstance()->Process(this, dt, coObjects);
@@ -392,9 +397,16 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 		{
 			if (koopa->GetState() == KOOPA_STATE_SHELL)
 			{
-				float direction = (x < koopa->GetX()) ? 1.0f : -1.0f; // xác định hướng đá
-				koopa->SetState(KOOPA_STATE_SHELL_MOVING);
-				koopa->SetSpeed(direction * KOOPA_KICKED_SPEED, 0.0f);
+				if (isHoldingRunKey && !isHoldingShell) 
+				{
+					PickUpShell(koopa);
+				}
+				else 
+				{
+					float direction = (x < koopa->GetX()) ? 1.0f : -1.0f; // xác định hướng đá
+					koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+					koopa->SetSpeed(direction * KOOPA_KICKED_SPEED, 0.0f);
+				}
 			}
 			// (c) Nếu mai rùa đang chạy hoặc Koopa đang đi thì Mario bị mất level
 			else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING || koopa->GetState() == KOOPA_STATE_WALKING || koopa->IsWing())
@@ -831,6 +843,12 @@ void CMario::AddScoreEffect(float xTemp, float yTemp, int scoreAdd)
 		scene->PushObject(effect);
 	}
 	score += scoreAdd;
+}
+
+void CMario::PickUpShell(CKoopa* shell)
+{
+	isHoldingShell = true;
+	shell->SetBeingHeld(true);
 }
 
 void CMario::SetLevel(int l)
