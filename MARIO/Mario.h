@@ -156,6 +156,7 @@ class CMario : public CGameObject
 	ULONGLONG grow_start;//thời gian biến to
 	ULONGLONG transform_start;// thời gian biến hình
 	BOOLEAN isOnPlatform;
+	bool isHoldingRunKey ;
 	int coin;
 	int score;
 
@@ -196,7 +197,7 @@ public:
 		score = 0;
 		isGrowing = false;
 		isRaccoon = false;
-
+		isHoldingRunKey = false;
 		targetLevel = -1;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
@@ -236,6 +237,6 @@ public:
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void AddScoreEffect(float xTemp, float yTemp, int scoreAdd);
 	
-
-
+	bool IsHoldingRunKey() { return isHoldingRunKey; }
+	void SetHoldingRunKey(int s) { isHoldingRunKey = s; }
 };

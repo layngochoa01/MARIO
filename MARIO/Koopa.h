@@ -2,37 +2,58 @@
 #include "GameObject.h"
 #include "Platform.h"
 #include "BrickPSwitch.h"
-#define KOOPA_GRAVITY         0.0005f    
-#define KOOPA_WALK_SPEED      0.02f     // Tốc độ di chuyển
+#define KOOPA_GRAVITY         0.001f    
+#define KOOPA_WALK_SPEED      0.04f     // Tốc độ di chuyển
 #define KOOPA_KICKED_SPEED    0.2f     // Tốc độ khi bị đá
 #define KOOPA_JUMP_DEFLECT    0.2f      // Lực nảy khi bị giết
 
+#define KOOPA_GRAVITY_WING 0.0004f
+#define KOOPA_JUMP_SPEED 0.16f
 
 #define KOOPA_DEFEND_TIMEOUT  8000      // Thời gian ở trong mai (ms)
 #define KOOPA_COMEBACK_TIME   6000      // Thời gian trước khi hồi phục
 #define KOOPA_TIME_DELAY_AROUND 400
+#define KOOPA_JUMP_RELEASE 1000
 
 #define KOOPA_TYPE_RED  1
+#define KOOPA_TYPE_GREEN  2
+#define KOOPA_TYPE_GREEN_WING  3
 
 #define ID_ANI_RED_WALK_RIGHT   16000
 #define ID_ANI_RED_WALK_LEFT    16001
-#define ID_ANI_RED_SHELL        16002   // Mai rùa đứng yên
-#define ID_ANI_RED_SHELL_MOVING 16003   // Mai rùa đang lăn
+#define ID_ANI_RED_SHELL        16002   
+#define ID_ANI_RED_SHELL_MOVING 16003   
 #define ID_ANI_RED_SHELL_UPSET	16004
-#define ID_ANI_RED_SHELL_UPSET_MOVING 16005   // Mai rùa đang lăn
+#define ID_ANI_RED_SHELL_UPSET_MOVING 16005   
 #define ID_ANI_RED_SHELL_BACK        16006 
 #define ID_ANI_RED_SHELL_UPSET_BACK	16007
 
+#define ID_ANI_GREEN_WALK_RIGHT   16010
+#define ID_ANI_GREEN_WALK_LEFT    16011
+#define ID_ANI_GREEN_SHELL        16012   
+#define ID_ANI_GREEN_SHELL_MOVING 16013   
+#define ID_ANI_GREEN_SHELL_UPSET	16014
+#define ID_ANI_GREEN_SHELL_UPSET_MOVING 16015   
+#define ID_ANI_GREEN_SHELL_BACK        16016 
+#define ID_ANI_GREEN_SHELL_UPSET_BACK	16017
+
+#define ID_ANI_GREEN_WING_JUMP_RIGHT   16021
+#define ID_ANI_GREEN_WING_JUMP_LEFT    16020
+
 #define KOOPA_BBOX_WIDTH 15
-#define KOOPA_BBOX_HEIGHT 28
+#define KOOPA_BBOX_HEIGHT 24
 
 #define KOOPA_SHELL_BBOX_WIDTH 16
 #define KOOPA_SHELL_BBOX_HEIGHT 15
+
+#define KOOPA_GREEN_WING_BBOX_WIDTH 15
+#define KOOPA_GREEN_WING_BBOX_HEIGHT 26
 
 #define KOOPA_STATE_WALKING       1   // Trạng thái di chuyển
 #define KOOPA_STATE_SHELL         2   // Trạng thái mai rùa (normal / upset)
 #define KOOPA_STATE_SHELL_MOVING       3   // Mai rùa move (normal / upset)
 #define KOOPA_STATE_DIE           10   // Chết KHI SHELL CHẠM GOOMPA OR DÍNH ĐẠN
+#define KOOPA_STATE_JUMP    4
 
 class CKoopa : public CGameObject
 {
@@ -42,6 +63,7 @@ protected:
     ULONGLONG defend_start;      // Thời điểm vào mai
     ULONGLONG comeback_start;
     ULONGLONG turnaround_delay;
+    ULONGLONG JumpTime ;
     bool isInShell; // mai 
     bool isUpset; // lat ngua
     bool isComeback;
@@ -49,11 +71,14 @@ protected:
     bool isKicked;
     bool isOnPlatform;
     bool isTurning = false;
-
+    bool isWing;
 
     void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
     void Render();
+
     int GetKoopaRedAniId();
+    int GetKoopaGreenAniId();
+    int GetKoopaGreenWingAniId();
     void OnNoCollision(DWORD dt);
     void OnCollisionWith(LPCOLLISIONEVENT e);
     void GetBoundingBox(float& l, float& t, float& r, float& b);
@@ -74,7 +99,9 @@ public:
 
     void SetState(int state);
     void SetIsUpset(int i) { this->isUpset = i; }
+    void SetType(int j) { this->type = j; }
     int GetType() { return this->type; }
+    int IsWing() { return this->isWing; }
 
     void UpdateWalkingOnPlatform(CPlatform* platform);
     void UpdateWalkingOnBrickPSwitch(CBrickPSwitch* brick);

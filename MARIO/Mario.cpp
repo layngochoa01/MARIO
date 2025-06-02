@@ -25,6 +25,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
 	//DebugOut(L"MARIO POSITION : %f , %f\n", x, y);
+	//DebugOut(L"[MARIO ] IS HOLDING RUN KEY %d\n", isHoldingRunKey);
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
@@ -301,7 +302,7 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithFireBall(LPCOLLISIONEVENT e)
 {
-	//if (untouchable) return;
+	if (untouchable) return;
 	e->obj->Delete();
 	if (state != MARIO_STATE_DIE)
 	{
@@ -330,24 +331,58 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 		
 	if (e->ny < 0)
 	{
-		if (koopa->GetState() == KOOPA_STATE_WALKING)
+		DebugOut(L"[VA CHAM VOI KOOPA TU TREN XUONG]ISWING %d, state %d\n", koopa->IsWing(), koopa->GetState());
+		if (!koopa->IsWing()) 
 		{
-			AddScoreEffect(koopa->GetX(), koopa->GetY(), SCORE_100);
-			koopa->SetState(KOOPA_STATE_SHELL);
-			koopa->SetSpeed(0.0f, 0.0f);
-			vy = -MARIO_JUMP_DEFLECT_SPEED;
+			if (koopa->GetState() == KOOPA_STATE_WALKING)
+			{
+				//DebugOut(L"[MARIO]CHANGE KOOPA STATE WALKING -> SHELL STATE IDLE\n");
+				//DebugOut(L"[MARIO]KOOPA X %f, Y %f\n", koopa->GetX(), koopa->GetY());
+				AddScoreEffect(koopa->GetX(), koopa->GetY(), SCORE_100);
+				koopa->SetState(KOOPA_STATE_SHELL);
+
+			}
+			else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING)
+			{
+				//DebugOut(L"[MARIO]CHANGE KOOPA SHELL STATE MOVING -> SHELL STATE IDLE\n");
+				koopa->SetState(KOOPA_STATE_SHELL);
+			}
+			else if (koopa->GetState() == KOOPA_STATE_SHELL)
+			{
+				float direction = (x < koopa->GetX() + 4.0f) ? 1.0f : -1.0f;
+				koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+				koopa->SetSpeed(direction * KOOPA_KICKED_SPEED, 0.0f);
+			}
 		}
-		else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING)
+		else
 		{
-			koopa->SetState(KOOPA_STATE_SHELL);
-			vy = -MARIO_JUMP_DEFLECT_SPEED;
-		}
-		else if (koopa->GetState() == KOOPA_STATE_SHELL)
-		{
-			float direction = (x < koopa->GetX() + 4.0f) ? 1.0f : -1.0f;
-			koopa->SetState(KOOPA_STATE_SHELL_MOVING);
-			koopa->SetSpeed(direction * KOOPA_KICKED_SPEED, 0.0f);
-			vy = -MARIO_JUMP_DEFLECT_SPEED;
+			if (koopa->GetState() == KOOPA_STATE_JUMP)
+			{
+				DebugOut(L"[MARIO COLLISION GOOMBA WING ] LOSS WING\n");
+				koopa->SetState(KOOPA_STATE_WALKING);
+			}
+			else
+			{
+				if (koopa->GetState() == KOOPA_STATE_WALKING)
+				{
+					//DebugOut(L"[MARIO]CHANGE KOOPA STATE WALKING -> SHELL STATE IDLE\n");
+					//DebugOut(L"[MARIO]KOOPA X %f, Y %f\n", koopa->GetX(), koopa->GetY());
+					AddScoreEffect(koopa->GetX(), koopa->GetY(), SCORE_100);
+					koopa->SetState(KOOPA_STATE_SHELL);
+
+				}
+				else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING)
+				{
+					//DebugOut(L"[MARIO]CHANGE KOOPA SHELL STATE MOVING -> SHELL STATE IDLE\n");
+					koopa->SetState(KOOPA_STATE_SHELL);
+				}
+				else if (koopa->GetState() == KOOPA_STATE_SHELL)
+				{
+					float direction = (x < koopa->GetX() + 4.0f) ? 1.0f : -1.0f;
+					koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+					koopa->SetSpeed(direction * KOOPA_KICKED_SPEED, 0.0f);
+				}
+			}
 		}
 	}
 	else // hit by KOOPA
@@ -361,7 +396,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 				koopa->SetSpeed(direction * KOOPA_KICKED_SPEED, 0.0f);
 			}
 			// (c) Nếu mai rùa đang chạy hoặc Koopa đang đi thì Mario bị mất level
-			else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING || koopa->GetState() == KOOPA_STATE_WALKING)
+			else if (koopa->GetState() == KOOPA_STATE_SHELL_MOVING || koopa->GetState() == KOOPA_STATE_WALKING || koopa->IsWing())
 			{
 				SetLevelLower();
 			}

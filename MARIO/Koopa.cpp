@@ -11,16 +11,51 @@
 
 #include "PlayScene.h"
 
+CKoopa::CKoopa(float x, float y, int t) : CGameObject(x, y)
+{
+	this->ax = 0;
+	this->ay = KOOPA_GRAVITY;
+	this->vx = 0;
+	this->vy = 0;
+	this->type = t;
+	this->isInShell = false;
+	this->isUpset = false;
+	this->isHeld = false;
+	this->isComeback = false;
+	this->isOnPlatform = false;
+	this->isKicked = false;
+	if (t == KOOPA_TYPE_GREEN_WING) 
+	{
+		this->isWing = true;
+		SetState(KOOPA_STATE_JUMP);
+	}
+	else 
+	{
+		isWing = false;
+		SetState(KOOPA_STATE_WALKING);
+	}
+	defend_start = 0;
+	comeback_start = 0;
+	JumpTime = 0;
+}
+
 void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	if (!CheckObjectInCamera(this)) return;
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	vy += ay * dt;
-
 	vx += ax * dt;
-	
+	if (isWing && state == KOOPA_STATE_JUMP)
+	{
+		if (GetTickCount64() - JumpTime > KOOPA_JUMP_RELEASE)
+		{
+			vy = -KOOPA_JUMP_SPEED;
+			JumpTime = GetTickCount64();
+		}
+	}
 	if (!isKicked && isInShell)
 	{
+		vx = 0;
 		if (GetTickCount64() - defend_start > KOOPA_COMEBACK_TIME) {
 			isComeback = true;
 		}
@@ -63,8 +98,21 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CKoopa::Render()
 {
 	if (!CheckObjectInCamera(this)) return;
+	int aniId = -1;
+	switch (type)
+	{
+	case KOOPA_TYPE_GREEN:
+		aniId = GetKoopaGreenAniId(); break;
+	case KOOPA_TYPE_RED:
+		aniId = GetKoopaRedAniId(); break;
+	case KOOPA_TYPE_GREEN_WING:
+		aniId = GetKoopaGreenWingAniId(); break;
+	default:
+		DebugOut(L"[KOOPA RENDER ] NOT FINE ANI ID KOOPA \n"); break;
+	}
+	
 	CAnimations* animations = CAnimations::GetInstance();
-	animations->Get(GetKoopaRedAniId())->Render(x, y);
+	animations->Get(aniId)->Render(x, y);
 	RenderBoundingBox();
 }
 
@@ -86,16 +134,63 @@ int CKoopa::GetKoopaRedAniId()
 	}
 }
 
+int CKoopa::GetKoopaGreenAniId()
+{
+	int aniId = -1;
+	if (!isUpset)
+	{
+		if (state == KOOPA_STATE_WALKING)
+			aniId = ((vx > 0) ? ID_ANI_GREEN_WALK_RIGHT : ID_ANI_GREEN_WALK_LEFT);
+		else if (state == KOOPA_STATE_SHELL) aniId = ID_ANI_GREEN_SHELL;
+		else if (isComeback) aniId = ID_ANI_GREEN_SHELL_BACK;
+		else aniId = ID_ANI_GREEN_SHELL_MOVING;
+	}
+	else
+	{
+		if (state == KOOPA_STATE_SHELL) aniId = ID_ANI_GREEN_SHELL_UPSET;
+		else if (isComeback) aniId = ID_ANI_GREEN_SHELL_UPSET_BACK;
+		else aniId = ID_ANI_GREEN_SHELL_UPSET_MOVING;
+	}
+	return aniId;
+}
+
+int CKoopa::GetKoopaGreenWingAniId()
+{
+	int aniId = -1;
+	if (isWing)
+	{
+		if (state == KOOPA_STATE_JUMP)
+			aniId = ((vx > 0) ? ID_ANI_GREEN_WING_JUMP_RIGHT : ID_ANI_GREEN_WING_JUMP_LEFT);
+	}
+	else
+	{
+		if (!isUpset)
+		{
+			if (state == KOOPA_STATE_WALKING)
+				aniId = ((vx > 0) ? ID_ANI_GREEN_WALK_RIGHT : ID_ANI_GREEN_WALK_LEFT);
+			else if (state == KOOPA_STATE_SHELL) aniId = ID_ANI_GREEN_SHELL;
+			else if (isComeback) aniId = ID_ANI_GREEN_SHELL_BACK;
+			else aniId = ID_ANI_GREEN_SHELL_MOVING;
+		}
+		else
+		{
+			if (state == KOOPA_STATE_SHELL) aniId = ID_ANI_GREEN_SHELL_UPSET;
+			else if (isComeback) aniId = ID_ANI_GREEN_SHELL_UPSET_BACK;
+			else aniId = ID_ANI_GREEN_SHELL_UPSET_MOVING;
+		}
+	}
+	return aniId;
+}
+
 void CKoopa::OnNoCollision(DWORD dt)
 {
 	x += vx * dt;
 	y += vy * dt;
-	
 }
 
 void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
 	if (!e->obj->IsBlocking() && !e->obj->IsEnemy()) { return; }
-	if (!dynamic_cast<CGoomba*>(e->obj)) {
+	/*if (!dynamic_cast<CGoomba*>(e->obj)) {
 		if (e->ny < 0) {
 			
 				vy = 0;
@@ -105,7 +200,28 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
 		if (e->nx != 0 && e->obj->IsBlocking()) {
 			vx = -vx;
 		}
+	}*/
+	if (!dynamic_cast<CGoomba*>(e->obj) && !dynamic_cast<CMario*>(e->obj)) {
+		if (e->ny < 0)
+		{
+			if (type != KOOPA_TYPE_GREEN_WING) {
+				vy = 0;
+				isOnPlatform = true;
+			}
+			else {
+				if (state == KOOPA_STATE_JUMP) {
+					vy = -KOOPA_JUMP_SPEED;
+				}
+				else vy = 0;
+			}
+		}
+		if (e->nx != 0 && e->obj->IsBlocking())
+		{
+			vx = -vx;
+		}
 	}
+
+
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	else if (dynamic_cast<CPlatform*>(e->obj))
@@ -124,7 +240,15 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
 
 void CKoopa::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
-	if (state == KOOPA_STATE_WALKING) 
+	//DebugOut(L"[KOOPA GET BBOX] IS BBOX , TYPE %d, ISWING %d\n", type, isWing);
+	if (isWing)
+	{
+		l = x - KOOPA_GREEN_WING_BBOX_WIDTH / 2;
+		t = y - KOOPA_GREEN_WING_BBOX_HEIGHT / 2;
+		r = l + KOOPA_GREEN_WING_BBOX_WIDTH;
+		b = t + KOOPA_GREEN_WING_BBOX_HEIGHT;
+	}
+	else if (state == KOOPA_STATE_WALKING) 
 	{
 		l = x - KOOPA_BBOX_WIDTH / 2;
 		t = y - KOOPA_BBOX_HEIGHT / 2;
@@ -138,24 +262,7 @@ void CKoopa::GetBoundingBox(float& l, float& t, float& r, float& b)
 		r = l + KOOPA_SHELL_BBOX_WIDTH;
 		b = t + KOOPA_SHELL_BBOX_HEIGHT;
 	}
-}
-
-CKoopa::CKoopa(float x, float y, int t) : CGameObject(x, y)
-{
-	this->ax = 0;
-	this->ay = KOOPA_GRAVITY;
-	this->vx = 0;
-	this->vy = 0;
-	this->type = t;
-	this->isInShell = false;
-	this->isUpset = false;
-	this->isHeld = false;
-	this->isComeback = false;
-	this->isOnPlatform = false;
-	this->isKicked = false;
-	defend_start = 0;
-	comeback_start = 0;
-	SetState(KOOPA_STATE_WALKING);
+	
 }
 
 void CKoopa::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
@@ -256,8 +363,6 @@ void CKoopa::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 	
 }
 
-
-
 void CKoopa::OnCollisionWithFireBall(LPCOLLISIONEVENT e)
 {
 	e->obj->Delete();
@@ -308,9 +413,10 @@ void CKoopa::SetState(int state)
 	{
 	case KOOPA_STATE_WALKING:
 	{
-		if(vx == 0.0f )vx = -KOOPA_WALK_SPEED;
+		if(vx == 0.0f ) vx = -KOOPA_WALK_SPEED;
 		vy = 0;
 		ay = KOOPA_GRAVITY;
+		isWing = false;
 		isComeback = false;
 		isUpset = false;//upset chỉ true khi raccoon quét đuôi
 		isInShell = false;
@@ -319,17 +425,21 @@ void CKoopa::SetState(int state)
 		isComeback = false;
 		break;
 	}
+
 	case KOOPA_STATE_SHELL:
 	{
 		vx = vy = 0;
+		ax = 0;
 		ay = KOOPA_GRAVITY;
 		isInShell = true;
+		isKicked = false;
 		isComeback = false;
 		isHeld = false;
-		if (isOnPlatform) vx = 0;
+		//if (isOnPlatform) vx = 0;
 		defend_start = GetTickCount64();
 		break;
 	}
+
 	case KOOPA_STATE_SHELL_MOVING:
 	{
 		if (isHeld) {
@@ -341,6 +451,20 @@ void CKoopa::SetState(int state)
 		isOnPlatform = true;
 		isKicked = true;
 		isHeld = false;
+		break;
+	}
+
+	case KOOPA_STATE_JUMP:
+	{
+		isUpset = false;
+		isWing = true;
+		isComeback = false;
+		isKicked = false;
+		vx = -KOOPA_WALK_SPEED;
+		if (isWing) {
+			ay = KOOPA_GRAVITY_WING;
+			//vy = -KOOPA_JUMP_SPEED;
+		}
 		break;
 	}
 	}
@@ -356,12 +480,10 @@ void CKoopa::UpdateWalkingOnPlatform(CPlatform* platform)
 // chỉ mới 1 ô
 void CKoopa::UpdateWalkingOnBrickPSwitch(CBrickPSwitch* brick)
 {
-	float leftBound = brick->GetX() - BRICK_MODEL_BBOX_HEIGHT / 2;
-	float rightBound = leftBound + BRICK_MODEL_BBOX_HEIGHT;
+	float leftBound = brick->GetX() - BRICK_MODEL_BBOX_HEIGHT / 2 + 5.0f;
+	float rightBound = leftBound + BRICK_MODEL_BBOX_HEIGHT - 5.0f;
 	UpdateWalkingOnEdge(leftBound, rightBound);
 }
-
-
 
 void CKoopa::UpdateWalkingOnEdge(float leftBound, float rightBound)
 {
