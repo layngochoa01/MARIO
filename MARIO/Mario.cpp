@@ -25,7 +25,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
 	//DebugOut(L"MARIO POSITION : %f , %f\n", x, y);
-	//DebugOut(L"[MARIO ] IS HOLDING RUN KEY %d\n", isHoldingRunKey);
+	DebugOut(L"[MARIO ] IS HOLDING RUN KEY %d\n", isHoldingRunKey);
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
@@ -38,7 +38,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				y -= 12; // Dịch trước khi gán level
 			isGrowing = false;
 			level = targetLevel;
-			targetLevel = -1; // tránh bị lẫn 
+			targetLevel = -1; 
 		}
 		else
 		{
@@ -384,6 +384,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 				}
 			}
 		}
+		vy = -MARIO_JUMP_DEFLECT_SPEED;
 	}
 	else // hit by KOOPA
 	{

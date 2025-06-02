@@ -3,7 +3,7 @@
 #include "Platform.h"
 #include "BrickPSwitch.h"
 #define KOOPA_GRAVITY         0.001f    
-#define KOOPA_WALK_SPEED      0.04f     // Tốc độ di chuyển
+#define KOOPA_WALK_SPEED      0.025f     // Tốc độ di chuyển
 #define KOOPA_KICKED_SPEED    0.2f     // Tốc độ khi bị đá
 #define KOOPA_JUMP_DEFLECT    0.2f      // Lực nảy khi bị giết
 

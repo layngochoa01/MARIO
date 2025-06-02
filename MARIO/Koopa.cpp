@@ -480,7 +480,7 @@ void CKoopa::UpdateWalkingOnPlatform(CPlatform* platform)
 // chỉ mới 1 ô
 void CKoopa::UpdateWalkingOnBrickPSwitch(CBrickPSwitch* brick)
 {
-	float leftBound = brick->GetX() - BRICK_MODEL_BBOX_HEIGHT / 2 + 5.0f;
+	float leftBound = brick->GetX() - BRICK_MODEL_BBOX_HEIGHT / 2 + 3.0f;
 	float rightBound = leftBound + BRICK_MODEL_BBOX_HEIGHT - 5.0f;
 	UpdateWalkingOnEdge(leftBound, rightBound);
 }
