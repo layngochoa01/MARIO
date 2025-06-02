@@ -24,29 +24,21 @@ void CPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
-	if (y <= startY - 16.0f) // Trồi lên 1 block
-	{
-		y = startY - 16.0f;
-		vy = 0;
-		ay = 0;
-		SetState(PSWITCH_STATE_IDLE);
-	}
-	else
-	{
-
-	}
-
-	if (state == PSWITCH_STATE_ACTIVE)
+	if (activated && !isFinish)
 	{
 		if (GetTickCount64() - time_live >= TIME_LIVE_PSWITCH_ACTIVE)
 		{
 			activated = false;
 			isFinish = true;
-			// TODO: Gọi logic để biến coin trở lại brick nếu cần
-			SetState(PSWITCH_STATE_IDLE);
+			//SetState(PSWITCH_STATE_IDLE);
+			//DebugOut(L"\n============================================\n");
+			//DebugOut(L"\n[PSWITCH] PSWICH KHONG CON HOAT DONG\n");
+			//DebugOut(L"\n============================================\n");
+			
 		}
+		//DebugOut(L"[PSWITCH ]PS ACTIVE %d, FINISH %d \n\n", IsActivated(), IsFinish());
 	}
-
+	//DebugOut(L"[PSWITCH]\t\t");
 
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
@@ -81,6 +73,7 @@ void CPSwitch::SetState(int s)
 		vy = 0;
 		visible = false;
 		activated = true;
+		isFinish = false;
 		time_live = GetTickCount64();
 		break;
 	}

@@ -190,7 +190,8 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
-	if(e->obj->GetState() == COIN_NOT_SUM)
+	if (!e->obj->IsVisible()) return;
+	if (e->obj->GetState() == COIN_NOT_SUM || e->obj->GetState() == COIN_SWITCH_NOT_SUM)
 		AddScoreEffect(e->obj->GetX(), e->obj->GetY(), SCORE_100);
 	e->obj->Delete();
 	coin++;
