@@ -24,6 +24,7 @@ CKoopa::CKoopa(float x, float y, int t) : CGameObject(x, y)
 	this->isComeback = false;
 	this->isOnPlatform = false;
 	this->isKicked = false;
+	this->isHeld = false;
 	if (t == KOOPA_TYPE_GREEN_WING) 
 	{
 		this->isWing = true;
@@ -55,10 +56,11 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	if (!isKicked && isInShell)
 	{
-		if (isBeingHeld) vx = vy = 0;
+		if (isHeld) vx = vy = 0;
 		vx = 0;
 		if (GetTickCount64() - defend_start > KOOPA_COMEBACK_TIME) {
 			isComeback = true;
+			isHeld = false;
 		}
 
 		if (GetTickCount64() - defend_start > KOOPA_DEFEND_TIMEOUT) {
@@ -66,6 +68,7 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				SetState(KOOPA_STATE_WALKING);
 				vy = -0.1f; // Nhảy nhẹ khi hồi phục
 				defend_start = 0;
+				
 				isComeback = false;
 			}
 		}
@@ -456,19 +459,21 @@ void CKoopa::SetState(int state)
 		break;
 	}
 
-	case KOOPA_STATE_JUMP:
-	{
+	case KOOPA_STATE_JUMP: {
 		isUpset = false;
 		isWing = true;
 		isComeback = false;
 		isKicked = false;
 		vx = -KOOPA_WALK_SPEED;
 		if (isWing) {
-			ay = KOOPA_GRAVITY_WING;
+			ay = KOOPA_GRAVITY_WING; 
 			//vy = -KOOPA_JUMP_SPEED;
 		}
 		break;
 	}
+
+	case KOOPA_STATE_HELD:
+		isHeld = true; break;
 	}
 	CGameObject::SetState(state);
 }

@@ -64,10 +64,24 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			vy = 0;
 		}
 	}
-
-	if (isHoldingShell && !isHoldingRunKey){
-		isHoldingShell = false;
-
+	
+	if (isHoldingShell && holdingShell) {
+		holdingShell->SetPosition(x + nx * 13.0f , y - 2.0f);
+		holdingShell->SetSpeed(0.0f, 0.0f);
+		if (!isHoldingRunKey)
+		{
+			isHoldingShell = false;
+			holdingShell->SetHeld(false);
+			float dir = nx >= 0 ? 1.0f : -1.0f;
+			holdingShell->SetState(KOOPA_STATE_SHELL_MOVING);
+			holdingShell->SetSpeed(dir * KOOPA_KICKED_SPEED, 0);
+			holdingShell = nullptr;
+		}
+		if (holdingShell && holdingShell->IsComeback()) {
+			isHoldingShell = false;
+			holdingShell->SetHeld(false);
+			//float dir = nx >= 0 ? 1.0f : -1.0f;
+		}
 	}
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
@@ -848,7 +862,9 @@ void CMario::AddScoreEffect(float xTemp, float yTemp, int scoreAdd)
 void CMario::PickUpShell(CKoopa* shell)
 {
 	isHoldingShell = true;
-	shell->SetBeingHeld(true);
+	holdingShell = shell;
+	shell->SetHeld(true);
+	shell->SetState(KOOPA_STATE_HELD);
 }
 
 void CMario::SetLevel(int l)

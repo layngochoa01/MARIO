@@ -54,7 +54,7 @@
 #define KOOPA_STATE_SHELL_MOVING       3   // Mai rùa move (normal / upset)
 #define KOOPA_STATE_DIE           10   // Chết KHI SHELL CHẠM GOOMPA OR DÍNH ĐẠN
 #define KOOPA_STATE_JUMP    4
-
+#define KOOPA_STATE_HELD 5
 class CKoopa : public CGameObject
 {
 protected:
@@ -63,7 +63,7 @@ protected:
     ULONGLONG defend_start;      // Thời điểm vào mai
     ULONGLONG comeback_start;
     ULONGLONG turnaround_delay;
-    ULONGLONG JumpTime ;
+    ULONGLONG JumpTime;
     bool isInShell; // mai 
     bool isUpset; // lat ngua
     bool isComeback;
@@ -72,7 +72,7 @@ protected:
     bool isOnPlatform;
     bool isTurning = false;
     bool isWing;
-    bool isBeingHeld = false;
+
 
     void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
     void Render();
@@ -98,16 +98,16 @@ public:
     virtual int IsCollidable() { return 1; }
     virtual int IsBlocking() { return 1; }
 
-    void SetBeingHeld(bool held) { isBeingHeld = held; }
+    void SetHeld(bool held) { isHeld = held; }
     void SetState(int state);
     void SetIsUpset(int i) { this->isUpset = i; }
     void SetType(int j) { this->type = j; }
-    
+
     int GetType() { return this->type; }
-    
+
     bool IsWing() { return this->isWing; }
-    bool IsBeingHeld() const { return isBeingHeld; }
-    
+    bool IsHeld() const { return isHeld; }
+    bool IsComeback() { return isComeback; }
     void UpdateWalkingOnPlatform(CPlatform* platform);
     void UpdateWalkingOnBrickPSwitch(CBrickPSwitch* brick);
     void UpdateWalkingOnEdge(float leftBound, float rightBound);
