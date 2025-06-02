@@ -92,7 +92,14 @@ void CKoopa::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (isUpset && !isOnPlatform) {
 		vx = -KOOPA_WALK_SPEED;
 	}
-
+	if (state == KOOPA_STATE_DEAD_UPSIDE)
+	{
+		if (GetTickCount64() - deadDelay > KOOPA_DIE_TIME)
+		{
+			isDeleted = true;
+			return;
+		}
+	}
 	if (state == KOOPA_STATE_DIE)
 	{
 		isDeleted = true;
@@ -136,7 +143,7 @@ int CKoopa::GetKoopaRedAniId()
 	}
 	else 
 	{
-		if (state == KOOPA_STATE_SHELL) return ID_ANI_RED_SHELL_UPSET;
+		if (state == KOOPA_STATE_SHELL && !isComeback) return ID_ANI_RED_SHELL_UPSET;
 		else if (isComeback) return ID_ANI_RED_SHELL_UPSET_BACK;
 		else return ID_ANI_RED_SHELL_UPSET_MOVING;
 	}
@@ -149,16 +156,17 @@ int CKoopa::GetKoopaGreenAniId()
 	{
 		if (state == KOOPA_STATE_WALKING)
 			aniId = ((vx > 0) ? ID_ANI_GREEN_WALK_RIGHT : ID_ANI_GREEN_WALK_LEFT);
-		else if (state == KOOPA_STATE_SHELL) aniId = ID_ANI_GREEN_SHELL;
+		else if (state == KOOPA_STATE_SHELL && !isComeback) aniId = ID_ANI_GREEN_SHELL;
 		else if (isComeback) aniId = ID_ANI_GREEN_SHELL_BACK;
 		else aniId = ID_ANI_GREEN_SHELL_MOVING;
 	}
 	else
 	{
-		if (state == KOOPA_STATE_SHELL) aniId = ID_ANI_GREEN_SHELL_UPSET;
+		if (state == KOOPA_STATE_SHELL && !isComeback) aniId = ID_ANI_GREEN_SHELL_UPSET;
 		else if (isComeback) aniId = ID_ANI_GREEN_SHELL_UPSET_BACK;
 		else aniId = ID_ANI_GREEN_SHELL_UPSET_MOVING;
 	}
+	DebugOut(L"[RENDER ANI ID GREEN] %d\n", aniId);
 	return aniId;
 }
 
@@ -169,6 +177,8 @@ int CKoopa::GetKoopaGreenWingAniId()
 	{
 		if (state == KOOPA_STATE_JUMP)
 			aniId = ((vx > 0) ? ID_ANI_GREEN_WING_JUMP_RIGHT : ID_ANI_GREEN_WING_JUMP_LEFT);
+		else if (state == KOOPA_STATE_DEAD_UPSIDE)
+			aniId = ID_ANI_GREEN_SHELL_UPSET_MOVING;
 	}
 	else
 	{
@@ -176,7 +186,7 @@ int CKoopa::GetKoopaGreenWingAniId()
 		{
 			if (state == KOOPA_STATE_WALKING)
 				aniId = ((vx > 0) ? ID_ANI_GREEN_WALK_RIGHT : ID_ANI_GREEN_WALK_LEFT);
-			else if (state == KOOPA_STATE_SHELL) aniId = ID_ANI_GREEN_SHELL;
+			else if (state == KOOPA_STATE_SHELL && !isComeback) aniId = ID_ANI_GREEN_SHELL;
 			else if (isComeback) aniId = ID_ANI_GREEN_SHELL_BACK;
 			else aniId = ID_ANI_GREEN_SHELL_MOVING;
 		}
@@ -187,6 +197,7 @@ int CKoopa::GetKoopaGreenWingAniId()
 			else aniId = ID_ANI_GREEN_SHELL_UPSET_MOVING;
 		}
 	}
+	DebugOut(L"[RENDER ANI ID GREEN WING] %d\n", aniId);
 	return aniId;
 }
 
@@ -251,7 +262,7 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e) {
 void CKoopa::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
 	//DebugOut(L"[KOOPA GET BBOX] IS BBOX , TYPE %d, ISWING %d\n", type, isWing);
-	if (isWing)
+	if (isWing && state != KOOPA_STATE_DEAD_UPSIDE )
 	{
 		l = x - KOOPA_GREEN_WING_BBOX_WIDTH / 2;
 		t = y - KOOPA_GREEN_WING_BBOX_HEIGHT / 2;
@@ -403,7 +414,13 @@ void CKoopa::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 
 void CKoopa::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 {
-
+	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
+	if (isKicked) {
+		DebugOut(L"[COLLISION WITH KOOPA - KOOPA]\n");
+		mario->AddScoreEffect(koopa->GetX(), koopa->GetY(), SCORE_100); 
+		koopa->SetState(KOOPA_STATE_DEAD_UPSIDE);
+	}
 }
 
 void CKoopa::OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e)
@@ -419,6 +436,7 @@ void CKoopa::OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e)
 
 void CKoopa::SetState(int state)
 {
+	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	if (this->state == KOOPA_STATE_DIE) return;
 	switch (state)
 	{
@@ -429,7 +447,7 @@ void CKoopa::SetState(int state)
 		ay = KOOPA_GRAVITY;
 		isWing = false;
 		isComeback = false;
-		isUpset = false;//upset chỉ true khi raccoon quét đuôi
+		isUpset = false;
 		isInShell = false;
 		isHeld = false;
 		isKicked = false;
@@ -480,6 +498,14 @@ void CKoopa::SetState(int state)
 
 	case KOOPA_STATE_HELD:
 		isHeld = true; break;
+
+	case KOOPA_STATE_DEAD_UPSIDE:
+		isUpset = true; 
+		ay = KOOPA_GRAVITY;
+		vx = 0;
+		vy = -KOOPA_JUMP_DEATH;
+		deadDelay = GetTickCount64();
+		break;
 	}
 	CGameObject::SetState(state);
 }

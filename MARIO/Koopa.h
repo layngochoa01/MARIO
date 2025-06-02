@@ -6,14 +6,16 @@
 #define KOOPA_WALK_SPEED      0.025f     // Tốc độ di chuyển
 #define KOOPA_KICKED_SPEED    0.2f     // Tốc độ khi bị đá
 #define KOOPA_JUMP_DEFLECT    0.2f      // Lực nảy khi bị giết
+#define KOOPA_JUMP_DEATH 0.3f
 
 #define KOOPA_GRAVITY_WING 0.0004f
-#define KOOPA_JUMP_SPEED 0.16f
+#define KOOPA_JUMP_SPEED 0.17f
 
 #define KOOPA_DEFEND_TIMEOUT  8000      // Thời gian ở trong mai (ms)
 #define KOOPA_COMEBACK_TIME   6000      // Thời gian trước khi hồi phục
 #define KOOPA_TIME_DELAY_AROUND 400
 #define KOOPA_JUMP_RELEASE 1000
+#define KOOPA_DIE_TIME 1500
 
 #define KOOPA_TYPE_RED  1
 #define KOOPA_TYPE_GREEN  2
@@ -52,9 +54,10 @@
 #define KOOPA_STATE_WALKING       101   // Trạng thái di chuyển
 #define KOOPA_STATE_SHELL         102   // Trạng thái mai rùa (normal / upset)
 #define KOOPA_STATE_SHELL_MOVING       103   // Mai rùa move (normal / upset)
-#define KOOPA_STATE_DIE           100   // Chết KHI SHELL CHẠM GOOMPA OR DÍNH ĐẠN
+#define KOOPA_STATE_DIE           100   // SHELL  BIEN MAT KHI DÍNH ĐẠN
 #define KOOPA_STATE_JUMP   104
 #define KOOPA_STATE_HELD 105
+#define KOOPA_STATE_DEAD_UPSIDE 106 // DIE KHI SHELL DUNG PHAI KOOPA
 class CKoopa : public CGameObject
 {
 protected:
@@ -64,6 +67,7 @@ protected:
     ULONGLONG comeback_start;
     ULONGLONG turnaround_delay;
     ULONGLONG JumpTime;
+    ULONGLONG deadDelay;
     bool isInShell; // mai 
     bool isUpset; // lat ngua
     bool isComeback;
