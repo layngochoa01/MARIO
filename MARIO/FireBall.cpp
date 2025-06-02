@@ -1,4 +1,4 @@
-#include "FireBall.h"
+﻿#include "FireBall.h"
 #include "Mario.h"
 #include "PlayScene.h"
 #include <math.h>
@@ -11,20 +11,19 @@ void CFireBall::OnCollisionWith(LPCOLLISIONEVENT e)
 
 CFireBall::CFireBall(float bx, float by, float targetX, float targetY) : CGameObject(bx, by)
 {
+	int dirX = (targetX >= bx) ? 1 : -1;
+	int dirY = (targetY >= by) ? 1 : -1;
 
-	float dx = targetX - bx;
-	float dy = targetY - by;
-	float angle = atan2(dy, dx);
-
-	vx = cos(angle) * FIREBALL_SPEED;
-	vy = sin(angle) * FIREBALL_SPEED;
+	float length = sqrt(2.0f);
+	vx = FIREBALL_SPEED * dirX / length;
+	vy = FIREBALL_SPEED * dirY / length;
 
 	ax = 0;
 	ay = FIREBALL_GRAVITY;
 
 	direction = (vx > 0) ? 1 : -1;
-
 }
+
 
 void CFireBall::OnNoCollision(DWORD dt)
 {
