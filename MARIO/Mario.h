@@ -25,6 +25,8 @@
 #define MARIO_STATE_JUMP			300
 #define MARIO_STATE_RELEASE_JUMP    301
 
+#define MARIO_STATE_KICK			350
+
 #define MARIO_STATE_RUNNING_RIGHT	400
 #define MARIO_STATE_RUNNING_LEFT	500
 
@@ -33,6 +35,7 @@
 
 #define MARRIO_STATE_GROWING	700
 #define MARIO_CHANGE_TIME 500
+#define MARIO_KICK 200
 
 
 #pragma region ANIMATION_ID
@@ -86,20 +89,28 @@
 #define ID_ANI_MARIO_RACCOON_WALKING_RIGHT 2100
 #define ID_ANI_MARIO_RACCOON_WALKING_LEFT 2101
 
-#define ID_ANI_MARIO_RACCOON_RUNNING_RIGHT 2200
-#define ID_ANI_MARIO_RACCOON_RUNNING_LEFT 2201
+#define ID_ANI_MARIO_RACCOON_RUNNING_RIGHT 2011
+#define ID_ANI_MARIO_RACCOON_RUNNING_LEFT 2010
 
 #define ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT 2300
 #define ID_ANI_MARIO_RACCOON_JUMP_WALK_LEFT 2301
 
-#define ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT 2400
-#define ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT 2401
+#define ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_RIGHT 2310
+#define ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT 2311
+//
+//#define ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT 2400
+//#define ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT 2401
 
 #define ID_ANI_MARIO_RACCOON_SIT_RIGHT 2500
 #define ID_ANI_MARIO_RACCOON_SIT_LEFT 2501
 
+#define ID_ANI_MARIO_RACCOON_KICH_RIGHT 2511
+#define ID_ANI_MARIO_RACCOON_KICH_LEFT 2510
+
 #define ID_ANI_MARIO_RACCOON_BRACE_RIGHT 2600
 #define ID_ANI_MARIO_RACCOON_BRACE_LEFT 2601
+
+
 
 #pragma endregion
 
@@ -117,7 +128,7 @@
 #define MARIO_BIG_SITTING_BBOX_HEIGHT 16
 
 #define MARIO_RACCOON_BBOX_WIDTH  20
-#define MARIO_RACCOON_BBOX_HEIGHT 27
+#define MARIO_RACCOON_BBOX_HEIGHT 26
 #define MARIO_RACCOON_FLY_BBOX_WIDTH  23
 #define MARIO_RACCOON_FLY_BBOX_HEIGHT 26
 #define MARIO_RACCOON_SITTING_BBOX_WIDTH  13
@@ -155,9 +166,11 @@ class CMario : public CGameObject
 	ULONGLONG untouchable_start;
 	ULONGLONG grow_start;//thời gian biến to
 	ULONGLONG transform_start;// thời gian biến hình
+	ULONGLONG kich_start;
 	BOOLEAN isOnPlatform;
 	bool isHoldingRunKey;
 	bool isHoldingShell;
+	bool isKich = false;
 	int coin;
 	int score;
 
@@ -179,7 +192,7 @@ class CMario : public CGameObject
 
 	bool isGrowing;// xác định mario đang biến hình từ nhỏ biến to
 	bool isRaccoon;
-
+	bool isFlying = false ;
 	CKoopa* holdingShell = nullptr;
 
 public:

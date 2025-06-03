@@ -24,7 +24,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
-	DebugOut(L"MARIO POSITION : %f , %f\n", x, y);
+
+	//DebugOut(L"MARIO POSITION : X %f , Y %f, VX %f, VY %f, nx %f\n", x, y, vx, vy, nx);
 	//DebugOut(L"[MARIO ] IS HOLDING RUN KEY %d\n", isHoldingRunKey);
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
@@ -81,6 +82,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			holdingShell->SetHeld(false);
 		}
 	}
+
+	if (isKich) 
+	{
+		if (GetTickCount64() - kich_start >= MARIO_KICK ) 
+		{
+			isKich = false;
+			SetState(MARIO_STATE_IDLE);
+		}
+	}
+
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
@@ -93,6 +104,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 	//DebugOut(L"out\n");
 }
+
 
 void CMario::OnNoCollision(DWORD dt)
 {
@@ -215,11 +227,13 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 	coin++;
 }
 
+
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
 	CPortal* p = (CPortal*)e->obj;
 	CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
 }
+
 
 void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 {
@@ -323,6 +337,7 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 	leaf->Delete();
 }
 
+
 void CMario::OnCollisionWithFireBall(LPCOLLISIONEVENT e)
 {
 	if (untouchable) return;
@@ -334,6 +349,7 @@ void CMario::OnCollisionWithFireBall(LPCOLLISIONEVENT e)
 	
 }
 
+
 void CMario::OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e)
 {
 	if (untouchable) return;
@@ -342,6 +358,7 @@ void CMario::OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e)
 		SetLevelLower();
 	}
 }
+
 
 void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 {
@@ -421,9 +438,16 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 				}
 				else 
 				{
-					float direction = (x < koopa->GetX()) ? 1.0f : -1.0f; // xác định hướng đá
-					koopa->SetState(KOOPA_STATE_SHELL_MOVING);
-					koopa->SetSpeed(direction * KOOPA_KICKED_SPEED, 0.0f);
+					if (nx != 0 && !isKich) 
+					{
+						SetState(MARIO_STATE_KICK);
+					}
+					else 
+					{
+						float direction = (x < koopa->GetX()) ? 1.0f : -1.0f; // xác định hướng đá
+						koopa->SetState(KOOPA_STATE_SHELL_MOVING);
+						koopa->SetSpeed(direction * KOOPA_KICKED_SPEED, 0.0f);
+					}
 				}
 			}
 			// (c) Nếu mai rùa đang chạy hoặc Koopa đang đi thì Mario bị mất level
@@ -434,6 +458,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 		}
 	}
 }
+
 
 void CMario::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 {
@@ -450,6 +475,7 @@ void CMario::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 		}
 	}
 }
+
 
 void CMario::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 {
@@ -482,6 +508,7 @@ void CMario::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 		
 	}
 }
+
 
 void CMario::OnCollisionWithPSwitch(LPCOLLISIONEVENT e)
 {
@@ -568,6 +595,7 @@ int CMario::GetAniIdSmall()
 	return aniId;
 }
 
+
 int CMario::GetAniIdRaccoon()
 {
 	int aniId = -1;
@@ -576,51 +604,72 @@ int CMario::GetAniIdRaccoon()
 		if (abs(ax) == MARIO_ACCEL_RUN_X)
 		{
 			if (nx >= 0)
-				aniId = ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT;
+				aniId = -1;
 			else
-				aniId = ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT;
+				aniId =-1;
 		}
 		else
 		{
 			if (nx >= 0)
-				aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
+			{
+				if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
+				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_RIGHT;
+			}
+
 			else
-				aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_LEFT;
+				if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_LEFT;
+				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT;
 		}
 	}
 	else 
-		if (isSitting)
+	{
+		if (isSitting) 
 		{
 			if (nx > 0)
-				aniId = ID_ANI_MARIO_SIT_RIGHT;
+				aniId = ID_ANI_MARIO_RACCOON_SIT_RIGHT;
 			else
-				aniId = ID_ANI_MARIO_SIT_LEFT;
+				aniId = ID_ANI_MARIO_RACCOON_SIT_LEFT;
 		}
-		else
-			if (vx == 0)
+		else 
+		{
+			if (!isKich) 
 			{
-				if (nx > 0) aniId = ID_ANI_MARIO_RACCOON_IDLE_RIGHT;
-				else aniId = ID_ANI_MARIO_RACCOON_IDLE_LEFT;
+				if (vx == 0)
+				{
+					if (nx > 0) aniId = ID_ANI_MARIO_RACCOON_IDLE_RIGHT;
+					else aniId = ID_ANI_MARIO_RACCOON_IDLE_LEFT;
+				}
+				else if (vx > 0)
+				{
+					if (ax < 0)
+						aniId = ID_ANI_MARIO_RACCOON_BRACE_RIGHT;
+					else if (ax == MARIO_ACCEL_RUN_X && !isHoldingShell)
+						aniId = ID_ANI_MARIO_RACCOON_RUNNING_RIGHT;
+					else if (ax == MARIO_ACCEL_WALK_X || (ax == MARIO_ACCEL_RUN_X && isHoldingShell))
+						aniId = ID_ANI_MARIO_RACCOON_WALKING_RIGHT;
+				}
+				else // vx < 0
+				{
+					if (ax > 0)
+						aniId = ID_ANI_MARIO_RACCOON_BRACE_LEFT;
+					else if (ax == -MARIO_ACCEL_RUN_X && !isHoldingShell)
+						aniId = ID_ANI_MARIO_RACCOON_RUNNING_LEFT;
+					else if (ax == -MARIO_ACCEL_WALK_X || (ax == -MARIO_ACCEL_RUN_X && isHoldingShell))
+						aniId = ID_ANI_MARIO_RACCOON_WALKING_LEFT;
+				}
 			}
-			else if (vx > 0)
+			else 
 			{
-				if (ax < 0)
-					aniId = ID_ANI_MARIO_RACCOON_BRACE_RIGHT;
-				else if (ax == MARIO_ACCEL_RUN_X)
-					aniId = ID_ANI_MARIO_RACCOON_RUNNING_RIGHT;
-				else if (ax == MARIO_ACCEL_WALK_X)
-					aniId = ID_ANI_MARIO_RACCOON_WALKING_RIGHT;
+				if (vx > 0) aniId = ID_ANI_MARIO_RACCOON_KICH_RIGHT;
+				else aniId = ID_ANI_MARIO_RACCOON_KICH_LEFT;
 			}
-			else // vx < 0
-			{
-				if (ax > 0)
-					aniId = ID_ANI_MARIO_RACCOON_BRACE_LEFT;
-				else if (ax == -MARIO_ACCEL_RUN_X)
-					aniId = ID_ANI_MARIO_RACCOON_RUNNING_LEFT;
-				else if (ax == -MARIO_ACCEL_WALK_X)
-					aniId = ID_ANI_MARIO_RACCOON_WALKING_LEFT;
-			}
-	if (aniId == -1) aniId = ID_ANI_MARIO_RACCOON_IDLE_RIGHT;
+		}
+	}
+	if (aniId == -1) 
+	{
+		DebugOut(L"[MARIO]NOT FIND ANIID RACCOON \n");
+		aniId = ID_ANI_MARIO_RACCOON_IDLE_RIGHT;
+	}
 	return aniId;
 }
 
@@ -686,8 +735,10 @@ int CMario::GetAniIdBig()
 	return aniId;
 }
 
+
 void CMario::Render()
 {
+
 	CAnimations* animations = CAnimations::GetInstance();
 	int aniId = -1;
 	if (state == MARIO_STATE_DIE)
@@ -718,6 +769,7 @@ void CMario::Render()
 	DebugOutTitle(L"Score: %d", score);
 	
 }
+
 
 void CMario::SetState(int state)
 {
@@ -789,6 +841,11 @@ void CMario::SetState(int state)
 		vx = 0.0f;
 		break;
 
+	case MARIO_STATE_KICK:
+		isKich = true;
+		kich_start = GetTickCount64();
+		break;
+
 	case MARIO_STATE_DIE:
 		vy = -MARIO_JUMP_DEFLECT_SPEED;
 		vx = 0;
@@ -799,11 +856,27 @@ void CMario::SetState(int state)
 	CGameObject::SetState(state);
 }
 
-
-
 void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	if (level == MARIO_LEVEL_BIG)
+	
+	if (level == MARIO_LEVEL_RACCOON) 
+	{
+		if (isSitting) 
+		{
+			left = x - MARIO_RACCOON_SITTING_BBOX_WIDTH / 2;
+			top = y - MARIO_RACCOON_SITTING_BBOX_HEIGHT / 2;
+			right = left + MARIO_RACCOON_SITTING_BBOX_WIDTH;
+			bottom = top + MARIO_RACCOON_SITTING_BBOX_HEIGHT;
+		}
+		else 
+		{
+			left = x - MARIO_RACCOON_BBOX_WIDTH / 2;
+			top = y - MARIO_RACCOON_BBOX_HEIGHT / 2;
+			right = left + MARIO_RACCOON_BBOX_WIDTH;
+			bottom = top + MARIO_RACCOON_BBOX_HEIGHT;
+		}
+	}
+	else if (level != MARIO_LEVEL_SMALL)
 	{
 		if (isSitting)
 		{
@@ -820,31 +893,16 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 			bottom = top + MARIO_BIG_BBOX_HEIGHT;
 		}
 	}
-	else if (level == MARIO_LEVEL_SMALL)
+	else
 	{
 		left = x - MARIO_SMALL_BBOX_WIDTH / 2;
 		top = y - MARIO_SMALL_BBOX_HEIGHT / 2;
 		right = left + MARIO_SMALL_BBOX_WIDTH;
 		bottom = top + MARIO_SMALL_BBOX_HEIGHT;
 	}
-	else 
-	{
-		if (isSitting)
-		{
-			left = x - MARIO_RACCOON_SITTING_BBOX_WIDTH / 2;
-			top = y - MARIO_RACCOON_SITTING_BBOX_HEIGHT / 2;
-			right = left + MARIO_RACCOON_SITTING_BBOX_WIDTH;
-			bottom = top + MARIO_RACCOON_SITTING_BBOX_HEIGHT;
-		}
-		else
-		{
-			left = x - MARIO_RACCOON_BBOX_WIDTH / 2;
-			top = y - MARIO_RACCOON_BBOX_HEIGHT / 2;
-			right = left + MARIO_RACCOON_BBOX_WIDTH;
-			bottom = top + MARIO_RACCOON_BBOX_HEIGHT;
-		}
-	}
+	
 }
+
 
 void CMario::AddScoreEffect(float xTemp, float yTemp, int scoreAdd)
 {
@@ -863,6 +921,7 @@ void CMario::AddScoreEffect(float xTemp, float yTemp, int scoreAdd)
 	score += scoreAdd;
 }
 
+
 void CMario::PickUpShell(CKoopa* shell)
 {
 	isHoldingShell = true;
@@ -870,6 +929,8 @@ void CMario::PickUpShell(CKoopa* shell)
 	shell->SetHeld(true);
 	shell->SetState(KOOPA_STATE_HELD);
 }
+
+
 
 void CMario::SetLevel(int l)
 {

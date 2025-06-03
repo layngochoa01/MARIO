@@ -359,7 +359,7 @@ void CPlayScene::UpdateCamera(LPGAMEOBJECT player)
 	//DebugOut(L" MARIO POS CX %f , CY %f\n", cx, cy);
 	CGame* game = CGame::GetInstance();
 	cx -= game->GetBackBufferWidth() / 2.0f;
-	cy -= (game->GetBackBufferHeight() * 2.0f / 3.0f);
+	cy -= (game->GetBackBufferHeight() / 2.0f);//CAM Ở GÓC TOP LEFT
 	//DebugOut(L" CAM POS CX %f , CY %f\n\n", cx, cy);
 
 	if (cx < 0)

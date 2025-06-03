@@ -69,13 +69,13 @@ CGameObject::~CGameObject()
 //}
 bool CGameObject::CheckObjectInCamera(CGameObject* obj)
 {
+
 	float camX, camY;
 	CGame::GetInstance()->GetCamPos(camX, camY);
-
 	// Giới hạn camera theo tọa độ center
 	float camLeft = camX;
 	float camTop = camY;
-	float camRight = camLeft + SCREEN_WIDTH ;
+	float camRight = camLeft + SCREEN_WIDTH;
 	float camBottom = camTop + SCREEN_HEIGHT;
 
 	// Bounding box của object
@@ -83,10 +83,10 @@ bool CGameObject::CheckObjectInCamera(CGameObject* obj)
 	obj->GetBoundingBox(left, top, right, bottom);
 
 	bool isInCamera = (
-		right > camLeft &&
-		left < camRight &&
-		bottom > camTop &&
-		top < camBottom
+		right >= camLeft &&
+		left <= camRight &&
+		bottom >= camTop &&
+		top <= camBottom
 		);
 
 	return isInCamera;
