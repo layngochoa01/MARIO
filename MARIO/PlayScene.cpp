@@ -191,7 +191,22 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	case OBJECT_TYPE_PSWITCH: obj = new CPSwitch(x, y);  break;
 
-	case OBJECT_TYPE_PIPE:	obj = new CPipe(x, y); break;
+	case OBJECT_TYPE_PIPE: {
+		float cell_width = (float)atof(tokens[3].c_str());
+		float cell_height = (float)atof(tokens[4].c_str());
+		int length = atoi(tokens[5].c_str());
+
+		int sprite_begin = (tokens.size() > 6 && !tokens[6].empty()) ? atoi(tokens[6].c_str()) : -1;
+		int sprite_middle = (tokens.size() > 7 && !tokens[7].empty()) ? atoi(tokens[7].c_str()) : -1;
+		int sprite_end = (tokens.size() > 8 && !tokens[8].empty()) ? atoi(tokens[8].c_str()) : -1;
+
+		obj = new CPipe(
+			x, y,
+			cell_width, cell_height, length,
+			sprite_begin, sprite_middle, sprite_end
+		);
+		break;
+	}
 
 	case OBJECT_TYPE_BRICK_QUES:
 	{
@@ -349,11 +364,13 @@ void CPlayScene::UpdateCamera(LPGAMEOBJECT player)
 
 	if (cx < 0)
 		cx = 0;
-	if (cy > 697.0f)
+	if (cy > 757.0f)//697
 	{
 		cy = 826.823303f;
 	}
-	else cy += 100.0f;
+	else if (cy < 590.0f)
+		cy = 590.0f;
+	else cy += 10.0f;
 		
 	CGame::GetInstance()->SetCamPos(cx, cy);
 

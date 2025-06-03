@@ -21,3 +21,6 @@ height	240
 70	textures\enemies_2.png
 80	textures\enemies_3.png
 90	textures\enemies_4.png
+100	textures\reward_x3.png
+110	textures\card.png
+120	textures\misc_3_old.png

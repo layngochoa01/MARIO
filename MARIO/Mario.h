@@ -127,7 +127,7 @@
 #define MARIO_RACCOON_SIT_HEIGHT_ADJUST ((MARIO_RACCOON_BBOX_HEIGHT-MARIO_RACCOON_SITTING_BBOX_HEIGHT)/2)
 
 #define MARIO_SMALL_BBOX_WIDTH  12
-#define MARIO_SMALL_BBOX_HEIGHT 12
+#define MARIO_SMALL_BBOX_HEIGHT 14
 
 #define MARIO_UNTOUCHABLE_TIME 2500
 
@@ -157,7 +157,7 @@ class CMario : public CGameObject
 	ULONGLONG transform_start;// thời gian biến hình
 	BOOLEAN isOnPlatform;
 	bool isHoldingRunKey;
-	bool isHoldingShell ;
+	bool isHoldingShell;
 	int coin;
 	int score;
 
@@ -233,16 +233,16 @@ public:
 	float GetCurrentHeight() const;
 	int GetLevel() { return this->level; }
 
-	int IsGrowing() { return isGrowing ; }
+	int IsGrowing() { return isGrowing; }
 	int IsRaccoon() { return isRaccoon; }
 	int IsUntouchable() { return untouchable; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void AddScoreEffect(float xTemp, float yTemp, int scoreAdd);
-	
+
 	bool IsHoldingRunKey() { return isHoldingRunKey; }
 	void SetHoldingRunKey(int s) { isHoldingRunKey = s; }
-
+	void SetIsRaccoon(int s) { isRaccoon = s; }
 	void PickUpShell(CKoopa* shell);
 };

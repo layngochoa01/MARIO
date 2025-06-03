@@ -12,6 +12,9 @@ void CBrick::Render()
 	case BRICK_DECOR:
 		animations->Get(ID_ANI_BRICK_DECOR)->Render(x, y);
 		break;
+	case BRICK_CLOUD:
+		animations->Get(ID_ANI_BRICK_CLOUD)->Render(x, y);
+		break;
 	}
 	RenderBoundingBox();
 	

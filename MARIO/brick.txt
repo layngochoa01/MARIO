@@ -66,12 +66,13 @@
 #brick_decor
 20061	254	188	269	203	30
 
-
-
+# cloud brick
+20062	354	243	369	258	20
 
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
 10000	20001	100
 10001	20061	100
+10010	20062	100
 
 

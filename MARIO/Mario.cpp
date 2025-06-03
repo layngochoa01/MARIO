@@ -24,7 +24,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
-	//DebugOut(L"MARIO POSITION : %f , %f\n", x, y);
+	DebugOut(L"MARIO POSITION : %f , %f\n", x, y);
 	//DebugOut(L"[MARIO ] IS HOLDING RUN KEY %d\n", isHoldingRunKey);
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
@@ -53,8 +53,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (GetTickCount64() - transform_start > MARIO_CHANGE_TIME)
 		{
 			if (level == MARIO_LEVEL_BIG)
-				y -= 12; // Dịch trước khi gán level
-			// xử lý hiệu ứng cho mario bùm biến thành raccoon 
+				y -= 12; 
 			isRaccoon = false;
 		}
 		else
@@ -271,7 +270,13 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 				questionBrick->SetIsEmpty(true);
 			}
 		}
-		
+		else if (questionBrick->GetItemType() == BRICK_QUES_MUSHROOM_GREEN) 
+		{
+			CBaseMushroom* mushroom = new CBaseMushroom(xT, yT, MUSHROOM_TYPE_GREEN);
+			mushroom->SetState(MUSHROOM_STATE_RISING);
+			scene->PushObject(mushroom);
+			questionBrick->SetIsEmpty(true);
+		}
 	}
 
 }

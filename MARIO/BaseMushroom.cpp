@@ -59,7 +59,9 @@ void CBaseMushroom::Render()
 	case MUSHROOM_TYPE_RED:
 		CAnimations::GetInstance()->Get(ID_ANI_RED_MUSHROOM)->Render(x, y);
 		break;
-	// có thể mở rộng cho các nấm màu khác
+	case MUSHROOM_TYPE_GREEN:
+		CAnimations::GetInstance()->Get(ID_ANI_GREEN_MUSHROOM)->Render(x, y);
+		break;
 	}
 	
 	//RenderBoundingBox();

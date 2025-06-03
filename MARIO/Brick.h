@@ -6,14 +6,14 @@
 
 #define ID_ANI_BRICK 10000
 #define ID_ANI_BRICK_DECOR 10001
-
+#define ID_ANI_BRICK_CLOUD 10010
 #define BRICK_WIDTH 16
 #define BRICK_BBOX_WIDTH 16
 #define BRICK_BBOX_HEIGHT 16
 
 #define BRICK 0
 #define BRICK_DECOR	1
-
+#define BRICK_CLOUD	10
 
 class CBrick : public CGameObject {
 protected:
