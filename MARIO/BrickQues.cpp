@@ -44,7 +44,7 @@ void CBrickQues::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
             SetState(-1);
         }
     }
-    DebugOut(L"[BRICK QUES ] X %f, Y %f, VX %f, VY %f, isEmpty %d, isUnbox %d \n", x, y, vx, vy, isEmpty ,isUnbox);
+   // DebugOut(L"[BRICK QUES ] X %f, Y %f, VX %f, VY %f, isEmpty %d, isUnbox %d \n", x, y, vx, vy, isEmpty ,isUnbox);
     CGameObject::Update(dt, coObjects);
     CCollision::GetInstance()->Process(this, dt, coObjects);
 }
