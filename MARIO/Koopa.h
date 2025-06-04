@@ -87,6 +87,7 @@ protected:
     void OnNoCollision(DWORD dt);
     void OnCollisionWith(LPCOLLISIONEVENT e);
     void GetBoundingBox(float& l, float& t, float& r, float& b);
+    bool IsEnemy() { return true; }
 public:
     CKoopa(float x, float y, int t);
     int IsUpset() { return isUpset; }

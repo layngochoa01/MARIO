@@ -28,6 +28,10 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_3:
 		mario->SetLevel(MARIO_LEVEL_RACCOON);
 		break;
+	case DIK_Z:
+		if(mario->GetLevel() == MARIO_LEVEL_RACCOON)
+			mario->SetState(MARIO_STATE_TAIL_ATTACK);
+		break;
 	case DIK_R: // reset
 		//Reload();
 		break;

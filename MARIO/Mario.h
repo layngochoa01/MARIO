@@ -27,6 +27,8 @@
 
 #define MARIO_STATE_KICK			350
 
+#define MARIO_STATE_TAIL_ATTACK		360
+
 #define MARIO_STATE_RUNNING_RIGHT	400
 #define MARIO_STATE_RUNNING_LEFT	500
 
@@ -35,6 +37,7 @@
 
 #define MARRIO_STATE_GROWING	700
 #define MARIO_CHANGE_TIME 500
+#define TAIL_ATTACK_TIME 1000
 #define MARIO_KICK 200
 
 
@@ -200,10 +203,12 @@ class CMario : public CGameObject
 	ULONGLONG grow_start;//thời gian biến to
 	ULONGLONG transform_start;// thời gian biến hình
 	ULONGLONG kich_start;
+	ULONGLONG tailAttackStart;
 	BOOLEAN isOnPlatform;
 	bool isHoldingRunKey;
 	bool isHoldingShell;
 	bool isKich = false;
+	bool isTailAttacking = false;
 	int coin;
 	int score;
 
@@ -224,7 +229,7 @@ class CMario : public CGameObject
 	int GetAniIdRaccoon();
 
 	bool isGrowing;// xác định mario đang biến hình từ nhỏ biến to
-	bool isRaccoon;
+	bool isTransRaccoon;// xác định mario đang biến hình từ to thành chồn
 	bool isFlying = false ;
 	CKoopa* holdingShell = nullptr;
 
@@ -245,7 +250,7 @@ public:
 		coin = 0;
 		score = 0;
 		isGrowing = false;
-		isRaccoon = false;
+		isTransRaccoon = false;
 		isHoldingRunKey = false;
 		isHoldingShell = false;
 		targetLevel = -1;
