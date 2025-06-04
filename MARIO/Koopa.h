@@ -11,8 +11,8 @@
 #define KOOPA_GRAVITY_WING 0.0004f
 #define KOOPA_JUMP_SPEED 0.17f
 
-#define KOOPA_DEFEND_TIMEOUT  8000      // Thời gian ở trong mai (ms)
-#define KOOPA_COMEBACK_TIME   6000      // Thời gian trước khi hồi phục
+#define KOOPA_DEFEND_TIMEOUT  10000      // Thời gian ở trong mai (ms)
+#define KOOPA_COMEBACK_TIME   8000      // Thời gian trước khi hồi phục
 #define KOOPA_TIME_DELAY_AROUND 400
 #define KOOPA_JUMP_RELEASE 1000
 #define KOOPA_DIE_TIME 1500

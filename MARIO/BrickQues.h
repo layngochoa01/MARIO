@@ -6,8 +6,8 @@
 // BRICK MOVE 
 #define BRICK_QUES_SPEED_UP 0.04f
 #define BRICK_QUES_SPEED_DOWN 0.04f
-#define BRICK_QUES_MAX_HEIGHT 10
-#define JUMP_OFFSET 13
+
+#define JUMP_OFFSET 14.0f
 
 //STATE BRICK QUESTION
 
@@ -32,8 +32,8 @@ protected:
 	float ay, minY;
 	float startX, startY;// vi tri ban dau cua brick
 
-	bool isUnbox = false;// brick up, con dau cham hoi
-	bool isEmpty = false;
+	bool isUnbox ;// brick up, con dau cham hoi
+	bool isEmpty ;
 	int itemType;
 	
 	int IsCollidable() { return 1; }
@@ -46,7 +46,8 @@ public:
 		this->startX = x;
 		this->startY = y;
 		this->itemType = item;
-
+		isUnbox = false;
+		isEmpty = false;
 	}
 	
 	void Render();

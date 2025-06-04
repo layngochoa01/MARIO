@@ -128,7 +128,7 @@ void CKoopa::Render()
 	
 	CAnimations* animations = CAnimations::GetInstance();
 	animations->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 int CKoopa::GetKoopaRedAniId()
@@ -166,7 +166,7 @@ int CKoopa::GetKoopaGreenAniId()
 		else if (isComeback) aniId = ID_ANI_GREEN_SHELL_UPSET_BACK;
 		else aniId = ID_ANI_GREEN_SHELL_UPSET_MOVING;
 	}
-	DebugOut(L"[RENDER ANI ID GREEN] %d\n", aniId);
+	//DebugOut(L"[RENDER ANI ID GREEN] %d\n", aniId);
 	return aniId;
 }
 
@@ -197,7 +197,7 @@ int CKoopa::GetKoopaGreenWingAniId()
 			else aniId = ID_ANI_GREEN_SHELL_UPSET_MOVING;
 		}
 	}
-	DebugOut(L"[RENDER ANI ID GREEN WING] %d\n", aniId);
+	//DebugOut(L"[RENDER ANI ID GREEN WING] %d\n", aniId);
 	return aniId;
 }
 

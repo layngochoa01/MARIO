@@ -10,7 +10,7 @@ void CBrickQues::Render()
     int aniId = isEmpty ? ID_ANI_BRICK_EMPTY : ID_ANI_BRICK_QUES;
 
     CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-    RenderBoundingBox();
+    //RenderBoundingBox();
 }
 
 void CBrickQues::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -37,15 +37,14 @@ void CBrickQues::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
         {
             vy = BRICK_QUES_SPEED_DOWN;
         }
-        if (y > startY + BRICK_BBOX_HEIGHT - JUMP_OFFSET)
+        else if (y > startY + (BRICK_BBOX_HEIGHT)  - JUMP_OFFSET)
         {
             y = startY;
-            vy = 0;
-            isEmpty = true;
             isUnbox = true;
+            SetState(-1);
         }
     }
-    
+    DebugOut(L"[BRICK QUES ] X %f, Y %f, VX %f, VY %f, isEmpty %d, isUnbox %d \n", x, y, vx, vy, isEmpty ,isUnbox);
     CGameObject::Update(dt, coObjects);
     CCollision::GetInstance()->Process(this, dt, coObjects);
 }
@@ -61,9 +60,10 @@ void CBrickQues::GetBoundingBox(float& l, float& t, float& r, float& b)
 
 void CBrickQues::OnNoCollision(DWORD dt)
 {
-    if (state == BRICK_QUES_STATE_UP) vx = 0;
+   /* if (state == BRICK_QUES_STATE_UP) vx = 0;
     else vx = vy = 0;
     
+    */
 }
 
 void CBrickQues::SetState(int state)
@@ -74,6 +74,8 @@ void CBrickQues::SetState(int state)
     case  BRICK_QUES_STATE_UP:
         vy = -BRICK_QUES_SPEED_UP;
         break;
-
+    default: 
+        vy = 0;
+        break;
     }
 }

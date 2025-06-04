@@ -277,7 +277,7 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 		if (line == "[SPRITES]") {  section = ASSETS_SECTION_SPRITES; continue; };
 		if (line == "[ANIMATIONS]") { section = ASSETS_SECTION_ANIMATIONS; continue; };
 		if (line[0] == '[') {  section = SCENE_SECTION_UNKNOWN; continue; }
-		DebugOut(L"[INFO] section : %d \n",section);
+		//DebugOut(L"[INFO] section : %d \n",section);
 		//
 		// data section
 		//
