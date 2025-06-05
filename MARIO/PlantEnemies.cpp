@@ -114,7 +114,7 @@ void CPlantEnemies::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	if (!CheckObjectInCamera(this)) return;
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
-	if (mario->IsGrowing() || mario->IsRaccoon() || mario->GetState() == MARIO_STATE_DIE) return;
+	if (mario->IsGrowing() || mario->IsTransRaccoon() || mario->GetState() == MARIO_STATE_DIE) return;
 	
 	
 	float mx, my;

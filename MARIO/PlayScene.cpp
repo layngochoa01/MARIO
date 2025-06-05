@@ -380,8 +380,14 @@ void CPlayScene::UpdateCamera(LPGAMEOBJECT player)
 
 void CPlayScene::Render()
 {
+	CGame* game = CGame::GetInstance();
 	for (int i = 0; i < objects.size(); i++)
 		objects[i]->Render();
+	
+	float xC, yC;
+	game->GetCamPos(xC, yC);
+	hud = new CHUD(xC + CELL_WIDTH_BLACK_RECTANGEL / 2 +ADJUST_HUD_X_POSITION, yC + ADJUST_HUD_Y_POSITION);
+	hud->Render();
 }
 
 /*

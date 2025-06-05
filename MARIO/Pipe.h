@@ -23,7 +23,7 @@ public:
 	float GetCellWidth() { return cellWidth; };
 	float GetCellHeight() { return cellHeight; };
 	int IsDirectionColliable(float nx, float ny);
-	virtual int IsBlocking() { return 1; };
+	virtual int IsBlocking() { return (cellHeight > 8 ); };
 
 };
 

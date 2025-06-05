@@ -19,7 +19,7 @@ using namespace std;
 #define KEYBOARD_STATE_SIZE 256
 
 #define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
+#define SCREEN_HEIGHT 277
 
 /*
 	Our simple game framework

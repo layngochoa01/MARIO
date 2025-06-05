@@ -285,7 +285,7 @@ public:
 	int GetLevel() { return this->level; }
 
 	int IsGrowing() { return isGrowing; }
-	int IsRaccoon() { return isRaccoon; }
+	int IsTransRaccoon() { return isTransRaccoon; }
 	int IsUntouchable() { return untouchable; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 
@@ -294,6 +294,6 @@ public:
 
 	bool IsHoldingRunKey() { return isHoldingRunKey; }
 	void SetHoldingRunKey(int s) { isHoldingRunKey = s; }
-	void SetIsRaccoon(int s) { isRaccoon = s; }
+	void SetTransRaccoon(int s) { isTransRaccoon = s; }
 	void PickUpShell(CKoopa* shell);
 };
