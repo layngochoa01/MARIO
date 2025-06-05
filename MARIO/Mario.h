@@ -211,7 +211,7 @@ class CMario : public CGameObject
 	bool isTailAttacking = false;
 	int coin;
 	int score;
-
+	int lives;
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
@@ -254,6 +254,7 @@ public:
 		isHoldingRunKey = false;
 		isHoldingShell = false;
 		targetLevel = -1;
+		lives = 4;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -296,4 +297,7 @@ public:
 	void SetHoldingRunKey(int s) { isHoldingRunKey = s; }
 	void SetTransRaccoon(int s) { isTransRaccoon = s; }
 	void PickUpShell(CKoopa* shell);
+	void AddLife(int amount) { lives += amount; }
+	void LoseLife();
+	int GetLives() { return lives; }
 };

@@ -14,7 +14,8 @@ class CPlayScene: public CScene
 {
 protected: 
 	// A play scene has to have player, right? 
-	LPGAMEOBJECT player;					
+	LPGAMEOBJECT player;	
+	
 
 	vector<LPGAMEOBJECT> objects;
 	CHUD* hud = NULL;
@@ -28,7 +29,7 @@ protected:
 	
 public: 
 	CPlayScene(int id, LPCWSTR filePath);
-
+	
 	virtual void Load();
 	virtual void Update(DWORD dt);
 	virtual void UpdateCamera(LPGAMEOBJECT player);

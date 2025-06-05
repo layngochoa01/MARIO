@@ -1,6 +1,7 @@
 #include "Animation.h"
 #include "debug.h"
-
+#include"Game.h"
+#include "PlayScene.h"
 void CAnimation::Add(int spriteId, DWORD time)
 {
 	int t = time;
@@ -24,13 +25,17 @@ void CAnimation::Render(float x, float y)
 	}
 	else
 	{
-		DWORD t = frames[currentFrame]->GetTime();
-		if (now - lastFrameTime > t)
+		if (!CGame::GetInstance()->GetCurrentScene()->IsPaused() )
 		{
-			currentFrame++;
-			lastFrameTime = now;
-			if (currentFrame == frames.size()) currentFrame = 0;
+			DWORD t = frames[currentFrame]->GetTime();
+			if (now - lastFrameTime > t)
+			{
+				currentFrame++;
+				lastFrameTime = now;
+				if (currentFrame == frames.size()) currentFrame = 0;
+			}
 		}
+		
 
 	}
 

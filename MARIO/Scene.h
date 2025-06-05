@@ -12,13 +12,16 @@ protected:
 	LPKEYEVENTHANDLER key_handler;
 	int id;
 	LPCWSTR sceneFilePath;
-
+	bool isEndGame;
+	bool isPaused;
 public: 
 	CScene(int id, LPCWSTR filePath)
 	{
 		this->id = id;
 		this->sceneFilePath = filePath;
 		this->key_handler = NULL;
+		this->isEndGame = false;
+		this->isPaused = false;
 	}
 
 	LPKEYEVENTHANDLER GetKeyEventHandler() { return key_handler; }
@@ -26,6 +29,11 @@ public:
 	virtual void Unload() = 0;
 	virtual void Update(DWORD dt) = 0;
 	virtual void Render() = 0; 
+
+	virtual void SetEndGame(bool value) { isEndGame = value; }
+	virtual bool IsEndGame() const { return isEndGame; }
+	void TogglePause() { isPaused = !isPaused; }
+	virtual bool IsPaused() const { return isPaused; }
 };
 typedef CScene * LPSCENE;
 

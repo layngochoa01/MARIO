@@ -829,7 +829,7 @@ void CMario::Render()
 	RenderBoundingBox();
 
 	//DebugOutTitle(L"Coins: %d", coin);
-	DebugOutTitle(L"Score: %d", score);
+	DebugOutTitle(L"Score: %d, Coins: %d", score, coin);
 	
 }
 
@@ -997,6 +997,16 @@ void CMario::PickUpShell(CKoopa* shell)
 	holdingShell = shell;
 	shell->SetHeld(true);
 	shell->SetState(KOOPA_STATE_HELD);
+}
+
+void CMario::LoseLife()
+{
+	if (lives > 0) lives--;
+	else 
+	{
+		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+		scene->SetEndGame(true);
+	}
 }
 
 void CMario::SetLevel(int l)
