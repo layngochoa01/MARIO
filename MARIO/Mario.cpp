@@ -24,7 +24,7 @@
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-
+	DebugOut(L"\t[MARIO]TIME %d\n", clock);
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
 	
@@ -105,13 +105,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			SetState(MARIO_STATE_IDLE);
 		}
 	}
+
+	if (state != MARIO_STATE_DIE || !isGrowing || !isTransRaccoon)
+		DownTimeClock1Second();
+
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
 		untouchable_start = 0;
 		untouchable = 0;
 	}
-
 	if (vy > 0.0f)
 		isOnPlatform = false;
 	CCollision::GetInstance()->Process(this, dt, coObjects);
@@ -180,6 +183,22 @@ void CMario::ResetVerticalMovement()
 {
 	vy = 0; ay = 0; 
 	isOnPlatform = true;
+}
+
+void CMario::DownTimeClock1Second()
+{
+	if (clock > 0) {
+
+		if (GetTickCount64() - time_down_1_second > TIME_ONE_SECOND) {
+			clock--;
+			time_down_1_second = GetTickCount64();
+		}
+	}
+	else
+	{
+		clock = 0;
+		SetState(MARIO_STATE_DIE);
+	}
 }
 
 void CMario::HandleSolidCollision(LPGAMEOBJECT gameobject, float objHeight)
@@ -1004,8 +1023,7 @@ void CMario::LoseLife()
 	if (lives > 0) lives--;
 	else 
 	{
-		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
-		scene->SetEndGame(true);
+		SetState(MARIO_STATE_DIE);
 	}
 }
 
@@ -1043,6 +1061,11 @@ void CMario::SetLevelLower()
 		StartUntouchable();
 	}
 	else
+	{
 		SetState(MARIO_STATE_DIE);
+		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+		scene->SetEndGame(true);
+	}
+		
 }
 

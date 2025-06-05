@@ -7,6 +7,10 @@
 #include "Koopa.h"
 #include "debug.h"
 
+#define TIME_CLOCK_INIT		300
+#define TIME_ONE_SECOND	1000
+
+
 #define MARIO_WALKING_SPEED		    0.1f
 #define MARIO_RUNNING_SPEED		    0.17f
 
@@ -204,6 +208,7 @@ class CMario : public CGameObject
 	ULONGLONG transform_start;// thời gian biến hình
 	ULONGLONG kich_start;
 	ULONGLONG tailAttackStart;
+	ULONGLONG time_down_1_second;
 	BOOLEAN isOnPlatform;
 	bool isHoldingRunKey;
 	bool isHoldingShell;
@@ -212,6 +217,7 @@ class CMario : public CGameObject
 	int coin;
 	int score;
 	int lives;
+	int clock;
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
@@ -255,6 +261,8 @@ public:
 		isHoldingShell = false;
 		targetLevel = -1;
 		lives = 4;
+		clock = TIME_CLOCK_INIT;
+		time_down_1_second = GetTickCount64();
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -278,9 +286,13 @@ public:
 	void SetX(int l) { this->x = l; }
 	void SetLevelLower();
 	void ResetVerticalMovement();
+	void DownTimeClock1Second();
+	void ClockReset() { this->clock = TIME_CLOCK_INIT; };
 
 	int GetCoin() { return this->coin; }
 	int GetScore() { return score; }
+	int GetClock() { return clock; }
+
 	bool GetIsOnPlatform() { return isOnPlatform; }
 	float GetCurrentHeight() const;
 	int GetLevel() { return this->level; }

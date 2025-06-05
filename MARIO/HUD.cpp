@@ -33,21 +33,51 @@ void CHUD::Render()
 
 	RenderBlackBackground();
 	RenderHUD(x + ADJUST_HUD_X, y + ADJUST_HUD_Y, ROWS_HUD, COLS_HUD);
-	for (int i = 0; i < 3; i++) 
+	for (int i = 0; i < 3; i++)
 	{
 		RenderHUD(x + ADJUST_HUD_CARD_X + DISTANCE_CARD * i, y + ADJUST_HUD_Y, ROWS_HUD, COLS_HUD_CARD);
 	}
 	// chữ M
 	RenderSym(ID_ANI_M_SYMBOL, x, y, POSITION_M_SYMBOL_X, POSITION_M_SYMBOL_Y);
-	//WORLD
+	//WORLD 1
 	RenderSym(ID_ANI_WORLD_SYMBOL, x, y, POSITION_M_SYMBOL_X + 8.0f, POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+	DrawNumber(1, x + POSITION_M_SYMBOL_X + 30.0f, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
 	//x
 	RenderSym(ID_ANI_X_SYMBOL, x, y, POSITION_M_SYMBOL_X + OFFSET_X_SYMBOL_FROM_M, POSITION_M_SYMBOL_Y);
 	//clock
-	RenderSym(ID_ANI_CLOCK_SYMBOL, x, y, POSITION_M_SYMBOL_X + 130.0f, POSITION_M_SYMBOL_Y);
+	RenderSym(ID_ANI_CLOCK_SYMBOL, x, y, POSITION_M_SYMBOL_X + 128.0f, POSITION_M_SYMBOL_Y);
 	//coin
-	RenderSym(ID_ANI_COIN_SYMBOL, x, y, POSITION_M_SYMBOL_X + 140.0f, POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+	RenderSym(ID_ANI_COIN_SYMBOL, x, y, POSITION_M_SYMBOL_X + 138.0f, POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+
+
 	if (!mario) return;
+	else 
+	{
+		//WRITE SCORE
+		int score = mario->GetScore();
+		DrawNumber(score / 1000000, x + POSITION_M_SYMBOL_X + 50.0f, y + POSITION_M_SYMBOL_Y);
+		DrawNumber((score / 100000) % 10, x + POSITION_M_SYMBOL_X + 50.0f + 8.0f, y + POSITION_M_SYMBOL_Y);
+		DrawNumber((score / 10000) % 10, x + POSITION_M_SYMBOL_X + 50.0f + 8.0f * 2, y + POSITION_M_SYMBOL_Y);
+		DrawNumber((score / 1000) % 10, x + POSITION_M_SYMBOL_X + 50.0f + 8.0f * 3, y + POSITION_M_SYMBOL_Y);
+		DrawNumber((score / 100) % 10, x + POSITION_M_SYMBOL_X + 50.0f + 8.0f * 4, y + POSITION_M_SYMBOL_Y);
+		DrawNumber((score / 10) % 10, x + POSITION_M_SYMBOL_X + 50.0f + 8.0f * 5, y + POSITION_M_SYMBOL_Y);
+		DrawNumber(score % 10, x + POSITION_M_SYMBOL_X + 50.0f + 8.0f * 6, y + POSITION_M_SYMBOL_Y);
+		
+		// WRITE UP
+		int live = mario->GetLives();
+		DrawNumber(live % 10, x + POSITION_M_SYMBOL_X + 20.0f, y + POSITION_M_SYMBOL_Y);
+		//WRITE COIN
+		int coin = mario->GetCoin();
+		//if (coin / 10 > 0) {
+			DrawNumber(coin / 10, x + POSITION_M_SYMBOL_X + 140.0f + 7.0f, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		//}
+		DrawNumber(coin % 10, x + POSITION_M_SYMBOL_X + 140.0f + 15.0f, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		//WRITE CLOCK
+		int clock = mario->GetClock();
+		DrawNumber(clock / 100, x + POSITION_M_SYMBOL_X + 130.0f + 8.0f, y + POSITION_M_SYMBOL_Y);
+		DrawNumber((clock / 10) % 10, x + POSITION_M_SYMBOL_X + 130.0f + 8.0f * 2, y + POSITION_M_SYMBOL_Y);
+		DrawNumber(clock % 10, x + POSITION_M_SYMBOL_X + 130.0f + 8.0f * 3, y + POSITION_M_SYMBOL_Y);
+	}
 }
 
 void CHUD::RenderBlackBackground()
