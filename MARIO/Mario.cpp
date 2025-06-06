@@ -37,7 +37,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (nx > 0) vx = 0.1f;
 		else if (nx < 0) vx = -0.1f;
 	}
-	//DebugOut(L"MARIO POSITION : X %f , Y %f, VX %f, VY %f, nx %f, state %d\n", x, y, vx, vy, nx, state);
+	//DebugOut(L"MARIO POSITION			: X %f , Y %f, VX %f, VY %f, nx %d, state %d\n", x, y, vx, vy, nx, state);
 	//DebugOut(L"[MARIO ] IS HOLDING SHELL %d\n", isHoldingRunKey);
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
@@ -135,11 +135,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	//XU LY VAN DE RUNNING BAY
-	if ((!isRunning) || (!vx) || (ax * vx < 0) || ((!isOnPlatform) && (isFlying) && (vy > 0)) || ((abs(vx) < SPEED_MARIO_WHEN_BLOCK) && (!isFlying)))
+	//thả nút chạy
+	// mario dừng lại
+	// mario đang running nhưng đụng block, chưa bay lên
+	//đang chạy chuyển hướng
+	// mario đang bay nhưng rơi xuống
+	// tốc độ tối thiểu khi chạy để bay lên
+	if ((!isRunning) || (!vx) || (checkUPCollisionX && isOnPlatform) || (ax * vx < 0) || ((!isOnPlatform) && (isFlying) && (vy > 0)) || ((abs(vx) < SPEED_MARIO_WHEN_BLOCK) && (!isFlying)))
 	{
-		//DebugOut(L"MARIO POSITION - LEVEL RUN: X %f , Y %f, VX %f, VY %f, nx %d, state %d\n", x, y, abs(vx), vy, nx, state);
+		
+		//DebugOut(L"MARIO POSITION - LEVEL RUN: X %f , Y %f, VX %f, VY %f, nx %d, state %d\n\n", x, y, vx, vy, nx, state);
 		if (GetTickCount64() - speed_stop > TIME_SPEED) {
 			if (levelRun > 0) levelRun--;
+			if (levelRun == 0) checkUPCollisionX = false;
 			speed_stop = GetTickCount64();
 		}
 		start_prepare = GetTickCount64();
@@ -208,7 +216,11 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 			isOnPlatform = true;
 		}
 	}
-	
+	if (e->nx != 0 && e->obj->IsBlocking()) 
+	{
+		DebugOut(L"\t[COLLISIONN] CO XAY RA VA CHAM \n]");
+		vx = 0; checkUPCollisionX = true;
+	}
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	else if (dynamic_cast<CCoin*>(e->obj))

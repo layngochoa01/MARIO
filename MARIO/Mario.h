@@ -234,6 +234,7 @@ class CMario : public CGameObject
 	ULONGLONG time_floating;
 	BOOLEAN isOnPlatform;
 	bool isHoldingRunKey;
+	bool checkUPCollisionX = false;
 	bool isHoldingShell;
 	bool isKich = false;
 	bool isTailAttacking = false;
