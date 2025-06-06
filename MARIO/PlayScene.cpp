@@ -402,6 +402,7 @@ void CPlayScene::UpdateCamera(LPGAMEOBJECT player)
 
 	if (cx < 0)
 		cx = 0;
+	else if (cx > 2823) cx = 2823;
 	if (cy > 757.0f)//697
 	{
 		cy = 826.823303f;
