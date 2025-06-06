@@ -25,10 +25,18 @@
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	//DebugOut(L"\t[MARIO]TIME %d\n", clock);
-	DebugOut(L"\t[MARIO]LEVEL RUN %d\n", levelRun);
-	vy += MARIO_GRAVITY * dt;
-	vx += ax * dt;
-
+	//DebugOut(L"\t[MARIO]LEVEL RUN %d\n", levelRun);
+	//if(isFloating)DebugOut(L"\t[MARIO]FLOAT %d, VX %f, VY %f\n", isFloating, vx, vy);
+	if (!isFloating)
+	{
+		vy += MARIO_GRAVITY * dt;
+		vx += ax * dt;
+	}
+	else 
+	{
+		if (nx > 0) vx = 0.1f;
+		else if (nx < 0) vx = -0.1f;
+	}
 	//DebugOut(L"MARIO POSITION : X %f , Y %f, VX %f, VY %f, nx %f, state %d\n", x, y, vx, vy, nx, state);
 	//DebugOut(L"[MARIO ] IS HOLDING SHELL %d\n", isHoldingRunKey);
 	if (vy > TERMINAL_VELOCITY)
@@ -125,9 +133,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			scene->PushObject(tailBox);
 		}
 	}
+
 	//XU LY VAN DE RUNNING BAY
 	if ((!isRunning) || (!vx) || (ax * vx < 0) || ((!isOnPlatform) && (isFlying) && (vy > 0)) || ((abs(vx) < SPEED_MARIO_WHEN_BLOCK) && (!isFlying)))
 	{
+		//DebugOut(L"MARIO POSITION - LEVEL RUN: X %f , Y %f, VX %f, VY %f, nx %d, state %d\n", x, y, abs(vx), vy, nx, state);
 		if (GetTickCount64() - speed_stop > TIME_SPEED) {
 			if (levelRun > 0) levelRun--;
 			speed_stop = GetTickCount64();
@@ -135,6 +145,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		start_prepare = GetTickCount64();
 	}
 	else {
+		//DebugOut(L"MARIO POSITION + LEVEL RUN: X %f , Y %f, VX %f, VY %f, nx %d, state %d\n\n", x, y, abs(vx), vy, nx, state);
 		if (GetTickCount64() - start_prepare > TIME_PREPARE_RUN) {
 			if (GetTickCount64() - speed_start > TIME_SPEED) {
 				if (levelRun < LEVEL_RUN_MAX) {
@@ -149,6 +160,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (isOnPlatform) {
 			isFlying = false;
 			ay = MARIO_GRAVITY;
+		}
+	}
+	//dang floating
+	if (isFloating) 
+	{
+		if (GetTickCount64() - time_floating > FLOATING_TIME_MAX)
+		{
+			isFloating = false;
+			time_floating = 0;
+			vy = MARIO_GRAVITY;
 		}
 	}
 
@@ -180,14 +201,14 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 
 	if (e->ny != 0 && e->obj->IsBlocking())
 	{
-
+		//DebugOut(L"\t[COLLISIONN] CO XAY RA VA CHAM \n]");
 		vy = 0;
 		if (e->ny < 0)
 		{
 			isOnPlatform = true;
 		}
 	}
-
+	
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	else if (dynamic_cast<CCoin*>(e->obj))
@@ -215,6 +236,15 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 }
 
 //======================================================================
+
+bool CMario::CanFloat()
+{
+	return level == MARIO_LEVEL_RACCOON &&
+		!isOnPlatform &&
+		vy > 0 &&
+		isJumpKeyHeld &&
+		!isFloating;
+}
 
 float CMario::GetCurrentHeight() const
 {
@@ -705,11 +735,13 @@ int CMario::GetAniIdRaccoon()
 		{
 			if (nx >= 0)
 				if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_RIGHT;
-				else if (levelRun == LEVEL_RUN_MAX) aniId = -1;
+				else if (levelRun == LEVEL_RUN_MAX) aniId = ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT;
+				else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_RIGHT;
 				else aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
 			else
-				if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_LEFT;
-				else if (levelRun == LEVEL_RUN_MAX) aniId = -1; //ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT;
+				if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_LEFT ;
+				else if (levelRun == LEVEL_RUN_MAX) aniId = ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT;
+				else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_LEFT;
 				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT;
 		}
 		else
@@ -717,10 +749,12 @@ int CMario::GetAniIdRaccoon()
 			if (nx >= 0)
 			{
 				if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
+				else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_RIGHT;
 				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_RIGHT;
 			}
 			else
 				if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_LEFT;
+				else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_LEFT;
 				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT;
 		}
 	}
@@ -787,6 +821,7 @@ int CMario::GetAniIdRaccoon()
 		//DebugOut(L"[MARIO]NOT FIND ANIID RACCOON \n");
 		aniId = ID_ANI_MARIO_DIE;
 	}
+	//DebugOut(L"[MARIO] ANIID %d, ISFLYING %d\n", aniId, isFlying);
 	return aniId;
 }
 
@@ -892,15 +927,16 @@ void CMario::Render()
 	}
 	else
 	{
+		DebugOutTitle(L"ANIID: %d", aniId);
 		animations->Get(aniId)->Render(x, y); // render bình thường
 	}
 
 
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 
 	//DebugOutTitle(L"Coins: %d", coin);
-	DebugOutTitle(L"Score: %d, Coins: %d", score, coin);
+	//DebugOutTitle(L"Score: %d, Coins: %d", score, coin);
 
 }
 
@@ -1001,6 +1037,12 @@ void CMario::SetState(int state)
 		isFlying = true;
 		break;
 
+	case MARIO_STATE_FLOAT:
+		isFloating = true;
+		time_floating = GetTickCount64();
+		vy = 0.07f;
+		//DebugOut(L"VX KHI FLOAT MOI DC SET :%f\n", vx);
+		break;
 	case MARIO_STATE_DIE:
 		vy = -MARIO_JUMP_DEFLECT_SPEED;
 		vx = 0;

@@ -18,11 +18,17 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 		mario->SetState(MARIO_STATE_SIT);
 		break;
 	case DIK_S:
+		mario->SetJumpKeyHeld(true);
 		if (mario->GetIsOnPlatform()) {
 			mario->SetState(MARIO_STATE_JUMP);
 		}
 		else {
-			if (mario->GetLevel() == MARIO_LEVEL_RACCOON && mario->GetLevelRun() == LEVEL_RUN_MAX) mario->SetState(MARIO_STATE_FLY);
+			if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
+				if (mario->GetLevelRun() == LEVEL_RUN_MAX) mario->SetState(MARIO_STATE_FLY);
+				else if (mario->CanFloat()) {
+					//DebugOut(L"ROI VAO FLOAT \n");
+					mario->SetState(MARIO_STATE_FLOAT);
+				}
 		}
 		break;
 	case DIK_A:
@@ -59,7 +65,11 @@ void CSampleKeyHandler::OnKeyUp(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_S:
-		mario->SetState(MARIO_STATE_RELEASE_JUMP);
+		mario->SetJumpKeyHeld(false);
+
+		if (mario->GetVY() < 0) {
+			mario->SetState(MARIO_STATE_RELEASE_JUMP);
+		}
 		break;
 	case DIK_DOWN:
 		mario->SetState(MARIO_STATE_SIT_RELEASE);

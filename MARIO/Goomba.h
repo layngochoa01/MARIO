@@ -59,7 +59,7 @@ protected:
 	virtual void Render();
 
 	virtual int IsCollidable() { return !isUpside; };
-	virtual int IsBlocking() { return 0; }
+	virtual int IsBlocking() { return (state != GOOMBA_STATE_DIE || !isUpside); }
 	virtual void OnNoCollision(DWORD dt);
 	virtual void OnCollisionWith(LPCOLLISIONEVENT e);
 	virtual void OnCollisionWithPlatform(LPCOLLISIONEVENT e);

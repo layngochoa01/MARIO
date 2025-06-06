@@ -48,7 +48,8 @@ public:
 
 	float GetX() { return this->x; }
 	float GetY() { return this->y; }
-
+	float GetVX() { return this->vx; }
+	float GetVY() { return this->vy; }
 	void RenderBoundingBox();
 
 	CGameObject();

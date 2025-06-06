@@ -100,8 +100,8 @@ public:
     void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
     void OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e);
 
-    virtual int IsCollidable() { return 1; }
-    virtual int IsBlocking() { return 1; }
+    virtual int IsCollidable() { return (state != KOOPA_STATE_DIE); }
+    virtual int IsBlocking() { return ( state != KOOPA_STATE_DIE); }
 
     void SetHeld(bool held) { isHeld = held; }
     void SetState(int state);

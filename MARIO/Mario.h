@@ -48,12 +48,13 @@
 #define MARIO_STATE_SIT_RELEASE		601
 
 #define MARIO_STATE_FLY		800
-
+#define MARIO_STATE_FLOAT		850
 #define MARRIO_STATE_GROWING	700
 
 #define MARIO_CHANGE_TIME 500
-#define TIME_PREPARE_RUN 700
+#define TIME_PREPARE_RUN 500
 #define TAIL_ATTACK_TIME 400
+#define FLOATING_TIME_MAX 500
 #define MARIO_KICK 200
 #define TIME_SPEED 150
 
@@ -136,14 +137,17 @@
 #define ID_ANI_MARIO_RACCOON_RUNNING_RIGHT 2010
 #define ID_ANI_MARIO_RACCOON_RUNNING_LEFT 2011
 
+#define ID_ANI_MARIO_RACCOON_FLOATING_RIGHT 2020
+#define ID_ANI_MARIO_RACCOON_FLOATING_LEFT 2021
+
 #define ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT 2300
 #define ID_ANI_MARIO_RACCOON_JUMP_WALK_LEFT 2301
 
 #define ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_RIGHT 2310
 #define ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT 2311
 
-#define ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT 2400
-#define ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT 2401
+#define ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT 2620
+#define ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT 2621
 
 #define ID_ANI_MARIO_RACCOON_HOLDING_RIGHT 2111
 #define ID_ANI_MARIO_RACCOON_HOLDING_LEFT 2110
@@ -162,6 +166,8 @@
 
 #define ID_ANI_MARIO_RACCOON_BRACE_RIGHT 2600
 #define ID_ANI_MARIO_RACCOON_BRACE_LEFT 2601
+
+
 
 
 
@@ -225,12 +231,15 @@ class CMario : public CGameObject
 	ULONGLONG start_prepare;
 	ULONGLONG tailAttackStart;
 	ULONGLONG time_down_1_second;
+	ULONGLONG time_floating;
 	BOOLEAN isOnPlatform;
 	bool isHoldingRunKey;
 	bool isHoldingShell;
 	bool isKich = false;
 	bool isTailAttacking = false;
 	bool isRunning;
+	bool isFloating;
+	bool isJumpKeyHeld;
 	int levelRun;
 	int coin;
 	int score;
@@ -280,6 +289,8 @@ public:
 		isTransRaccoon = false;
 		isHoldingRunKey = false;
 		isHoldingShell = false;
+		isJumpKeyHeld = false;
+		isFloating = false;
 		targetLevel = -1;
 		lives = 4;
 		clock = TIME_CLOCK_INIT;
@@ -289,6 +300,7 @@ public:
 		speed_start = 0;
 		speed_stop = 0;
 		start_prepare = 0;
+		time_floating = 0;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -321,14 +333,17 @@ public:
 	int GetLevelRun() { return levelRun; }
 	int GetClock() { return clock; }
 	bool GetIsFlying() { return isFlying; }
-
+	bool GetJumpKeyHeld() { return isJumpKeyHeld; }
+	bool CanFloat();
 	bool GetIsOnPlatform() { return isOnPlatform; }
 	float GetCurrentHeight() const;
 	int GetLevel() { return this->level; }
 
 	int IsGrowing() { return isGrowing; }
-	int IsTransRaccoon() { return isTransRaccoon; }
-	int IsUntouchable() { return untouchable; }
+	bool IsTransRaccoon() { return isTransRaccoon; }
+	bool IsUntouchable() { return untouchable; }
+	bool IsFloating() { return isFloating; }
+
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
@@ -336,6 +351,7 @@ public:
 	bool GetIsRunning() { return isRunning; }
 	bool IsHoldingRunKey() { return isHoldingRunKey; }
 	void SetHoldingRunKey(int s) { isHoldingRunKey = s; }
+	void SetJumpKeyHeld(bool value) { isJumpKeyHeld = value; }
 	void SetTransRaccoon(int s) { isTransRaccoon = s; }
 	void PickUpShell(CKoopa* shell);
 	void AddLife(int amount) { lives += amount; }
