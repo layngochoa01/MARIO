@@ -16,8 +16,8 @@ effect.txt
 brickPSwitch.txt
 pswitch.txt
 hud.txt
-#[HIDDENMAP]
-#world1_1.txt
+[TILEMAP]
+world1_1.txt
 [OBJECTS]
 # type	x	y	extra_settings per object type
 # type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas, 4 = Coin, 5 = Platform, 

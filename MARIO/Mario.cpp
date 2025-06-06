@@ -218,7 +218,7 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	}
 	if (e->nx != 0 && e->obj->IsBlocking()) 
 	{
-		DebugOut(L"\t[COLLISIONN] CO XAY RA VA CHAM \n]");
+		//DebugOut(L"\t[COLLISIONN] CO XAY RA VA CHAM \n]");
 		vx = 0; checkUPCollisionX = true;
 	}
 	if (dynamic_cast<CGoomba*>(e->obj))
