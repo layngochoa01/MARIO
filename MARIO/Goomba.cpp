@@ -50,7 +50,7 @@ void CGoomba::OnNoCollision(DWORD dt)
 void CGoomba::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	if (dynamic_cast<CBrickQues*>(e->obj))
-		DebugOut(L"BRICK QUEST \n\n");
+		//DebugOut(L"BRICK QUEST \n\n");
 	if (!e->obj->IsBlocking()) { return; }
 	
 	if (dynamic_cast<CGoomba*>(e->obj))
@@ -103,7 +103,11 @@ void CGoomba::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (!CheckObjectInCamera(this)) return;
+	if (!CheckObjectInCamera(this)) 
+	{
+		//DebugOut(L"\t[GOOMBA] OBJECT NOT IN CAMERA \n");
+		return;
+	}
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	if (mario->IsUntouchable() || mario->IsGrowing() || mario->IsTransRaccoon() || mario->GetState() == MARIO_STATE_DIE) return;
 	
@@ -198,16 +202,17 @@ int CGoomba::GetAniGoombaPara() {
 //
 
 int CGoomba::GetAniGoombaBase() {
+	int aniId = -1;
 	switch (state)
 	{
 	case GOOMBA_STATE_UPSIDE:
-		DebugOut(L"[GOOMBA] RENDER UPSIDE \n");
-		return ID_ANI_GOOMBA_UPSIDE;
+		aniId = ID_ANI_GOOMBA_UPSIDE; break;
 	case GOOMBA_STATE_DIE:
-		return ID_ANI_GOOMBA_DIE;
+		aniId = ID_ANI_GOOMBA_DIE; break;
 	default:
-		return ID_ANI_GOOMBA_WALKING;
+		aniId = ID_ANI_GOOMBA_WALKING; break;
 	}
+	return aniId;
 }
 
 
@@ -223,6 +228,7 @@ void CGoomba::Render()
 		if (aniId == -1)
 			DebugOut(L"[GOOMBA ] NOT HAVE ANIID \n");
 	}
+	//DebugOut(L"[GOOMBA] ANIID %d\n", aniId);
 	CAnimations::GetInstance()->Get(aniId)->Render(x,y);
 	RenderBoundingBox();
 }
@@ -316,10 +322,11 @@ void CGoomba::SetState(int state)
 			
 	case GOOMBA_STATE_UPSIDE: 
 	{
+		die_start = GetTickCount64();
+		
 		vy = -GOOMBA_JUMP_DEFLECT_SPEED;
 		isUpside = true;
-		isDie = true;
-		die_start = GetTickCount64();
+		DebugOut(L"[GOOMBA] STATE DEBUG UPDISE die_start %llu, isUpside %d\n", die_start, isUpside);
 		break;
 	}		
 	}

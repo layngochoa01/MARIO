@@ -41,7 +41,7 @@
 
 #define MARRIO_STATE_GROWING	700
 #define MARIO_CHANGE_TIME 500
-#define TAIL_ATTACK_TIME 1000
+#define TAIL_ATTACK_TIME 500
 #define MARIO_KICK 200
 
 
@@ -167,7 +167,7 @@
 #define MARIO_BIG_SITTING_BBOX_WIDTH  14
 #define MARIO_BIG_SITTING_BBOX_HEIGHT 16
 
-#define MARIO_RACCOON_BBOX_WIDTH  14
+#define MARIO_RACCOON_BBOX_WIDTH  20
 #define MARIO_RACCOON_BBOX_HEIGHT 26
 #define MARIO_RACCOON_FLY_BBOX_WIDTH  23
 #define MARIO_RACCOON_FLY_BBOX_HEIGHT 26
@@ -247,11 +247,14 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY;
 
-		level = MARIO_LEVEL_SMALL;
+		kich_start = 0;
+		tailAttackStart = 0;
 		untouchable = 0;
 		untouchable_start = -1;
 		grow_start = 0;
 		transform_start = 0;
+
+		level = MARIO_LEVEL_SMALL;
 		isOnPlatform = false;
 		coin = 0;
 		score = 0;

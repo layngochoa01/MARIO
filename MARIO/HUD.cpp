@@ -68,9 +68,9 @@ void CHUD::Render()
 		DrawNumber(live % 10, x + POSITION_M_SYMBOL_X + 20.0f, y + POSITION_M_SYMBOL_Y);
 		//WRITE COIN
 		int coin = mario->GetCoin();
-		//if (coin / 10 > 0) {
+		if (coin / 10 > 0) {
 			DrawNumber(coin / 10, x + POSITION_M_SYMBOL_X + 140.0f + 7.0f, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
-		//}
+		}
 		DrawNumber(coin % 10, x + POSITION_M_SYMBOL_X + 140.0f + 15.0f, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
 		//WRITE CLOCK
 		int clock = mario->GetClock();

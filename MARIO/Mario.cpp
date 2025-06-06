@@ -14,7 +14,7 @@
 #include "Leaf.h"
 #include "FireBall.h"
 #include "PlantEnemies.h"
-
+#include"TailHitbox.h"
 #include "Effect.h"
 #include "Collision.h"
 #include "PlayScene.h"
@@ -24,7 +24,9 @@
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	DebugOut(L"\t[MARIO]TIME %d\n", clock);
+	//DebugOut(L"\t[MARIO]TIME %d\n", clock);
+	//DebugOut(L"\t[MARIO]IS TRANS RACCOON %d\n", isTransRaccoon);
+	DebugOut(L"[MARIO UPDATE]ISTAILATACK %d\n", isTailAttacking);
 	vy += MARIO_GRAVITY * dt;
 	vx += ax * dt;
 	
@@ -33,7 +35,25 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
+	if (isTailAttacking)
+	{
+		DebugOut(L"\t[MARIO UPDATE]TAO TAIL HIT BOX NGAN HAN %d\n");
+		float tailX, tailY, tailWidth = 8.0f, tailHeight = 8.0f;
 
+		if (nx > 0) // Quét sang phải
+		{
+			tailX = x + MARIO_RACCOON_BBOX_WIDTH / 2;
+		}
+		else // Quét sang trái
+		{
+			tailX = x - MARIO_RACCOON_BBOX_WIDTH / 2 - tailWidth;
+		}
+		tailY = y + 5.0f; // chỉnh tầm cao đuôi
+
+		CTailHitbox* tailBox = new CTailHitbox(tailX, tailY, this);
+		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+		scene->PushObject(tailBox);
+	}
 	if (isGrowing)
 	{
 		if (GetTickCount64() - grow_start > MARIO_CHANGE_TIME)
@@ -102,7 +122,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			isTailAttacking = false;
 			tailAttackStart = 0;
-			SetState(MARIO_STATE_IDLE);
 		}
 	}
 
@@ -220,16 +239,24 @@ void CMario::HandleSolidCollision(LPGAMEOBJECT gameobject, float objHeight)
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 {
 	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
-
+	/*if (isTailAttacking && !isTransRaccoon && !isGrowing) 
+	{
+		AddScoreEffect(goomba->GetX(), goomba->GetY(), SCORE_100);
+		DebugOut(L"\t[MARIO]TAIL ATACK GOOMBA\n");
+		goomba->SetState(GOOMBA_STATE_UPSIDE); DebugOut(L"\t[MARIO]GOOMBA UPSIDE\n");
+		
+	}
+	else
+	{*/
 		if (e->ny < 0)
 		{
 			if (goomba->GetState() != GOOMBA_STATE_DIE)
 			{
-				if(goomba->GetType() == GOOMBA_TYPE_WING && !goomba->IsAttack() )
+				if (goomba->GetType() == GOOMBA_TYPE_WING && !goomba->IsAttack())
 					goomba->SetState(GOOMBAPARA_STATE_IS_ATTACK);
 				else  goomba->SetState(GOOMBA_STATE_DIE);
 				vy = -MARIO_JUMP_DEFLECT_SPEED;
-				AddScoreEffect(goomba->GetX(),goomba->GetY(), SCORE_100);
+				AddScoreEffect(goomba->GetX(), goomba->GetY(), SCORE_100);
 			}
 		}
 		else // hit by Goomba
@@ -242,7 +269,9 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 				}
 			}
 		}
-	
+
+	//}
+		
 	// jump on top >> kill Goomba and deflect a bit 
 	
 }
@@ -256,7 +285,6 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 	coin++;
 }
 
-
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
 	CPortal* p = (CPortal*)e->obj;
@@ -265,7 +293,7 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 {
-	DebugOut(L"[MARIO VA CHAM VOI BRICK QUES]");
+	//DebugOut(L"[MARIO VA CHAM VOI BRICK QUES]");
 	CBrickQues* questionBrick = dynamic_cast<CBrickQues*>(e->obj);
 
 	if (!questionBrick || questionBrick->GetIsUnbox() || questionBrick->GetIsEmpty())
@@ -276,7 +304,7 @@ void CMario::OnCollisionWithBrickQues(LPCOLLISIONEVENT e)
 		return;
 	}
 
-	if (e->ny > 0)
+	if (e->ny > 0 )//|| (isTailAttacking && (e->nx != 0)))
 	{
 		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 		questionBrick->SetState(BRICK_QUES_STATE_UP);
@@ -385,6 +413,12 @@ void CMario::OnCollisionWithPlantEnemies(LPCOLLISIONEVENT e)
 	if (untouchable) return;
 	if (state != MARIO_STATE_DIE)
 	{
+		//if (isTailAttacking)
+		//{
+		//	AddScoreEffect(e->obj->GetX(), e->obj->GetY(), SCORE_100); 
+		//	e->obj->Delete();
+		//}
+		//else 
 		SetLevelLower();
 	}
 }
@@ -399,7 +433,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 		return;
 	}
 		
-	if (e->ny < 0)
+	if (e->ny < 0 )
 	{
 		//DebugOut(L"[VA CHAM VOI KOOPA TU TREN XUONG]ISWING %d, state %d\n", koopa->IsWing(), koopa->GetState());
 		if (!koopa->IsWing()) 
@@ -460,7 +494,7 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 	{
 		if (untouchable == 0)
 		{
-			if (koopa->GetState() == KOOPA_STATE_SHELL)
+			if (koopa->GetState() == KOOPA_STATE_SHELL )
 			{
 				if (isHoldingRunKey && !isHoldingShell) 
 				{
@@ -509,34 +543,45 @@ void CMario::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e)
 {
+	//DebugOut(L"[COLLISION ]ISTAILATACK %d\n", isTailAttacking);
 	CBrickPSwitch* bricksp = dynamic_cast<CBrickPSwitch*>(e->obj);
 	//DebugOut(L"[BUTTON SWITCH MODEL :%d]\n", bricksp->GetModel());
-	if (!bricksp || bricksp->IsEmpty()) 
+	if (!bricksp || bricksp->IsEmpty())
 	{
 		return;
 	}
-		
+
 	if (e->ny < 0) {
-		HandleSolidCollision( bricksp , BRICK_MODEL_BBOX_HEIGHT);
+		HandleSolidCollision(bricksp, BRICK_MODEL_BBOX_HEIGHT);
 		return;
 	}
-	if (e->ny > 0) 
+	if (e->ny > 0)
 	{
-		
-		if (bricksp->GetModel() == MODEL_PSWITCH) 
+
+		if (bricksp->GetModel() == MODEL_PSWITCH)
 		{
 			DebugOut(L"\t[STATE BRICK PSWITCH]\n\n");
 			bricksp->SetState(BRICK_STATE_NO_PSWITCH);
 			bricksp->CreatePSwitch();
 		}
-		else if (bricksp->GetModel() == MODEL_COIN) 
+		else if (bricksp->GetModel() == MODEL_COIN)
 		{
+
 			//DebugOut(L"\t[STATE COIN]\n\n");
 			bricksp->SetState(BRICK_MODEL_STATE_UP);
-			
 		}
-		
+
 	}
+	//else 
+	//{
+		//DebugOut(L"ISTAILATACK %d\n", isTailAttacking);
+		//if (isTailAttacking && (abs(bricksp->GetY() - GetY()) < MARIO_SMALL_BBOX_HEIGHT / 2))
+		//{
+		//	DebugOut(L"DUOI QUET BRICK %d\n", (abs(bricksp->GetY() - GetY()) < MARIO_SMALL_BBOX_HEIGHT / 2));
+		//}
+	//if(e->nx != 0 && (abs(bricksp->GetY() - GetY()) < MARIO_SMALL_BBOX_HEIGHT / 2))
+		
+	//}
 }
 
 
@@ -653,25 +698,33 @@ int CMario::GetAniIdRaccoon()
 	int aniId = -1;
 	if (!isOnPlatform) 
 	{
-		if (abs(ax) == MARIO_ACCEL_RUN_X)
+		if (!isTailAttacking) 
 		{
-			if (nx >= 0)
-				if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_RIGHT;
-				else aniId = aniId = ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT;
-			else
-				if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_LEFT;
-				else aniId = aniId = ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT;
-		}
-		else
-		{
-			if (nx >= 0)
+			if (abs(ax) == MARIO_ACCEL_RUN_X)
 			{
-				if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
-				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_RIGHT;
+				if (nx >= 0)
+					if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_RIGHT;
+					else aniId = aniId = -1;//ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT;
+				else
+					if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_LEFT;
+					else aniId = aniId = -1;//ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT;
 			}
 			else
-				if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_LEFT;
-				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT;
+			{
+				if (nx >= 0)
+				{
+					if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
+					else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_RIGHT;
+				}
+				else
+					if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_LEFT;
+					else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT;
+			}
+		}
+		else 
+		{
+			if (nx > 0) aniId = ID_ANI_MARIO_RACCOON_AROUND_FROM_RIGHT;
+			else aniId = ID_ANI_MARIO_RACCOON_AROUND_FROM_LEFT;
 		}
 	}
 	else 
@@ -845,7 +898,7 @@ void CMario::Render()
 
 
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 
 	//DebugOutTitle(L"Coins: %d", coin);
 	DebugOutTitle(L"Score: %d, Coins: %d", score, coin);
@@ -868,15 +921,24 @@ void CMario::SetState(int state)
 		break;
 	case MARIO_STATE_RUNNING_LEFT:
 		if (isSitting) break;
+		if (level == MARIO_LEVEL_RACCOON) {
+			isTailAttacking = true;
+		}
 		maxVx = -MARIO_RUNNING_SPEED;
 		ax = -MARIO_ACCEL_RUN_X;
 		nx = -1;
 		break;
 	case MARIO_STATE_WALKING_RIGHT:
+		if (level == MARIO_LEVEL_RACCOON) {
+			isTailAttacking = true;
+		}
 		if (isSitting) break;
 		maxVx = MARIO_WALKING_SPEED;
 		ax = MARIO_ACCEL_WALK_X;
 		nx = 1;
+		if (level == MARIO_LEVEL_RACCOON) {
+			isTailAttacking = true;
+		}
 		break;
 	case MARIO_STATE_WALKING_LEFT:
 		if (isSitting) break;

@@ -23,6 +23,7 @@ void CBrickPSwitch::SetState(int s)
     }
     case  BRICK_STATE_BREAK: 
         {//danh cho bi raccoon tan cong / mai rua dap vao
+       // DebugOut(L"\tSET STATE BROKEN \n");
         isBroken = true;
         break;
         }
@@ -128,8 +129,10 @@ void CBrickPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
             SetState(BRICK_STATE_HAS_MODEL);
         }
     }
+   // DebugOut(L"BROKEN %d \n", isBroken);
    if (isBroken) 
     {
+      
         isDeleted = true;
         this->Delete();
     }
