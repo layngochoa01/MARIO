@@ -44,33 +44,33 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define MAX_SCENE_LINE 1024
 
 
-void CPlayScene::_ParseSection_TILEMAP_DATA(string line)
-{
-	int ID, rowMap, columnMap, columnTile, rowTile, totalTiles, startX, startY;
-	LPCWSTR path = ToLPCWSTR(line);
-	ifstream f;
-
-	f.open(path);
-	f >> ID >> rowMap >> columnMap >> rowTile >> columnTile >> totalTiles >> startX >> startY;
-	//Init Map Matrix
-
-	int** TileMapData = new int* [rowMap];
-	for (int i = 0; i < rowMap; i++)
-	{
-		TileMapData[i] = new int[columnMap];
-		for (int j = 0; j < columnMap; j++)
-		{
-			f >> TileMapData[i][j];
-		}
-
-	}
-	f.close();
-
-	current_map = new CMap(ID, rowMap, columnMap, rowTile, columnTile, totalTiles, startX, startY);
-	current_map->ExtractTileFromTileSet();
-	current_map->SetTileMapData(TileMapData);
-	DebugOut(L"LOAD MAP SUCCESS START X %d, START Y %d\n", startX, startY);
-}
+//void CPlayScene::_ParseSection_TILEMAP_DATA(string line)
+//{
+//	int ID, rowMap, columnMap, columnTile, rowTile, totalTiles, startX, startY;
+//	LPCWSTR path = ToLPCWSTR(line);
+//	ifstream f;
+//
+//	f.open(path);
+//	f >> ID >> rowMap >> columnMap >> rowTile >> columnTile >> totalTiles >> startX >> startY;
+//	//Init Map Matrix
+//
+//	int** TileMapData = new int* [rowMap];
+//	for (int i = 0; i < rowMap; i++)
+//	{
+//		TileMapData[i] = new int[columnMap];
+//		for (int j = 0; j < columnMap; j++)
+//		{
+//			f >> TileMapData[i][j];
+//		}
+//
+//	}
+//	f.close();
+//
+//	current_map = new CMap(ID, rowMap, columnMap, rowTile, columnTile, totalTiles, startX, startY);
+//	current_map->ExtractTileFromTileSet();
+//	current_map->SetTileMapData(TileMapData);
+//	DebugOut(L"LOAD MAP SUCCESS START X %d, START Y %d\n", startX, startY);
+//}
 
 
 void CPlayScene::_ParseSection_SPRITES(string line)
@@ -342,7 +342,7 @@ void CPlayScene::Load()
 		if (line[0] == '#') continue;	// skip comment lines	
 		if (line == "[ASSETS]") { section = SCENE_SECTION_ASSETS; continue; };
 		if (line == "[OBJECTS]") { section = SCENE_SECTION_OBJECTS; continue; };
-		if (line == "[TILEMAP]") { section = SCENE_SECTION_TILEMAP_DATA; continue; }
+		//if (line == "[TILEMAP]") { section = SCENE_SECTION_TILEMAP_DATA; continue; }
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -352,12 +352,12 @@ void CPlayScene::Load()
 		{
 		case SCENE_SECTION_ASSETS: _ParseSection_ASSETS(line); break;
 		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
-		case SCENE_SECTION_TILEMAP_DATA: _ParseSection_TILEMAP_DATA(line); break;
+		//case SCENE_SECTION_TILEMAP_DATA: _ParseSection_TILEMAP_DATA(line); break;
 		}
 	}
 
 	f.close();
-
+	//if (current_map) DebugOut(L"LOAD MAP SUCCESS START ");
 	DebugOut(L"[INFO] Done loading scene  %s\n", sceneFilePath);
 }
 
@@ -419,7 +419,8 @@ void CPlayScene::UpdateCamera(LPGAMEOBJECT player)
 void CPlayScene::Render()
 {
 		CGame* game = CGame::GetInstance();
-		current_map->Render();
+		//if (current_map) current_map->Render();
+		//DebugOut(L"[TITLE MAP RENDER SUCCESS]\n");
 		for (int i = 0; i < objects.size(); i++)
 			objects[i]->Render();
 
@@ -455,10 +456,10 @@ void CPlayScene::Unload()
 		delete objects[i];
 
 	objects.clear();
-	delete current_map;
-	current_map = nullptr;
+	//delete current_map;
+	
 	player = NULL;
-
+	//current_map = nullptr;
 	DebugOut(L"[INFO] Scene %d unloaded! \n", id);
 }
 

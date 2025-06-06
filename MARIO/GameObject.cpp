@@ -43,30 +43,6 @@ CGameObject::~CGameObject()
 
 }
 
-//bool CGameObject::CheckObjectInCamera(CGameObject* obj)
-//{
-//	// Lấy camera hiện tại từ lớp Game
-//	float camX, camY;
-//	CGame::GetInstance()->GetCamPos(camX, camY);
-//
-//	// Kích thước màn hình 
-//	int screenWidth = SCREEN_WIDTH;
-//	int screenHeight = SCREEN_HEIGHT;
-//
-//	// Bounding box của đối tượng
-//	float left, top, right, bottom;
-//	obj->GetBoundingBox(left, top, right, bottom);
-//
-//	// Kiểm tra đối tượng có giao với camera không
-//	bool isInCamera = (
-//		right > camX &&
-//		left < camX + screenWidth &&
-//		bottom > camY &&
-//		top < camY + screenHeight
-//		);
-//
-//	return isInCamera;
-//}
 bool CGameObject::CheckObjectInCamera(CGameObject* obj)
 {
 

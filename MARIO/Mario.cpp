@@ -37,7 +37,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (nx > 0) vx = 0.1f;
 		else if (nx < 0) vx = -0.1f;
 	}
-	//DebugOut(L"MARIO POSITION			: X %f , Y %f, VX %f, VY %f, nx %d, state %d\n", x, y, vx, vy, nx, state);
+	DebugOut(L"MARIO POSITION			: X %f , Y %f, VX %f, VY %f, nx %d, state %d\n", x, y, vx, vy, nx, state);
 	//DebugOut(L"[MARIO ] IS HOLDING SHELL %d\n", isHoldingRunKey);
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;

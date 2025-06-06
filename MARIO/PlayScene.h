@@ -19,10 +19,10 @@ protected:
 
 	vector<LPGAMEOBJECT> objects;
 	CHUD* hud = NULL;
-	CMap* current_map = NULL; 
+	//CMap* current_map = NULL; 
 	void _ParseSection_SPRITES(string line);
 	void _ParseSection_ANIMATIONS(string line);
-	void _ParseSection_TILEMAP_DATA(string line);
+	//void _ParseSection_TILEMAP_DATA(string line);
 
 
 	void _ParseSection_ASSETS(string line);
@@ -41,7 +41,7 @@ public:
 
 	LPGAMEOBJECT GetPlayer() { return player; }
 	vector<LPGAMEOBJECT>* GetAllGameObjects() { return &objects; }
-	CMap* GetMap() { return current_map; } 
+	//CMap* GetMap() { return current_map; } 
 	
 	void Clear();
 	void PurgeDeletedObjects();
