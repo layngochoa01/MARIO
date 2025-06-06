@@ -622,10 +622,12 @@ int CMario::GetAniIdSmall()
 		{
 			if (nx >= 0)
 				if (isHoldingShell) aniId = ID_ANI_MARIO_SMALL_HOLDING_JUMP_RIGHT;
-				else aniId = aniId = ID_ANI_MARIO_SMALL_JUMP_RUN_RIGHT;
+				else if (levelRun == LEVEL_RUN_MAX) aniId = ID_ANI_MARIO_SMALL_JUMP_RUN_RIGHT;
+				else aniId =  ID_ANI_MARIO_SMALL_JUMP_WALK_RIGHT;
 			else
 				if (isHoldingShell) aniId = ID_ANI_MARIO_SMALL_HOLDING_JUMP_LEFT;
-				else aniId = aniId = ID_ANI_MARIO_SMALL_JUMP_RUN_LEFT;
+				else if (levelRun == LEVEL_RUN_MAX) aniId = ID_ANI_MARIO_SMALL_JUMP_RUN_LEFT;
+				else aniId = ID_ANI_MARIO_SMALL_JUMP_WALK_LEFT;
 		}
 		else
 		{
@@ -703,10 +705,12 @@ int CMario::GetAniIdRaccoon()
 		{
 			if (nx >= 0)
 				if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_RIGHT;
-				else if(levelRun == LEVEL_RUN_MAX) aniId = -1;// ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT;
+				else if (levelRun == LEVEL_RUN_MAX) aniId = -1;
+				else aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
 			else
 				if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_LEFT;
-				else if(levelRun == LEVEL_RUN_MAX) aniId = -1; //ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT;
+				else if (levelRun == LEVEL_RUN_MAX) aniId = -1; //ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT;
+				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT;
 		}
 		else
 		{
@@ -799,10 +803,12 @@ int CMario::GetAniIdBig()
 		{
 			if (nx >= 0)
 				if (isHoldingShell) aniId = ID_ANI_MARIO_HOLDING_JUMP_RIGHT;
-				else aniId = aniId = ID_ANI_MARIO_JUMP_RUN_RIGHT;
+				else if (levelRun == LEVEL_RUN_MAX) aniId = ID_ANI_MARIO_JUMP_RUN_RIGHT;
+				else aniId = ID_ANI_MARIO_JUMP_WALK_RIGHT;
 			else
 				if (isHoldingShell) aniId = ID_ANI_MARIO_HOLDING_JUMP_LEFT;
-				else aniId = aniId = ID_ANI_MARIO_JUMP_RUN_LEFT;
+				else if (levelRun == LEVEL_RUN_MAX) aniId = ID_ANI_MARIO_JUMP_RUN_LEFT;
+				else aniId = ID_ANI_MARIO_JUMP_WALK_LEFT;
 		}
 		else
 		{
