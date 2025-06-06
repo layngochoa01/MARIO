@@ -3,7 +3,7 @@
 
 #include "Mario.h"
 #include "Game.h"
-
+#include "Card.h"
 #include "Goomba.h"
 #include "Coin.h"
 #include "Platform.h"

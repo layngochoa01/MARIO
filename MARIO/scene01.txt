@@ -17,6 +17,9 @@ brickPSwitch.txt
 pswitch.txt
 hud.txt
 world1_1.txt
+card.txt
+
+
 #[TILEMAP]
 #world1_1.txt
 
@@ -551,6 +554,7 @@ world1_1.txt
 5	2910	959	8	8	1	60529
 #KHUNG CHO CARD RANDOM
 6	2990	910	60530
+20	2990	910
 #ground
 5	15	1000	20	25	37	20051	20052	20053
 1	753	981	0

@@ -8,6 +8,7 @@
 #include "Sprites.h"
 #include "Portal.h"
 #include "Coin.h"
+#include "Card.h"
 #include "Platform.h"
 #include "BackgroundOBJ.h"
 #include "Pipe.h"
@@ -212,6 +213,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CBackgroundOBJ(x, y, sprite_id);
 		break;
 	}
+
+	case OBJECT_TYPE_CARD: obj = new CCard(x, y); break;
 
 	case OBJECT_TYPE_EFFECT:
 	{
