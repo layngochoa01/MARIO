@@ -77,6 +77,36 @@ void CHUD::Render()
 		DrawNumber(clock / 100, x + POSITION_M_SYMBOL_X + 130.0f + 8.0f, y + POSITION_M_SYMBOL_Y);
 		DrawNumber((clock / 10) % 10, x + POSITION_M_SYMBOL_X + 130.0f + 8.0f * 2, y + POSITION_M_SYMBOL_Y);
 		DrawNumber(clock % 10, x + POSITION_M_SYMBOL_X + 130.0f + 8.0f * 3, y + POSITION_M_SYMBOL_Y);
+	
+		for (int i = 0; i < 6; i++) 
+		{
+			CAnimations::GetInstance()->Get(ID_ANI_POWER_HUD_OFF)->Render(x + ADJUST_X_POWER_POSITION + DISTANCE_EVERY_LEVEL_RUN * i, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		}
+
+		CAnimations::GetInstance()->Get(ID_ANI_POWER_HUD_MAX_OFF)->Render(x + ADJUST_X_POWER_POSITION + DISTANCE_EVERY_LEVEL_RUN * 7, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		
+		if (mario->GetLevelRun() > 1)
+		{
+			CAnimations::GetInstance()->Get(ID_ANI_POWER_HUD_ON)->Render(x + ADJUST_X_POWER_POSITION, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		}
+		if (mario->GetLevelRun() > 2) {
+			CAnimations::GetInstance()->Get(ID_ANI_POWER_HUD_ON)->Render(x + ADJUST_X_POWER_POSITION + DISTANCE_EVERY_LEVEL_RUN, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		}
+		if (mario->GetLevelRun() > 3) {
+			CAnimations::GetInstance()->Get(ID_ANI_POWER_HUD_ON)->Render(x + ADJUST_X_POWER_POSITION + DISTANCE_EVERY_LEVEL_RUN * 2, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		}
+		if (mario->GetLevelRun() > 4) {
+			CAnimations::GetInstance()->Get(ID_ANI_POWER_HUD_ON)->Render(x + ADJUST_X_POWER_POSITION + DISTANCE_EVERY_LEVEL_RUN * 3, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		}
+		if (mario->GetLevelRun() > 5) {
+			CAnimations::GetInstance()->Get(ID_ANI_POWER_HUD_ON)->Render(x + ADJUST_X_POWER_POSITION + DISTANCE_EVERY_LEVEL_RUN * 4, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		}
+		if (mario->GetLevelRun() > 6) {
+			CAnimations::GetInstance()->Get(ID_ANI_POWER_HUD_ON)->Render(x + ADJUST_X_POWER_POSITION + DISTANCE_EVERY_LEVEL_RUN * 5, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		}
+		if (mario->GetLevelRun() == LEVEL_RUN_MAX) {
+			CAnimations::GetInstance()->Get(ID_ANI_POWER_HUD_MAX_ON)->Render(x + ADJUST_X_POWER_POSITION + DISTANCE_EVERY_LEVEL_RUN * 7, y + POSITION_M_SYMBOL_Y - OFFSET_WORLD_SYMBOL_FROM_M);
+		}
 	}
 }
 

@@ -4,7 +4,7 @@
 #include "PlayScene.h"
 
 #include "BrickQues.h"
-CGoomba::CGoomba(float x, float y, int t):CGameObject(x, y)
+CGoomba::CGoomba(float x, float y, int t) :CGameObject(x, y)
 {
 	this->ax = 0;
 	this->ay = GOOMBA_GRAVITY;
@@ -22,7 +22,7 @@ CGoomba::CGoomba(float x, float y, int t):CGameObject(x, y)
 	SetState(GOOMBA_STATE_WALKING);
 }
 
-void CGoomba::GetBoundingBox(float &left, float &top, float &right, float &bottom)
+void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	if (isUpside) return;
 	if (isDie)
@@ -50,9 +50,9 @@ void CGoomba::OnNoCollision(DWORD dt)
 void CGoomba::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	if (dynamic_cast<CBrickQues*>(e->obj))
-		//DebugOut(L"BRICK QUEST \n\n");
+		DebugOut(L"BRICK QUEST \n\n");
 	if (!e->obj->IsBlocking()) { return; }
-	
+
 	if (dynamic_cast<CGoomba*>(e->obj))
 	{
 		if (type == GOOMBA_TYPE_WING)
@@ -103,22 +103,18 @@ void CGoomba::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (!CheckObjectInCamera(this)) 
-	{
-		//DebugOut(L"\t[GOOMBA] OBJECT NOT IN CAMERA \n");
-		return;
-	}
+	if (!CheckObjectInCamera(this)) return;
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	if (mario->IsUntouchable() || mario->IsGrowing() || mario->IsTransRaccoon() || mario->GetState() == MARIO_STATE_DIE) return;
-	
+
 	vy += ay * dt;
 	vx += ax * dt;
-	if ( (state == GOOMBA_STATE_DIE) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT) )
+	if ((state == GOOMBA_STATE_DIE) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT))
 	{
 		isDeleted = true;
 		return;
 	}
-	if ((isUpside == true ) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT ))
+	if ((isUpside == true) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT))
 	{
 		isDeleted = true;
 		return;
@@ -126,7 +122,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (vy < 0) {
 		isOnGround = false;
 	}
-	if (!isUpside) 
+	if (!isUpside)
 	{
 		if ((type == GOOMBA_TYPE_WING) && (!isAttack)) {
 			if ((GetTickCount64() - walking_start > TIME_WALKING - TIME_JUMP_SMALL) && !isJump) {
@@ -157,7 +153,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			}
 		}
-		
+
 	}
 
 	CGameObject::Update(dt, coObjects);
@@ -169,32 +165,32 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 int CGoomba::GetAniGoombaPara() {
 	int aniId = -1;
-	
+
 	if (isAttack) {
 		switch (state)
 		{
-			case GOOMBA_STATE_UPSIDE:
-				aniId = ID_ANI_GOOMBAPARA_UPSIDE; break;
-			case GOOMBA_STATE_DIE:
-				aniId = ID_ANI_GOOMBAPARA_DIE; break;
-			default:
-				aniId = ID_ANI_GOOMBAPARA_WALKING;
-				break;
+		case GOOMBA_STATE_UPSIDE:
+			aniId = ID_ANI_GOOMBAPARA_UPSIDE; break;
+		case GOOMBA_STATE_DIE:
+			aniId = ID_ANI_GOOMBAPARA_DIE; break;
+		default:
+			aniId = ID_ANI_GOOMBAPARA_WALKING;
+			break;
 		}
 	}
-		else 
+	else
+	{
+		if (isUpside)
 		{
-			if (isUpside) 
-			{
-				aniId = ID_ANI_GOOMBAPARA_UPSIDE;
-			}
-			else if (!isOnGround) {
-				aniId = ID_ANI_GOOMBAPARA_FLY_JUMP;
-			}
-			else aniId = ID_ANI_GOOMBAPARA_FLY_WALKING;
+			aniId = ID_ANI_GOOMBAPARA_UPSIDE;
 		}
-	
-	
+		else if (!isOnGround) {
+			aniId = ID_ANI_GOOMBAPARA_FLY_JUMP;
+		}
+		else aniId = ID_ANI_GOOMBAPARA_FLY_WALKING;
+	}
+
+
 	return aniId;
 }
 //
@@ -202,17 +198,16 @@ int CGoomba::GetAniGoombaPara() {
 //
 
 int CGoomba::GetAniGoombaBase() {
-	int aniId = -1;
 	switch (state)
 	{
 	case GOOMBA_STATE_UPSIDE:
-		aniId = ID_ANI_GOOMBA_UPSIDE; break;
+		DebugOut(L"[GOOMBA] RENDER UPSIDE \n");
+		return ID_ANI_GOOMBA_UPSIDE;
 	case GOOMBA_STATE_DIE:
-		aniId = ID_ANI_GOOMBA_DIE; break;
+		return ID_ANI_GOOMBA_DIE;
 	default:
-		aniId = ID_ANI_GOOMBA_WALKING; break;
+		return ID_ANI_GOOMBA_WALKING;
 	}
-	return aniId;
 }
 
 
@@ -222,14 +217,13 @@ void CGoomba::Render()
 	int aniId = -1;
 	if (type == GOOMBA_TYPE_BASE)
 		aniId = GetAniGoombaBase();
-	else if(type == GOOMBA_TYPE_WING)
+	else if (type == GOOMBA_TYPE_WING)
 		aniId = GetAniGoombaPara();
 	else {
 		if (aniId == -1)
 			DebugOut(L"[GOOMBA ] NOT HAVE ANIID \n");
 	}
-	//DebugOut(L"[GOOMBA] ANIID %d\n", aniId);
-	CAnimations::GetInstance()->Get(aniId)->Render(x,y);
+	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
 	RenderBoundingBox();
 }
 
@@ -248,7 +242,7 @@ void CGoomba::SetState(int state)
 		isUpside = false;
 		break;
 	}
-	
+
 	case GOOMBA_STATE_WALKING:
 	{
 		if (type == GOOMBA_TYPE_BASE)
@@ -271,7 +265,7 @@ void CGoomba::SetState(int state)
 				isUpside = false;
 				walking_start = GetTickCount64();
 			}
-			else 
+			else
 			{
 				isDie = false;
 				isJump = false;
@@ -283,7 +277,7 @@ void CGoomba::SetState(int state)
 		}
 		break;
 	}
-		
+
 	case GOOMBAPARA_STATE_FLY:
 	{
 		vy = -GOOMBA_JUMP_DEFLECT_SPEED; // Nhảy lên
@@ -291,7 +285,7 @@ void CGoomba::SetState(int state)
 		isOnGround = false;
 		break;
 	}
-			
+
 	case GOOMBAPARA_STATE_IS_ATTACK:
 	{
 		vx = -GOOMBA_WALKING_SPEED;
@@ -319,16 +313,15 @@ void CGoomba::SetState(int state)
 		};
 		break;
 	}
-			
-	case GOOMBA_STATE_UPSIDE: 
+
+	case GOOMBA_STATE_UPSIDE:
 	{
-		die_start = GetTickCount64();
-		
 		vy = -GOOMBA_JUMP_DEFLECT_SPEED;
 		isUpside = true;
-		DebugOut(L"[GOOMBA] STATE DEBUG UPDISE die_start %llu, isUpside %d\n", die_start, isUpside);
+		isDie = true;
+		die_start = GetTickCount64();
 		break;
-	}		
+	}
 	}
 	CGameObject::SetState(state);
 }

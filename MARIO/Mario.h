@@ -10,6 +10,12 @@
 #define TIME_CLOCK_INIT		300
 #define TIME_ONE_SECOND	1000
 
+#define MARIO_FLY_FALL 0.0f
+#define MARIO_FLYING 0.27f
+
+#define SCORE_MAX 9999999
+#define LEVEL_RUN_MAX 7
+#define TIME_FLY 3000
 
 #define MARIO_WALKING_SPEED		    0.1f
 #define MARIO_RUNNING_SPEED		    0.17f
@@ -19,7 +25,9 @@
 #define MARIO_JUMP_SPEED_Y		    0.3f		
 #define MARIO_JUMP_RUN_SPEED_Y	    0.35f		
 #define MARIO_GRAVITY			    0.0005f		
-#define MARIO_JUMP_DEFLECT_SPEED    0.15f		
+#define MARIO_JUMP_DEFLECT_SPEED    0.15f
+#define SPEED_MARIO_WHEN_BLOCK 0.007f
+#define SPEED_LEVEL_RUN 0.01f
 
 #define MARIO_STATE_DIE				-10
 #define MARIO_STATE_IDLE			0
@@ -39,10 +47,15 @@
 #define MARIO_STATE_SIT				600
 #define MARIO_STATE_SIT_RELEASE		601
 
+#define MARIO_STATE_FLY		800
+
 #define MARRIO_STATE_GROWING	700
+
 #define MARIO_CHANGE_TIME 500
+#define TIME_PREPARE_RUN 700
 #define TAIL_ATTACK_TIME 500
 #define MARIO_KICK 200
+#define TIME_SPEED 150
 
 
 #pragma region ANIMATION_ID
@@ -207,6 +220,9 @@ class CMario : public CGameObject
 	ULONGLONG grow_start;//thời gian biến to
 	ULONGLONG transform_start;// thời gian biến hình
 	ULONGLONG kich_start;
+	ULONGLONG speed_stop;
+	ULONGLONG speed_start;
+	ULONGLONG start_prepare;
 	ULONGLONG tailAttackStart;
 	ULONGLONG time_down_1_second;
 	BOOLEAN isOnPlatform;
@@ -214,6 +230,8 @@ class CMario : public CGameObject
 	bool isHoldingShell;
 	bool isKich = false;
 	bool isTailAttacking = false;
+	bool isRunning;
+	int levelRun;
 	int coin;
 	int score;
 	int lives;
@@ -265,7 +283,12 @@ public:
 		targetLevel = -1;
 		lives = 4;
 		clock = TIME_CLOCK_INIT;
-		time_down_1_second = GetTickCount64();
+		time_down_1_second = GetTickCount64();	
+		isRunning = false;
+		levelRun = 0;
+		speed_start = 0;
+		speed_stop = 0;
+		start_prepare = 0;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -288,13 +311,16 @@ public:
 	void SetY(int l) { this->y = l; }
 	void SetX(int l) { this->x = l; }
 	void SetLevelLower();
+	void SetIsRunning(bool b) { isRunning = b; }
 	void ResetVerticalMovement();
 	void DownTimeClock1Second();
 	void ClockReset() { this->clock = TIME_CLOCK_INIT; };
 
 	int GetCoin() { return this->coin; }
 	int GetScore() { return score; }
+	int GetLevelRun() { return levelRun; }
 	int GetClock() { return clock; }
+	bool GetIsFlying() { return isFlying; }
 
 	bool GetIsOnPlatform() { return isOnPlatform; }
 	float GetCurrentHeight() const;
@@ -307,7 +333,7 @@ public:
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void AddScoreEffect(float xTemp, float yTemp, int scoreAdd);
-
+	bool GetIsRunning() { return isRunning; }
 	bool IsHoldingRunKey() { return isHoldingRunKey; }
 	void SetHoldingRunKey(int s) { isHoldingRunKey = s; }
 	void SetTransRaccoon(int s) { isTransRaccoon = s; }
@@ -315,4 +341,5 @@ public:
 	void AddLife(int amount) { lives += amount; }
 	void LoseLife();
 	int GetLives() { return lives; }
+
 };
