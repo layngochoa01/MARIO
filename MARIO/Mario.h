@@ -28,6 +28,8 @@
 #define MARIO_JUMP_DEFLECT_SPEED    0.15f
 #define SPEED_MARIO_WHEN_BLOCK 0.007f
 #define SPEED_LEVEL_RUN 0.01f
+#define MARIO_SPEED_USE_PIPE 0.02f
+
 
 #define MARIO_STATE_DIE				-10
 #define MARIO_STATE_IDLE			0
@@ -51,12 +53,16 @@
 #define MARIO_STATE_FLOAT		850
 #define MARRIO_STATE_GROWING	700
 
+#define MARIO_STATE_DOWNING_PIPE 900
+#define MARIO_STATE_UPPING_PIPE 1000
+
 #define MARIO_CHANGE_TIME 500
 #define TIME_PREPARE_RUN 500
 #define TAIL_ATTACK_TIME 400
 #define FLOATING_TIME_MAX 500
 #define MARIO_KICK 200
 #define TIME_SPEED 150
+#define TIME_WAIT_USE_PIPE 500
 
 
 #pragma region ANIMATION_ID
@@ -93,6 +99,8 @@
 
 #define ID_ANI_MARIO_KICH_RIGHT 1003
 #define ID_ANI_MARIO_KICH_LEFT 1002
+
+
 
 #define ID_ANI_MARIO_DIE 999
 
@@ -146,8 +154,6 @@
 #define ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_RIGHT 2310
 #define ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT 2311
 
-#define ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT 2620
-#define ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT 2621
 
 #define ID_ANI_MARIO_RACCOON_HOLDING_RIGHT 2111
 #define ID_ANI_MARIO_RACCOON_HOLDING_LEFT 2110
@@ -167,7 +173,10 @@
 #define ID_ANI_MARIO_RACCOON_BRACE_RIGHT 2600
 #define ID_ANI_MARIO_RACCOON_BRACE_LEFT 2601
 
+#define ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT 2620
+#define ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT 2621
 
+#define ID_ANI_MARIO_RACCOON_USE_PIPE 2650
 
 
 
@@ -212,6 +221,10 @@
 
 
 
+
+
+
+
 class CMario : public CGameObject
 {
 	BOOLEAN isSitting;
@@ -232,6 +245,7 @@ class CMario : public CGameObject
 	ULONGLONG tailAttackStart;
 	ULONGLONG time_down_1_second;
 	ULONGLONG time_floating;
+	ULONGLONG time_wait_use_pipe;
 	BOOLEAN isOnPlatform;
 	bool isHoldingRunKey;
 	bool checkUPCollisionX = false;
@@ -258,9 +272,16 @@ class CMario : public CGameObject
 	void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
 	void OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e);
 	void OnCollisionWithPSwitch(LPCOLLISIONEVENT e);
+	void OnCollisionWithPipe(LPCOLLISIONEVENT e);
 	int GetAniIdBig();
 	int GetAniIdSmall();
 	int GetAniIdRaccoon();
+
+	float startUsePiPeY;   // Tọa độ Y bắt đầu dùng pipe
+
+	bool isDown;        
+	bool isUp;         
+	bool isUsePipe;        // Mario đang dùng ống
 
 	bool isGrowing;// xác định mario đang biến hình từ nhỏ biến to
 	bool isTransRaccoon;// xác định mario đang biến hình từ to thành chồn
@@ -292,6 +313,9 @@ public:
 		isHoldingShell = false;
 		isJumpKeyHeld = false;
 		isFloating = false;
+		isDown = false;
+		isUp = false;
+		isUsePipe = false;
 		targetLevel = -1;
 		lives = 4;
 		clock = TIME_CLOCK_INIT;
@@ -302,6 +326,7 @@ public:
 		speed_stop = 0;
 		start_prepare = 0;
 		time_floating = 0;
+		time_wait_use_pipe = 0;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -328,7 +353,7 @@ public:
 	void ResetVerticalMovement();
 	void DownTimeClock1Second();
 	void ClockReset() { this->clock = TIME_CLOCK_INIT; };
-
+	int IsUsePipe() { return isUsePipe; }
 	int GetCoin() { return this->coin; }
 	int GetScore() { return score; }
 	int GetLevelRun() { return levelRun; }

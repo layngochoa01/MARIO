@@ -8,6 +8,7 @@
 #include "Coin.h"
 #include "Platform.h"
 #include "Portal.h"
+#include "Pipe.h"
 #include "BrickQues.h"
 #include "BrickPSwitch.h"
 #include "BaseMushroom.h"
@@ -33,7 +34,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vy += MARIO_GRAVITY * dt;
 		vx += ax * dt;
 	}
-	else 
+	else
 	{
 		if (nx > 0) vx = 0.1f;
 		else if (nx < 0) vx = -0.1f;
@@ -144,7 +145,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// tốc độ tối thiểu khi chạy để bay lên
 	if ((!isRunning) || (!vx) || (checkUPCollisionX && isOnPlatform) || (ax * vx < 0) || ((!isOnPlatform) && (isFlying) && (vy > 0)) || ((abs(vx) < SPEED_MARIO_WHEN_BLOCK) && (!isFlying)))
 	{
-		
+
 		//DebugOut(L"MARIO POSITION - LEVEL RUN: X %f , Y %f, VX %f, VY %f, nx %d, state %d\n\n", x, y, vx, vy, nx, state);
 		if (GetTickCount64() - speed_stop > TIME_SPEED) {
 			if (levelRun > 0) levelRun--;
@@ -172,7 +173,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 	//dang floating
-	if (isFloating) 
+	if (isFloating)
 	{
 		if (GetTickCount64() - time_floating > FLOATING_TIME_MAX)
 		{
@@ -185,6 +186,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (state != MARIO_STATE_DIE || !isGrowing || !isTransRaccoon)
 		DownTimeClock1Second();
 
+	//USE PIPE
+	if (isDown)
+	{
+		if (GetTickCount64() - time_wait_use_pipe > TIME_WAIT_USE_PIPE * 2)
+		{
+			isUsePipe = true;
+			if (GetTickCount64() - time_wait_use_pipe > TIME_WAIT_USE_PIPE * 3)
+				SetState(MARIO_STATE_DOWNING_PIPE);
+
+		}
+	}
+	else { isUsePipe = false; }
+	
 	//Neu mario bi fall => DIE
 	if (y > POSITION_Y_DIE  ) { SetState(MARIO_STATE_DIE); }
 	if (x > POSITION_END_MAP) { x = POSITION_END_MAP; }
@@ -254,6 +268,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithBrickPSwitch(e);
 	else if (dynamic_cast<CPSwitch*>(e->obj))
 		OnCollisionWithPSwitch(e);
+	else if (dynamic_cast<CPipe*>(e->obj))
+		OnCollisionWithPipe(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
 }
@@ -665,6 +681,22 @@ void CMario::OnCollisionWithPSwitch(LPCOLLISIONEVENT e)
 
 }
 
+void CMario::OnCollisionWithPipe(LPCOLLISIONEVENT e)
+{
+	DebugOut(L"[COLLISION WITH PIPE AT X %f, Y %f \n]", x, y);
+	CPipe* P = dynamic_cast<CPipe*>(e->obj);
+	if (e->ny < 0 && isSitting)
+	{
+		isDown = true;
+		if(time_wait_use_pipe == 0) time_wait_use_pipe = GetTickCount64();
+	}
+	else 
+	{
+		isDown = false;
+		time_wait_use_pipe = 0;
+	}
+}
+
 //
 // Get animation ID for small Mario
 //
@@ -754,92 +786,99 @@ int CMario::GetAniIdSmall()
 int CMario::GetAniIdRaccoon()
 {
 	int aniId = -1;
-	if (!isOnPlatform)
+	if (!isUsePipe) 
 	{
-		if (abs(ax) == MARIO_ACCEL_RUN_X)
+		if (!isOnPlatform)
 		{
-			if (nx >= 0)
-				if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_RIGHT;
-				else if (levelRun == LEVEL_RUN_MAX) aniId = ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT;
-				else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_RIGHT;
-				else aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
-			else
-				if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_LEFT ;
-				else if (levelRun == LEVEL_RUN_MAX) aniId = ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT;
-				else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_LEFT;
-				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT;
-		}
-		else
-		{
-			if (nx >= 0)
+			if (abs(ax) == MARIO_ACCEL_RUN_X)
 			{
-				if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
-				else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_RIGHT;
-				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_RIGHT;
+				if (nx >= 0)
+					if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_RIGHT;
+					else if (levelRun == LEVEL_RUN_MAX) aniId = ID_ANI_MARIO_RACCOON_JUMP_RUN_RIGHT;
+					else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_RIGHT;
+					else aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
+				else
+					if (isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_HOLDING_JUMP_LEFT;
+					else if (levelRun == LEVEL_RUN_MAX) aniId = ID_ANI_MARIO_RACCOON_JUMP_RUN_LEFT;
+					else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_LEFT;
+					else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT;
 			}
 			else
-				if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_LEFT;
-				else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_LEFT;
-				else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT;
-		}
-	}
-	else
-	{
-		if (isSitting)
-		{
-			if (nx > 0)
-				aniId = ID_ANI_MARIO_RACCOON_SIT_RIGHT;
-			else
-				aniId = ID_ANI_MARIO_RACCOON_SIT_LEFT;
+			{
+				if (nx >= 0)
+				{
+					if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_RIGHT;
+					else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_RIGHT;
+					else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_RIGHT;
+				}
+				else
+					if (vy <= 0) aniId = ID_ANI_MARIO_RACCOON_JUMP_WALK_LEFT;
+					else if (isFloating) aniId = ID_ANI_MARIO_RACCOON_FLOATING_LEFT;
+					else aniId = ID_ANI_MARIO_RACCOON_NOT_JUMP_WALK_LEFT;
+			}
 		}
 		else
 		{
-			if (!isTailAttacking)
+			if (isSitting)
 			{
-				if (!isKich)
+				if (nx > 0)
+					aniId = ID_ANI_MARIO_RACCOON_SIT_RIGHT;
+				else
+					aniId = ID_ANI_MARIO_RACCOON_SIT_LEFT;
+			}
+			else
+			{
+				if (!isTailAttacking)
 				{
-					if (vx == 0)
+					if (!isKich)
 					{
-						if (nx > 0) aniId = ID_ANI_MARIO_RACCOON_IDLE_RIGHT;
-						else aniId = ID_ANI_MARIO_RACCOON_IDLE_LEFT;
-					}
-					else if (vx > 0)
-					{
-						if (ax < 0)
-							aniId = ID_ANI_MARIO_RACCOON_BRACE_RIGHT;
-						else if (ax == MARIO_ACCEL_RUN_X)
+						if (vx == 0)
 						{
-							if (!isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_RUNNING_RIGHT;
-							else aniId = ID_ANI_MARIO_RACCOON_HOLDING_RIGHT;
+							if (nx > 0) aniId = ID_ANI_MARIO_RACCOON_IDLE_RIGHT;
+							else aniId = ID_ANI_MARIO_RACCOON_IDLE_LEFT;
 						}
-						else if (ax == MARIO_ACCEL_WALK_X)
-							aniId = ID_ANI_MARIO_RACCOON_WALKING_RIGHT;
-					}
-					else // vx < 0
-					{
-						if (ax > 0)
-							aniId = ID_ANI_MARIO_RACCOON_BRACE_LEFT;
-						else if (ax == -MARIO_ACCEL_RUN_X)
+						else if (vx > 0)
 						{
-							if (!isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_RUNNING_LEFT;
-							else aniId = ID_ANI_MARIO_RACCOON_HOLDING_LEFT;
+							if (ax < 0)
+								aniId = ID_ANI_MARIO_RACCOON_BRACE_RIGHT;
+							else if (ax == MARIO_ACCEL_RUN_X)
+							{
+								if (!isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_RUNNING_RIGHT;
+								else aniId = ID_ANI_MARIO_RACCOON_HOLDING_RIGHT;
+							}
+							else if (ax == MARIO_ACCEL_WALK_X)
+								aniId = ID_ANI_MARIO_RACCOON_WALKING_RIGHT;
 						}
-						else if (ax == -MARIO_ACCEL_WALK_X)
-							aniId = ID_ANI_MARIO_RACCOON_WALKING_LEFT;
+						else // vx < 0
+						{
+							if (ax > 0)
+								aniId = ID_ANI_MARIO_RACCOON_BRACE_LEFT;
+							else if (ax == -MARIO_ACCEL_RUN_X)
+							{
+								if (!isHoldingShell) aniId = ID_ANI_MARIO_RACCOON_RUNNING_LEFT;
+								else aniId = ID_ANI_MARIO_RACCOON_HOLDING_LEFT;
+							}
+							else if (ax == -MARIO_ACCEL_WALK_X)
+								aniId = ID_ANI_MARIO_RACCOON_WALKING_LEFT;
+						}
+					}
+					else
+					{
+						if (vx > 0) aniId = ID_ANI_MARIO_RACCOON_KICH_RIGHT;
+						else aniId = ID_ANI_MARIO_RACCOON_KICH_LEFT;
 					}
 				}
 				else
 				{
-					if (vx > 0) aniId = ID_ANI_MARIO_RACCOON_KICH_RIGHT;
-					else aniId = ID_ANI_MARIO_RACCOON_KICH_LEFT;
+					if (nx > 0) aniId = ID_ANI_MARIO_RACCOON_AROUND_FROM_RIGHT;
+					else aniId = ID_ANI_MARIO_RACCOON_AROUND_FROM_LEFT;
 				}
 			}
-			else
-			{
-				if (nx > 0) aniId = ID_ANI_MARIO_RACCOON_AROUND_FROM_RIGHT;
-				else aniId = ID_ANI_MARIO_RACCOON_AROUND_FROM_LEFT;
-			}
 		}
+	}
+	else 
+	{
+		aniId = ID_ANI_MARIO_RACCOON_USE_PIPE ;
 	}
 	if (aniId == -1)
 	{
@@ -1068,6 +1107,23 @@ void CMario::SetState(int state)
 		vy = 0.07f;
 		//DebugOut(L"VX KHI FLOAT MOI DC SET :%f\n", vx);
 		break;
+
+	case MARIO_STATE_DOWNING_PIPE:
+		isUsePipe = true;
+		vx = 0;
+		ay = 0;
+		startUsePiPeY = y;
+		vy = MARIO_SPEED_USE_PIPE;
+		break;
+
+	case MARIO_STATE_UPPING_PIPE:
+		isUsePipe = true;
+		vx = 0;
+		ay = 0;
+		startUsePiPeY = y;
+		vy = -MARIO_SPEED_USE_PIPE;
+		break;
+
 	case MARIO_STATE_DIE:
 		vy = -MARIO_JUMP_DEFLECT_SPEED;
 		vx = 0;

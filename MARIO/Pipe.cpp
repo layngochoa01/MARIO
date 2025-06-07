@@ -1,7 +1,8 @@
 #include "Pipe.h"
-
+#include "PlayScene.h"
 #include "Sprite.h"
 #include "Sprites.h"
+#include "Mario.h"
 #include "Collision.h"
 #include "Textures.h"
 #include "Game.h"
@@ -76,4 +77,11 @@ int CPipe::IsDirectionColliable(float nx, float ny)
 {
 	
 	return 1;
+}
+
+int CPipe::IsBlocking()
+{
+	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	if (mario->IsUsePipe() && PipeCanDown()) return 0;
+	return (cellHeight > 10 && cellWidth > 16);
 }
