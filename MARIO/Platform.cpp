@@ -16,8 +16,16 @@ void CPlatform::RenderBoundingBox()
 	float l, t, r, b;
 
 	GetBoundingBox(l, t, r, b);
-	rect.left = 0;
-	rect.top = 0;
+	if (cellWidth == 16 && cellHeight == 16) 
+	{
+		rect.left = l;
+		rect.top = t;
+	}
+	else 
+	{
+		rect.left = 0;
+		rect.top = 0;
+	}
 	rect.right = (int)r - (int)l;
 	rect.bottom = (int)b - (int)t;
 
@@ -61,7 +69,14 @@ void CPlatform::GetBoundingBox(float& l, float& t, float& r, float& b)
 int CPlatform::IsDirectionColliable(float nx, float ny)
 {
 	if (nx == 0 && ny == -1) return 1;
-	else return 0;
+	if (cellWidth == 16 && cellHeight == 16) return 1;
+	return 0;
+}
+
+int CPlatform::IsBlocking()
+{
+	if (cellWidth == 16 && cellHeight == 16) return 1;
+	return (cellHeight >= 9);
 }
 
 

@@ -1,5 +1,5 @@
 [SETTINGS]
-start	2
+start	1
 width	340
 height	240
 
@@ -28,3 +28,4 @@ height	240
 120	textures\misc_3_old.png
 130	textures\Demo.png
 200	textures\world1_1_bank.png
+210	textures\hidden_map.png
