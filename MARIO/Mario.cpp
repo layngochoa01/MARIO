@@ -20,6 +20,7 @@
 #include "Collision.h"
 #include "PlayScene.h"
 #define POSITION_END_MAP 3070
+#define POSITION_START_MAP 30
 #define OFFSET_HOLDING_X 16.0f
 #define OFFSET_HOLDING_Y 2.0f
 #define POSITION_Y_DIE	1000
@@ -29,6 +30,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	//DebugOut(L"\t[MARIO]TIME %d\n", clock);
 	//DebugOut(L"\t[MARIO]LEVEL RUN %d\n", levelRun);
 	//if(isFloating)DebugOut(L"\t[MARIO]FLOAT %d, VX %f, VY %f\n", isFloating, vx, vy);
+	 DebugOut(L"\t[MARIO]ISJUMPKEYHOLD %d, ISPREPAREUP %d\n", isJumpKeyHeld, isPrepareUp);
 	if (!isFloating)
 	{
 		vy += MARIO_GRAVITY * dt;
@@ -118,15 +120,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		else
 		{
 			//DebugOut(L"\t[MARIO UPDATE]TAO TAIL HIT BOX NGAN HAN %d\n");
-			float tailX, tailY, tailWidth = 2.0f;
+			float tailX, tailY, tailWidth = 8.0f;
 
 			if (nx > 0) // Quét sang phải
 			{
-				tailX = x + MARIO_RACCOON_BBOX_WIDTH / 2 + tailWidth;
+				tailX = x + tailWidth;
 			}
 			else // Quét sang trái
 			{
-				tailX = x - MARIO_RACCOON_BBOX_WIDTH / 2 - tailWidth;
+				tailX = x - tailWidth;
 			}
 			tailY = y + 5.0f; // chỉnh tầm cao đuôi
 
@@ -187,21 +189,27 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		DownTimeClock1Second();
 
 	//USE PIPE
-	if (isDown)
+	if (isDown || isUp)
 	{
-		if (GetTickCount64() - time_wait_use_pipe > TIME_WAIT_USE_PIPE * 2)
+		if (GetTickCount64() - time_wait_use_pipe > TIME_WAIT_USE_PIPE * 1)
 		{
 			isUsePipe = true;
-			if (GetTickCount64() - time_wait_use_pipe > TIME_WAIT_USE_PIPE * 3)
-				SetState(MARIO_STATE_DOWNING_PIPE);
-
+			if (GetTickCount64() - time_wait_use_pipe > TIME_WAIT_USE_PIPE * 2)
+				if(isDown) SetState(MARIO_STATE_DOWNING_PIPE);
+				else SetState(MARIO_STATE_UPPING_PIPE);
 		}
 	}
-	else { isUsePipe = false; }
-	
+	else 
+	{ 
+		isUsePipe = false;
+		isPrepareUp = false;
+	}
+
+
 	//Neu mario bi fall => DIE
 	if (y > POSITION_Y_DIE  ) { SetState(MARIO_STATE_DIE); }
 	if (x > POSITION_END_MAP) { x = POSITION_END_MAP; }
+	else if (x < POSITION_START_MAP) x = POSITION_START_MAP;
 	if (score > SCORE_MAX) {
 		score = 0;
 	}
@@ -695,6 +703,17 @@ void CMario::OnCollisionWithPipe(LPCOLLISIONEVENT e)
 		isDown = false;
 		time_wait_use_pipe = 0;
 	}
+	if (e->ny > 0 && isJumpKeyHeld)
+	{
+		isUp = true;
+		if (time_wait_use_pipe == 0) time_wait_use_pipe = GetTickCount64();
+	}
+}
+
+void CMario::OnCollisionWithCard(LPCOLLISIONEVENT e)
+{
+	DebugOut(L"[MARIO VA CHAM CARD] \n");
+	CCard* card = dynamic_cast<CCard*>(e->obj);
 }
 
 //

@@ -27,7 +27,7 @@ void CCard::Render()
 	else if (card == CARD_FLOWER) aniId = ID_ANI_CARD_FLOWER;
 	else if (card == CARD_STAR) aniId = ID_ANI_CARD_STAR;
 	animations->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CCard::GetBoundingBox(float& l, float& t, float& r, float& b)

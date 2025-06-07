@@ -16,7 +16,7 @@ void CBrick::Render()
 		animations->Get(ID_ANI_BRICK_CLOUD)->Render(x, y);
 		break;
 	}
-	RenderBoundingBox();
+	//RenderBoundingBox();
 	
 }
 

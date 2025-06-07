@@ -20,12 +20,12 @@
 #define MARIO_WALKING_SPEED		    0.1f
 #define MARIO_RUNNING_SPEED		    0.17f
 
-#define MARIO_ACCEL_WALK_X	        0.0005f
-#define MARIO_ACCEL_RUN_X		    0.0007f
-#define MARIO_JUMP_SPEED_Y		    0.3f		
-#define MARIO_JUMP_RUN_SPEED_Y	    0.35f		
+#define MARIO_ACCEL_WALK_X	        0.0003f
+#define MARIO_ACCEL_RUN_X		    0.0005f
+#define MARIO_JUMP_SPEED_Y		    0.24f		
+#define MARIO_JUMP_RUN_SPEED_Y	    0.24f		
 #define MARIO_GRAVITY			    0.0005f		
-#define MARIO_JUMP_DEFLECT_SPEED    0.15f
+#define MARIO_JUMP_DEFLECT_SPEED    0.13f
 #define SPEED_MARIO_WHEN_BLOCK 0.007f
 #define SPEED_LEVEL_RUN 0.01f
 #define MARIO_SPEED_USE_PIPE 0.02f
@@ -62,7 +62,7 @@
 #define FLOATING_TIME_MAX 500
 #define MARIO_KICK 200
 #define TIME_SPEED 150
-#define TIME_WAIT_USE_PIPE 500
+#define TIME_WAIT_USE_PIPE 2000
 
 
 #pragma region ANIMATION_ID
@@ -273,6 +273,7 @@ class CMario : public CGameObject
 	void OnCollisionWithBrickPSwitch(LPCOLLISIONEVENT e);
 	void OnCollisionWithPSwitch(LPCOLLISIONEVENT e);
 	void OnCollisionWithPipe(LPCOLLISIONEVENT e);
+	void OnCollisionWithCard(LPCOLLISIONEVENT e);
 	int GetAniIdBig();
 	int GetAniIdSmall();
 	int GetAniIdRaccoon();
@@ -282,6 +283,7 @@ class CMario : public CGameObject
 	bool isDown;        
 	bool isUp;         
 	bool isUsePipe;        // Mario đang dùng ống
+	bool isPrepareUp;
 
 	bool isGrowing;// xác định mario đang biến hình từ nhỏ biến to
 	bool isTransRaccoon;// xác định mario đang biến hình từ to thành chồn
@@ -316,6 +318,7 @@ public:
 		isDown = false;
 		isUp = false;
 		isUsePipe = false;
+		isPrepareUp = false;
 		targetLevel = -1;
 		lives = 4;
 		clock = TIME_CLOCK_INIT;
@@ -350,10 +353,13 @@ public:
 	void SetX(int l) { this->x = l; }
 	void SetLevelLower();
 	void SetIsRunning(bool b) { isRunning = b; }
+	void SetPrepareUp(int x) { isPrepareUp = x; };
 	void ResetVerticalMovement();
 	void DownTimeClock1Second();
 	void ClockReset() { this->clock = TIME_CLOCK_INIT; };
+
 	int IsUsePipe() { return isUsePipe; }
+	int IsPrepareUp() { return isPrepareUp; }
 	int GetCoin() { return this->coin; }
 	int GetScore() { return score; }
 	int GetLevelRun() { return levelRun; }

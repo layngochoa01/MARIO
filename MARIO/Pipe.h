@@ -19,6 +19,7 @@ public:
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void RenderBoundingBox();
 	int PipeCanDown() { return (length > 10); }
+	int PipeCanUp() { return (cellWidth == 31 && cellHeight == 16); };
 	int GetLength() { return length; }
 	float GetCellWidth() { return cellWidth; };
 	float GetCellHeight() { return cellHeight; };

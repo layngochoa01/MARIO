@@ -50,7 +50,8 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_ESCAPE:
 		CGame::GetInstance()->GetCurrentScene()->TogglePause();
 		break;
-		
+	case DIK_UP:
+		mario->SetPrepareUp(1);
 	case DIK_R: // reset
 		//Reload();
 		break;

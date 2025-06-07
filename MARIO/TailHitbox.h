@@ -13,7 +13,10 @@ protected:
 	int IsBlocking() { return 0; }
 public:
 	CTailHitbox(float x, float y);
-	void Render() { RenderBoundingBox(); }
+	void Render() 
+	{ 
+		//RenderBoundingBox(); 
+	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) ;
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void OnCollisionWith(LPCOLLISIONEVENT e);

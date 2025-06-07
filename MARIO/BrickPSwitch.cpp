@@ -73,7 +73,7 @@ void CBrickPSwitch::Render()
     }
 
     CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-    RenderBoundingBox();
+   // RenderBoundingBox();
 }
 
 void CBrickPSwitch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

@@ -224,7 +224,7 @@ void CGoomba::Render()
 			DebugOut(L"[GOOMBA ] NOT HAVE ANIID \n");
 	}
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CGoomba::SetState(int state)

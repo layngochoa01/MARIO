@@ -83,5 +83,6 @@ int CPipe::IsBlocking()
 {
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	if (mario->IsUsePipe() && PipeCanDown()) return 0;
+	else if (mario->IsUsePipe() && PipeCanUp()) return 0;
 	return (cellHeight > 10 && cellWidth > 16);
 }
