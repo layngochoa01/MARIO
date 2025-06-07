@@ -18,9 +18,10 @@
 #include "Effect.h"
 #include "Collision.h"
 #include "PlayScene.h"
-
+#define POSITION_END_MAP 3070
 #define OFFSET_HOLDING_X 16.0f
 #define OFFSET_HOLDING_Y 2.0f
+#define POSITION_Y_DIE	1000
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -184,6 +185,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (state != MARIO_STATE_DIE || !isGrowing || !isTransRaccoon)
 		DownTimeClock1Second();
 
+	//Neu mario bi fall => DIE
+	if (y > POSITION_Y_DIE  ) { SetState(MARIO_STATE_DIE); }
+	if (x > POSITION_END_MAP) { x = POSITION_END_MAP; }
+	if (score > SCORE_MAX) {
+		score = 0;
+	}
+	if (coin > 99) {
+		coin = 0;
+	}
+
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
@@ -206,7 +217,7 @@ void CMario::OnNoCollision(DWORD dt)
 
 void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 {
-
+	if(dynamic_cast<CPortal*>(e->obj))  DebugOut(L"COLLISION WITH PORTAL");
 	if (e->ny != 0 && e->obj->IsBlocking())
 	{
 		//DebugOut(L"\t[COLLISIONN] CO XAY RA VA CHAM \n]");
@@ -347,6 +358,7 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
+	DebugOut(L"COLLISION WITH PORTAL");
 	CPortal* p = (CPortal*)e->obj;
 	CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
 }
