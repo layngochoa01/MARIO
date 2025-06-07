@@ -55,6 +55,7 @@ class CGame
 	ID3D10SamplerState* pPointSamplerState;
 
 	unordered_map<int, LPSCENE> scenes;
+	
 	int current_scene;
 	int next_scene = -1;
 
@@ -122,7 +123,6 @@ public:
 
 	static bool IsOverlapping(float l1, float t1, float r1, float b1,
 		float l2, float t2, float r2, float b2);
-
 
 	~CGame();
 };

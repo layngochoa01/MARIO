@@ -517,11 +517,13 @@ void CGame::SwitchScene()
 	DebugOut(L"[INFO] Switching to scene %d\n", next_scene);
 
 	scenes[current_scene]->Unload();
-
+	DebugOut(L"NEXT SCENE : %d\n", next_scene);
 	CSprites::GetInstance()->Clear();
 	CAnimations::GetInstance()->Clear();
-
+	//int t = current_scene;
 	current_scene = next_scene;
+	//next_scene = t;
+	DebugOut(L"NEXT SCENE : %d\n", next_scene);
 	LPSCENE s = scenes[next_scene];
 	this->SetKeyHandler(s->GetKeyEventHandler());
 	s->Load();

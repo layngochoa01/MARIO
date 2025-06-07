@@ -37,41 +37,12 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define SCENE_SECTION_UNKNOWN -1
 #define SCENE_SECTION_ASSETS	1
 #define SCENE_SECTION_OBJECTS	2
-#define SCENE_SECTION_TILEMAP_DATA	3
+
 #define ASSETS_SECTION_UNKNOWN -1
 #define ASSETS_SECTION_SPRITES 1
 #define ASSETS_SECTION_ANIMATIONS 2
 
 #define MAX_SCENE_LINE 1024
-
-
-//void CPlayScene::_ParseSection_TILEMAP_DATA(string line)
-//{
-//	int ID, rowMap, columnMap, columnTile, rowTile, totalTiles, startX, startY;
-//	LPCWSTR path = ToLPCWSTR(line);
-//	ifstream f;
-//
-//	f.open(path);
-//	f >> ID >> rowMap >> columnMap >> rowTile >> columnTile >> totalTiles >> startX >> startY;
-//	//Init Map Matrix
-//
-//	int** TileMapData = new int* [rowMap];
-//	for (int i = 0; i < rowMap; i++)
-//	{
-//		TileMapData[i] = new int[columnMap];
-//		for (int j = 0; j < columnMap; j++)
-//		{
-//			f >> TileMapData[i][j];
-//		}
-//
-//	}
-//	f.close();
-//
-//	current_map = new CMap(ID, rowMap, columnMap, rowTile, columnTile, totalTiles, startX, startY);
-//	current_map->ExtractTileFromTileSet();
-//	current_map->SetTileMapData(TileMapData);
-//	DebugOut(L"LOAD MAP SUCCESS START X %d, START Y %d\n", startX, startY);
-//}
 
 
 void CPlayScene::_ParseSection_SPRITES(string line)
@@ -277,8 +248,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		float b = (float)atof(tokens[4].c_str());
 		int scene_id = atoi(tokens[5].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
+		//DebugOut(L"[PLAYSCENE] KHOI TAO PORTAL THANH CONG \n");
+		break;
 	}
-	break;
+	
 
 
 	default:

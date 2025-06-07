@@ -38,7 +38,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (nx > 0) vx = 0.1f;
 		else if (nx < 0) vx = -0.1f;
 	}
-	DebugOut(L"MARIO POSITION			: X %f , Y %f, VX %f, VY %f, nx %d, state %d\n", x, y, vx, vy, nx, state);
+	//DebugOut(L"MARIO POSITION			: X %f , Y %f, VX %f, VY %f, nx %d, state %d\n", x, y, vx, vy, nx, state);
 	//DebugOut(L"[MARIO ] IS HOLDING SHELL %d\n", isHoldingRunKey);
 	if (vy > TERMINAL_VELOCITY)
 		vy = TERMINAL_VELOCITY;
@@ -217,7 +217,7 @@ void CMario::OnNoCollision(DWORD dt)
 
 void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 {
-	if(dynamic_cast<CPortal*>(e->obj))  DebugOut(L"COLLISION WITH PORTAL");
+	//if(dynamic_cast<CPortal*>(e->obj))  DebugOut(L"\t[COLLISION ]COLLISION WITH PORTAL\n");
 	if (e->ny != 0 && e->obj->IsBlocking())
 	{
 		//DebugOut(L"\t[COLLISIONN] CO XAY RA VA CHAM \n]");
@@ -358,8 +358,9 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
-	DebugOut(L"COLLISION WITH PORTAL");
+	DebugOut(L"[COLLISION WITH PORTAL ]COLLISION WITH PORTAL\n");
 	CPortal* p = (CPortal*)e->obj;
+	//CGame::SetSwitchScene(1);
 	CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
 }
 
